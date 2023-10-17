@@ -39,7 +39,7 @@ db_secret_scopes_api <- function(operation, workspace_url, access_token,
     args$body <- list("scope" = scope_name)
   }
 
-  do.call(rSQuIS::az_authenticated_api_query, args)
+  do.call(qiverse.azure::az_authenticated_api_query, args)
 }
 
 #' Interact with the Databricks API for managing individual secrets.
@@ -87,7 +87,7 @@ db_secrets_api <- function(operation, workspace_url, access_token,
       "scope" = scope_name,
       "key" = secret_name
     )
-    if (operation == "create") {
+    if (operation == "put") {
       if (bytestring) {
         args$body$bytes_value <- secret_value
       } else {
@@ -96,7 +96,7 @@ db_secrets_api <- function(operation, workspace_url, access_token,
     }
   }
 
-  do.call(rSQuIS::az_authenticated_api_query, args)
+  do.call(qiverse.azure::az_authenticated_api_query, args)
 }
 
 #' Create an Azure authentication token and store it as a Databricks secret
@@ -109,39 +109,48 @@ db_secrets_api <- function(operation, workspace_url, access_token,
 #'
 #' @family Azure methods
 #' @export
-#' @examples -
-init_databricks_access_token <- function(url, username) {
-  if (!requireNamespace("callr", quietly = TRUE)) {
-    stop(
-      "Package \"callr\" must be installed to use this function.\n",
-      call. = FALSE
-    )
-  }
-  args <- list(
-    username = username,
-    url = url
-  )
-  token_function <- function(url, username) {
-    token <- rSQuIS::get_az_tk("databricks", auth_type = "device_code")
-    db_secret_scopes_api(
-      operation = "create",
-      scope_name = username,
-      workspace_url = url,
-      access_token = token$credentials$access_token)
+#' @examples
+#' \dontrun{
+#' # Set with your tenant_id and app_id. Ensure that this has it's own command
+#' # chunk, so the command will complete after authentication
+#' token <- qiverse.azure::get_az_tk(
+#'   "databricks",
+#'   tenant_id = tenant_id,
+#'   app_id_pbi_df = app_id,
+#'   auth_type = "device_code"
+#' )
+#'
+#' # Store token as databricks secret
+#' update_secret <- qiverse.azure::store_databricks_access_token(
+#'   token = token,
+#'   url = paste0("https://", SparkR::sparkR.conf("spark.databricks.workspaceUrl")),
+#'   user_name = SparkR::first(SparkR::sql("SELECT current_user() AS username"))$username
+#' )
+#'
+#' # Check whether the HTTP request returned a success code
+#' if(update_secret$status_code == 200) {
+#'   "Token successfully updated"
+#' } else {
+#'   "Error occurred"
+#' }
+#'}
+store_databricks_access_token <- function(token, url, username) {
+  # Check if username scope exists, otherwise create
+  qiverse.azure::db_secret_scopes_api(
+    operation = "create",
+    scope_name = username,
+    workspace_url = url,
+    access_token = token$credentials$access_token)
 
-    token_as_bytes <- serialize(token, NULL)
-    db_secrets_api(operation = "put",
-                    workspace_url = url,
-                    access_token = token$credentials$access_token,
-                    scope_name = username,
-                    secret_value = token_as_bytes,
-                    bytestring = TRUE)
-  }
-  bg_r_process <- callr::r_bg(token_function, args)
+  # Convert token into bytes
+  token_as_bytes <- serialize(token, NULL)
 
-  # Wait until an output has been printed (the ID code)
-  bg_r_process$poll_io(10000)
-
-  # Return the printed output (ID code for authentication)
-  message(bg_r_process$read_output())
+  # Put token into databricks secrets
+  qiverse.azure::db_secrets_api(operation = "put",
+                 workspace_url = url,
+                 access_token = token$credentials$access_token,
+                 scope_name = username,
+                 secret_name = 'azure_token',
+                 secret_value = token_as_bytes,
+                 bytestring = TRUE)
 }

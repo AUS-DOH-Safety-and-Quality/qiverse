@@ -12,11 +12,15 @@
 #' @param graph_api_shp The Graph API created for access to SharePoint
 #' @param app_id_shp The application identifier with access to SharePoint
 #' @param cli_sec_shp The client secret with access to SharePoint
+#' @param system_type The system where the package is being called from. Can be
+#' either "local" if running on your local machine or virtual machine, or
+#' "databricks" if running on a databricks instance. The "databricks" option
+#' will pull the token from your secret created using
+#' qiverse.azure::store_databricks_access_token
 #' @param ... Additional arguments to be passed to [AzureAuth::get_azure_token()], #nolint
 #' such as 'use_cache' or 'auth_type'
 #'
 #' @return An Azure token to authenticate connections.
-#' @import AzureAuth
 #' @export
 #' @examples
 #' \dontrun{
@@ -33,6 +37,8 @@ get_az_tk <- function(
     graph_api_shp = Sys.getenv("az_graph_api_sharepoint"),
     app_id_shp = Sys.getenv("az_app_id_sharepoint"),
     cli_sec_shp = Sys.getenv("az_cli_secret_id_sharepoint"),
+    system_type = 'local',
+    db_scope = '',
     ...
 ) {
   resource <- list(
@@ -53,13 +59,31 @@ get_az_tk <- function(
     "key_vault" = app_id_pbi_df
   )
 
+  # Running on databricks requires extraction of secret
+  if (system_type == "databricks") {
+    # Extract the byte-string representation of the AzureAuth token object for the current user
+    token_bytes <- dbutils.secrets.getBytes(
+      scope = db_scope, key = "azure_token"
+    )
+
+    # Convert the byte-string to an actual R object
+    token_db <- unserialize(token_bytes)
+
+    # Update the token with PowerBI API
+    token_db$resource <- "https://analysis.windows.net/powerbi/api"
+  }
+
   # Sharepoint requires a passthrough of token
   if (token_type == "sp") {
-    token <- AzureAuth::get_azure_token(
-      resource = resource[["pbi_df"]],
-      tenant = tenant_id,
-      app = app[["pbi_df"]]
-    )
+    if (system_type == "local") {
+      token <- AzureAuth::get_azure_token(
+        resource = resource[["pbi_df"]],
+        tenant = tenant_id,
+        app = app[["pbi_df"]]
+      )
+    } else if (system_type == "databricks") {
+      token <- token_db
+    }
 
     # Specify the resource URI for the service principal
     # This is found under the 'Expose an API' menu
@@ -75,14 +99,19 @@ get_az_tk <- function(
       on_behalf_of = token
     )
   } else {
-    token <- AzureAuth::get_azure_token(
-      resource = resource[[token_type]],
-      tenant = tenant_id,
-      app = app[[token_type]],
-      ...
-    )
+    if (system_type == "local") {
+      token <- AzureAuth::get_azure_token(
+        resource = resource[[token_type]],
+        tenant = tenant_id,
+        app = app[[token_type]],
+        ...
+      )
+    } else if (system_type == "databricks") {
+      token <- token_db
+    }
     token$refresh()
   }
+
 
   # Output token ####
   return(token)

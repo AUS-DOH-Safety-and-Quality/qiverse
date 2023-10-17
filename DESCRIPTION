@@ -2,7 +2,7 @@ Package: qiverse.azure
 Title: PowerBI, Sharepoint and Snowflake Connectivity
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "SQuIS",
+    person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
     family = "",
     role = c("aut", "cre"),
     email = "safetyandquality@health.wa.gov.au",
@@ -16,6 +16,20 @@ RoxygenNote: 7.2.3
 URL: https://github.com/AUS-DOH-Safety-and-Quality/qiverse.azure
 BugReports: https://github.com/AUS-DOH-Safety-and-Quality/qiverse.azure/issues
 Imports:
+  httr,
+  jsonlite,
+  AzureKeyVault,
+  AzureAuth,
+  purrr,
+  readr,
+  dplyr,
+  stats,
+  stringr,
+  utils,
+  Microsoft365R,
+  DBI,
+  odbc,
+  arrow
 Suggests:
   testthat (>= 3.0.0)
 Remotes:

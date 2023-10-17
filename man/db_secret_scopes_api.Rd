@@ -35,6 +35,6 @@ and deleting secret scopes.
 Other Azure methods: 
 \code{\link{az_authenticated_api_query}()},
 \code{\link{db_secrets_api}()},
-\code{\link{init_databricks_access_token}()}
+\code{\link{store_databricks_access_token}()}
 }
 \concept{Azure methods}

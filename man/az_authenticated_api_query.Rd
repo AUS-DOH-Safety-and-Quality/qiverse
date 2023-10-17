@@ -32,6 +32,6 @@ authentication
 Other Azure methods: 
 \code{\link{db_secret_scopes_api}()},
 \code{\link{db_secrets_api}()},
-\code{\link{init_databricks_access_token}()}
+\code{\link{store_databricks_access_token}()}
 }
 \concept{Azure methods}

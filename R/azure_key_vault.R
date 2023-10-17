@@ -7,12 +7,11 @@
 #' created for the Key Vault resource
 #'
 #' @return An AzureKeyVault::key_vault() object
-#'
 #' @family Key Vault methods
 #' @examples -
 .init_key_vault <- function(vault_name, token_object) {
   if (is.null(token_object)) {
-    token_object <- rSQuIS::get_az_tk("key_vault")
+    token_object <- qiverse.azure::get_az_tk("key_vault")
   }
   AzureKeyVault::key_vault(url = vault_name, token = token_object)
 }
