@@ -20,8 +20,8 @@ get_az_tk(
 \arguments{
 \item{token_type}{The type of token to be generated.
 This can be either: "pbi_df" for PowerBI Dataflows, "pbi_ds"
-for PowerBI datasets, "sp" for SharePoint, "databricks" for the Databricks
-API, "key_vault" for Azure Key Vault}
+for PowerBI datasets, "sp" for SharePoint, "sf" for Snowflake,
+"databricks" for the Databricks API, "key_vault" for Azure Key Vault}
 
 \item{tenant_id}{Your organisation's tenant identifier}
 

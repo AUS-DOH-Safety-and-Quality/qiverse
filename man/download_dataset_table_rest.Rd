@@ -38,7 +38,7 @@ R
 tk <- get_az_tk('pbi_ds')
 
 # Load AD dummy file from PowerBI dataflow
-ad_dummy <- download_dataset_table_rest(
+data_lbw <- download_dataset_table_rest(
   workspace_name = "DOH - Reference Data",
   dataset_name = "r_datasets",
   table_name = "COUNT_lbw",

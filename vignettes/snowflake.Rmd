@@ -1,0 +1,29 @@
+---
+title: "snowflake"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{snowflake}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = FALSE}
+library(qiverse.azure)
+```
+
+This vignette utilises the Snowflake ODBC connector, the AzureAuth package for Azure authentication and the DBI package to run queries on the connected database. These functions provide useful tools to easily connect to the Snowflake data warehouse, run SnowSQL queries and ingest data from R to snowflake.
+
+Setting up your connection
+
+Ensure you install the snowflake odbc driver
+
+Using the connection and querying a table using DBI
+
+Ingesting an R table held in-memory into Snowflake

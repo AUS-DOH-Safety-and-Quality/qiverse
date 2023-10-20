@@ -114,7 +114,7 @@ db_secrets_api <- function(operation, workspace_url, access_token,
 #' # Set with your tenant_id and app_id. Ensure that this has it's own command
 #' # chunk, so the command will complete after authentication
 #' token <- qiverse.azure::get_az_tk(
-#'   "databricks",
+#'   "pbi_df",
 #'   tenant_id = tenant_id,
 #'   app_id_pbi_df = app_id,
 #'   auth_type = "device_code"

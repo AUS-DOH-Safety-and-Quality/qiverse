@@ -1,0 +1,35 @@
+---
+title: "sharepoint"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{sharepoint}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = FALSE}
+library(qiverse.azure)
+```
+
+The series of functions in qiverse.azure are wrappers of Microsoft365R functions to perform some key tasks such as downloading and uploading files to Sharepoint, and downloading data from a sharepoint list. The Microsoft365R package provides a lot of functionality that leverages off the Microsoft Graph API, including the ability to create, modify and delete lists, manage SharePoint sites and many more.
+
+Get sharepoint token
+
+follow instructions in azureaccesstoken vignette
+
+Download sharepoint file
+
+Upload sharepoint file
+
+Download sharepoint List
+
+Other sharepoint functionality
+
+Use Microsoft365R

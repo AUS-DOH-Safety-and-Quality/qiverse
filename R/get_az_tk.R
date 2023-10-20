@@ -2,8 +2,8 @@
 #'
 #' @param token_type The type of token to be generated.
 #' This can be either: "pbi_df" for PowerBI Dataflows, "pbi_ds"
-#' for PowerBI datasets, "sp" for SharePoint, "databricks" for the Databricks
-#' API, "key_vault" for Azure Key Vault
+#' for PowerBI datasets, "sp" for SharePoint, "sf" for Snowflake,
+#' "databricks" for the Databricks API, "key_vault" for Azure Key Vault
 #' @param tenant_id Your organisation's tenant identifier
 #' @param app_id_pbi_df The application identifier with access to PowerBI
 #' dataflows
@@ -45,8 +45,7 @@ get_az_tk <- function(
     "pbi_df" = "https://analysis.windows.net/powerbi/api",
     "pbi_ds" = "https://analysis.windows.net/powerbi/api",
     "sp" = "https://graph.microsoft.com",
-    "sf" = "https://analysis.windows.   net/powerbi/connector/Snowflake",
-    "databricks" = "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d",
+    "sf" = "https://analysis.windows.net/powerbi/connector/Snowflake",
     "key_vault" = "https://vault.azure.net"
   )
 
@@ -55,7 +54,6 @@ get_az_tk <- function(
     "pbi_ds" = app_id_pbi_ds,
     "sp" = app_id_shp,
     "sf" = app_id_pbi_df,
-    "databricks" = app_id_pbi_df,
     "key_vault" = app_id_pbi_df
   )
 

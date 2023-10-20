@@ -1,0 +1,27 @@
+---
+title: "powerbi"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{powerbi}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = FALSE}
+library(qiverse.azure)
+```
+
+PowerBI dataflows
+
+Using the rest API
+
+PowerBI dataset
+
+Using the xmla endpoint
