@@ -45,7 +45,7 @@ get_az_tk <- function(
     "pbi_df" = "https://analysis.windows.net/powerbi/api",
     "pbi_ds" = "https://analysis.windows.net/powerbi/api",
     "sp" = "https://graph.microsoft.com",
-    "sf" = "https://analysis.windows.net/powerbi/connector/Snowflake",
+    "sf" = "https://analysis.windows.   net/powerbi/connector/Snowflake",
     "databricks" = "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d",
     "key_vault" = "https://vault.azure.net"
   )

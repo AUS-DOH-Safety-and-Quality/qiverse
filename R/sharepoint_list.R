@@ -11,12 +11,15 @@
 #'  \dontrun{
 #' token <- get_az_tk('sp')
 #' list_data <- download_sharepoint_list(
-#' paste0("https://wahealthdept.sharepoint.com/sites/",
-#' "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators/Currently%20Live.aspx"),
-#' token = token) # nolint
+#'   paste0("https://wahealthdept.sharepoint.com/sites/",
+#'   "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators/Currently%20Live.aspx"),
+#'   token = token
+#' ) # nolint
 #' list_data <- download_sharepoint_list(
-#' paste0("https://wahealthdept.sharepoint.com/sites/",
-#' "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators"), token = token)
+#'   paste0("https://wahealthdept.sharepoint.com/sites/",
+#'   "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators"),
+#'   token = token
+#' )
 #'}
 download_sharepoint_list <- function(list_url, token) {
   # Initialise objects ####

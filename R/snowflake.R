@@ -75,7 +75,7 @@ ingest_to_snowflake <- function(
     table_name
 ) {
   # Convert data into data.table for faster processing
-  data <- data.table::as.data.table(data)
+  input_data <- data.table::as.data.table(data)
 
   # Save data into temporary parquetfile ####
   # Create a temporary path to store downloaded file
@@ -83,7 +83,7 @@ ingest_to_snowflake <- function(
   ## Replace backslash with frontslash for later SQL code
   temp_path <- gsub("\\\\", "/", temp_path)
   # Write as parquet file into temporary path
-  arrow::write_parquet(data, sink = temp_path)
+  arrow::write_parquet(input_data, sink = temp_path)
 
   # Create schema in Snowflake ####
   DBI::dbGetQuery(con, DBI::SQL(paste0(
@@ -91,13 +91,13 @@ ingest_to_snowflake <- function(
   )))
 
   # Set Data Type in SQL ####
-  sqlDataType <- DBI::dbDataType(con, data)
+  sqlDataType <- DBI::dbDataType(con, input_data)
   # Convert those with character lengths greater than 255, to be the maximum
   # observed
-  for (i in seq_len(ncol(data))) {
-    if (substr(sqlDataType[i], 1, 7) == "VARCHAR" && nrow(data) > 0) {
+  for (i in seq_len(ncol(input_data))) {
+    if (substr(sqlDataType[i], 1, 7) == "VARCHAR" && nrow(input_data) > 0) {
       max_nchar <-
-        data[, nchar(eval(parse(text = paste0("`", names(data)[i], "`"))))] |>
+        input_data[, nchar(eval(parse(text = paste0("`", names(input_data)[i], "`"))))] |>
         max(na.rm = TRUE)
       if (!is.na(max_nchar)) {
         if (max_nchar > 255) {
@@ -118,7 +118,7 @@ ingest_to_snowflake <- function(
   # Snowflake.
   DBI::dbGetQuery(con, DBI::SQL(paste0(
     "create or replace table ", database_name, ".", schema_name, ".",
-    table_name, " ( ", paste0('"', names(data), '" ', sqlDataType,
+    table_name, " ( ", paste0('"', names(input_data), '" ', sqlDataType,
     collapse = ", "), ");"
   )))
 
@@ -149,7 +149,7 @@ ingest_to_snowflake <- function(
   DBI::dbGetQuery(con, DBI::SQL(paste0(
     "COPY INTO ", database_name, ".", schema_name, ".", table_name, "
     FROM (
-        SELECT ", paste0("$1:", names(data), "::", sqlDataType,
+        SELECT ", paste0("$1:", names(input_data), "::", sqlDataType,
         collapse = ", "), "
         FROM @", database_name, ".", schema_name, ".", table_name, "_STAGE",
         "/", put_output$target, "

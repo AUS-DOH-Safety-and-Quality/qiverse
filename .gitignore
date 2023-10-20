@@ -4,6 +4,10 @@
 .httr-oauth
 .DS_Store
 <<<<<<< HEAD
+<<<<<<< HEAD
 inst/doc
 =======
 >>>>>>> 8136a17 (Initial commit)
+=======
+inst/doc
+>>>>>>> 20e6084 (Initialise github and fix functions)
