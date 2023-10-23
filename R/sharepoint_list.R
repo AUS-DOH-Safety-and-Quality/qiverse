@@ -1,6 +1,6 @@
 #' Download SharePoint list
 #'
-#' @param list_url The URL of the list when access the list via your web
+#' @param list_url The URL of the list when accessing the list via your web
 #' browser.
 #' @param token The token generated with the correct SharePoint permissions.
 #' Use get_az_tk('sp") to create this token.
@@ -9,19 +9,28 @@
 #' @export
 #' @examples
 #'  \dontrun{
-#' token <- get_az_tk('sp')
+#' # Get the token for SharePoint
+#' tk <- get_az_tk('sp')
+#'
+#' # Download a particular view for the SharePoint list
 #' list_data <- download_sharepoint_list(
 #'   paste0("https://wahealthdept.sharepoint.com/sites/",
-#'   "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators/Currently%20Live.aspx"),
-#'   token = token
-#' ) # nolint
+#'   "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators/",
+#'   "Currently%20Live.aspx"),
+#'   token = tk
+#' )
+#'
+#' # Download the default view for the SharePoint list
 #' list_data <- download_sharepoint_list(
 #'   paste0("https://wahealthdept.sharepoint.com/sites/",
 #'   "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators"),
-#'   token = token
+#'   token = tk
 #' )
 #'}
-download_sharepoint_list <- function(list_url, token) {
+download_sharepoint_list <- function(
+    list_url,
+    token
+) {
   # Initialise objects ####
   ## Check if the string 'Lists' exists in the url, and return the position
   list_url_start <- gregexpr("Lists", list_url)[[1]][1]

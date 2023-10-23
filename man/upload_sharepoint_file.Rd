@@ -35,10 +35,9 @@ tk <- get_az_tk('sp')
 upload_sharepoint_file(
   src = 'TestFiles/test.txt',
   site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-  "SafetyandQualityIndicatorSetSQuIS/internal/"),
+  "MySharepointSite/"),
   dest_fldr_url = paste0("https://wahealthdept.sharepoint.com/:f:/r/sites/",
-  "SafetyandQualityIndicatorSetSQuIS/internal/",
-  "SQuIS\%20O365\%20Confidential\%20Documents/",
+  "MySharepointSite/",
   "Analytical\%20Code?csf=1&web=1&e=U53w2m"),
   token = tk
 )

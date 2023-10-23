@@ -27,11 +27,10 @@
 #' # Download file to working directory from SharePoint site
 #' download_sharepoint_file(
 #'   site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-#'   "SafetyandQualityIndicatorSetSQuIS/"),
+#'   "DOH-ReferenceData/"),
 #'   file_url = paste0("https://wahealthdept.sharepoint.com/:x:/r/sites/",
-#'   "SafetyandQualityIndicatorSetSQuIS/Shared%20Documents/",
-#'   "Reference%20Material/Establishment_CSV_Exports/",
-#'   "Hospitals_SharePoint_list.csv",
+#'   "DOH-ReferenceData/Shared%20Documents/",
+#'   "R_datasets/qicharts2/cabg.csv",
 #'   "?d=wa2a4067cf69241ce8f4a5d209878328b&csf=1&web=1&e=ybGCQF"),
 #'   token = tk,
 #'   download = TRUE
@@ -40,24 +39,23 @@
 #' # Download file to C:/ drive from SharePoint subsite
 #' download_sharepoint_file(
 #'   site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-#'   "SafetyandQualityIndicatorSetSQuIS/internal/"), # nolint
+#'   "DOH-ReferenceData/"),
 #'   file_url = paste0("https://wahealthdept.sharepoint.com/:u:/r/sites/",
-#'   "SafetyandQualityIndicatorSetSQuIS/internal/",
-#'   "SQuIS%20O365%20Confidential%20Documents/Analytical%20Code/",
-#'   "EmergencyTest.R?csf=1&web=1&e=pwUOBk"),
+#'   "DOH-ReferenceData/Shared%20Documents/",
+#'   "R_datasets/qicharts2/cabg.csv",
+#'   "?d=wa2a4067cf69241ce8f4a5d209878328b&csf=1&web=1&e=ybGCQF"),
 #'   token = tk,
 #'   download = TRUE,
-#'   download_dest = 'C:/Github/EmergencyTest.R'
+#'   download_dest = 'C:/cabg.csv'
 #' )
 #'
 #' # Example to download to tempfile, to load straight into R memory
 #' data <- download_sharepoint_file(
 #'   site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-#'   "SafetyandQualityIndicatorSetSQuIS/"), # nolint
+#'   "DOH-ReferenceData/"),
 #'   file_url = paste0("https://wahealthdept.sharepoint.com/:x:/r/sites/",
-#'   "SafetyandQualityIndicatorSetSQuIS/Shared%20Documents/",
-#'   "Reference%20Material/Establishment_CSV_Exports/",
-#'   "Hospitals_SharePoint_list.csv",
+#'   "DOH-ReferenceData/Shared%20Documents/",
+#'   "R_datasets/qicharts2/cabg.csv",
 #'   "?d=wa2a4067cf69241ce8f4a5d209878328b&csf=1&web=1&e=ybGCQF"),
 #'   token = tk,
 #'   download = FALSE
@@ -65,8 +63,13 @@
 #'   # Pipe in the approprate function to read in the data
 #'   read.csv()
 #'}
-download_sharepoint_file <- function(site_url, file_url, token,
-                                     download = FALSE, download_dest = NULL) {
+download_sharepoint_file <- function(
+    site_url,
+    file_url,
+    token,
+    download = FALSE,
+    download_dest = NULL
+) {
   # split up site_url to determine where drive starts
   if (substr(site_url, nchar(site_url), nchar(site_url)) == "/") {
     site_url <- substr(site_url, 1, nchar(site_url) - 1)
@@ -167,16 +170,20 @@ download_sharepoint_file <- function(site_url, file_url, token,
 #' upload_sharepoint_file(
 #'   src = 'TestFiles/test.txt',
 #'   site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-#'   "SafetyandQualityIndicatorSetSQuIS/internal/"),
+#'   "MySharepointSite/"),
 #'   dest_fldr_url = paste0("https://wahealthdept.sharepoint.com/:f:/r/sites/",
-#'   "SafetyandQualityIndicatorSetSQuIS/internal/",
-#'   "SQuIS%20O365%20Confidential%20Documents/",
+#'   "MySharepointSite/",
 #'   "Analytical%20Code?csf=1&web=1&e=U53w2m"),
 #'   token = tk
 #' )
 #' }
 
-upload_sharepoint_file <- function(src, site_url, dest_fldr_url, token) {
+upload_sharepoint_file <- function(
+    src,
+    site_url,
+    dest_fldr_url,
+    token
+) {
   # split up site_url to determine where drive starts
   if (substr(site_url, nchar(site_url), nchar(site_url)) == "/") {
     site_url <- substr(site_url, 1, nchar(site_url) - 1)

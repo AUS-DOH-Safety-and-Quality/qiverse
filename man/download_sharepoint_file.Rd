@@ -48,11 +48,10 @@ tk <- get_az_tk('sp')
 # Download file to working directory from SharePoint site
 download_sharepoint_file(
   site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-  "SafetyandQualityIndicatorSetSQuIS/"),
+  "DOH-ReferenceData/"),
   file_url = paste0("https://wahealthdept.sharepoint.com/:x:/r/sites/",
-  "SafetyandQualityIndicatorSetSQuIS/Shared\%20Documents/",
-  "Reference\%20Material/Establishment_CSV_Exports/",
-  "Hospitals_SharePoint_list.csv",
+  "DOH-ReferenceData/Shared\%20Documents/",
+  "R_datasets/qicharts2/cabg.csv",
   "?d=wa2a4067cf69241ce8f4a5d209878328b&csf=1&web=1&e=ybGCQF"),
   token = tk,
   download = TRUE
@@ -61,24 +60,23 @@ download_sharepoint_file(
 # Download file to C:/ drive from SharePoint subsite
 download_sharepoint_file(
   site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-  "SafetyandQualityIndicatorSetSQuIS/internal/"), # nolint
+  "DOH-ReferenceData/"),
   file_url = paste0("https://wahealthdept.sharepoint.com/:u:/r/sites/",
-  "SafetyandQualityIndicatorSetSQuIS/internal/",
-  "SQuIS\%20O365\%20Confidential\%20Documents/Analytical\%20Code/",
-  "EmergencyTest.R?csf=1&web=1&e=pwUOBk"),
+  "DOH-ReferenceData/Shared\%20Documents/",
+  "R_datasets/qicharts2/cabg.csv",
+  "?d=wa2a4067cf69241ce8f4a5d209878328b&csf=1&web=1&e=ybGCQF"),
   token = tk,
   download = TRUE,
-  download_dest = 'C:/Github/EmergencyTest.R'
+  download_dest = 'C:/cabg.csv'
 )
 
 # Example to download to tempfile, to load straight into R memory
 data <- download_sharepoint_file(
   site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-  "SafetyandQualityIndicatorSetSQuIS/"), # nolint
+  "DOH-ReferenceData/"),
   file_url = paste0("https://wahealthdept.sharepoint.com/:x:/r/sites/",
-  "SafetyandQualityIndicatorSetSQuIS/Shared\%20Documents/",
-  "Reference\%20Material/Establishment_CSV_Exports/",
-  "Hospitals_SharePoint_list.csv",
+  "DOH-ReferenceData/Shared\%20Documents/",
+  "R_datasets/qicharts2/cabg.csv",
   "?d=wa2a4067cf69241ce8f4a5d209878328b&csf=1&web=1&e=ybGCQF"),
   token = tk,
   download = FALSE

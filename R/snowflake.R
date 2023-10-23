@@ -26,7 +26,10 @@
 #' tk <- get_az_tk('sf')
 #' con <- snowflake_con(server_name = 'hsswa.australia-east', token = tk)
 #'}
-snowflake_con <- function(server_name = Sys.getenv("snowflake_server"), token) {
+snowflake_con <- function(
+    server_name = Sys.getenv("snowflake_server"),
+    token
+) {
   if (server_name == "") {
     stop("No server_name was entered")
   }

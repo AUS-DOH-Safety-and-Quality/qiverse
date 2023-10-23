@@ -7,7 +7,7 @@
 download_sharepoint_list(list_url, token)
 }
 \arguments{
-\item{list_url}{The URL of the list when access the list via your web
+\item{list_url}{The URL of the list when accessing the list via your web
 browser.}
 
 \item{token}{The token generated with the correct SharePoint permissions.
@@ -21,16 +21,22 @@ Download SharePoint list
 }
 \examples{
  \dontrun{
-token <- get_az_tk('sp')
+# Get the token for SharePoint
+tk <- get_az_tk('sp')
+
+# Download a particular view for the SharePoint list
 list_data <- download_sharepoint_list(
   paste0("https://wahealthdept.sharepoint.com/sites/",
-  "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators/Currently\%20Live.aspx"),
-  token = token
-) # nolint
+  "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators/",
+  "Currently\%20Live.aspx"),
+  token = tk
+)
+
+# Download the default view for the SharePoint list
 list_data <- download_sharepoint_list(
   paste0("https://wahealthdept.sharepoint.com/sites/",
   "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators"),
-  token = token
+  token = tk
 )
 }
 }

@@ -37,9 +37,10 @@ tk <- get_az_tk('pbi_df')
 
 # Load AD dummy file from PowerBI dataflow
 ad_dummy <- download_dataflow_table(
-  workspace_name = "DOH - Safety and Quality",
-  dataflow_name = "active_directory",
-  table_name = "dummy",
-  access_token = tk$credentials$access_token)
+  workspace_name = "DOH - Reference Data",
+  dataflow_name = "calendar",
+  table_name = "CalendarToToday",
+  access_token = tk$credentials$access_token
+)
 }
 }

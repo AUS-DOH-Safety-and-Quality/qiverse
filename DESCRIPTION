@@ -29,7 +29,8 @@ Imports:
   Microsoft365R,
   DBI,
   odbc,
-  arrow
+  arrow,
+  data.table
 Suggests:
     knitr,
     rmarkdown,
