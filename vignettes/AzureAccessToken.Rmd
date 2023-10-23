@@ -38,7 +38,7 @@ Local token creation is calls upon the [AzureAuth](https://github.com/Azure/Azur
 
 In order to utilise the full functionality of `get_az_tk`, the R environment config file should be edited. The config file can be manually edited using the following function:
 
-``` R
+``` r
 usethis::edit_r_environ()
 ```
 
@@ -61,7 +61,7 @@ The dummy values should be replaced with the actual values. each of these variab
 
 -   `az_tenant_id` - This is the unique tenant identification key for your PowerBI service. This can be found by navigating to <https://app.powerbi.com> and logging in. The tenant id will be attached to the url in the address bar like so:
 
-    -   https://app.powerbi.com/home?tenant=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&experience=power-bi
+    -   <https://app.powerbi.com/home?tenant=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&experience=power-bi>
 
 **PowerBI Dataflows**
 
@@ -137,7 +137,7 @@ Using `get_az_tk` in databricks requires a slightly different method, as browser
 
 The token will need to be stored somewhere that is easily accessible but secure. One such method is as a databricks secret, which can be done via the `store_databricks_access_token` function. This stores the token under the scope of your choice. The following code shows an example that uses the `SparkR` package to pull in information from databricks:
 
-``` R
+``` r
 # Set with your tenant_id and app_id. Ensure that this has it's own command
 # chunk, so the command will complete after authentication
 token <- qiverse.azure::get_az_tk(
@@ -164,7 +164,7 @@ if(update_secret$status_code == 200) {
 
 Now that the token has been initialised and stored as a databricks secret, this can be extracted and passed back through to `get_az_tk` using the `system_type` option:
 
-``` R
+``` r
 tk <- get_az_tk(
   token_type = "pbi_df", 
   tenant_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
