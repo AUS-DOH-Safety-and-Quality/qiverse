@@ -1,8 +1,8 @@
 ---
-title: "snowflake"
+title: "Snowflake"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{snowflake}
+  %\VignetteIndexEntry{Snowflake}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
