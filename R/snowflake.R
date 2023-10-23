@@ -94,17 +94,17 @@ ingest_to_snowflake <- function(
   )))
 
   # Set Data Type in SQL ####
-  sqlDataType <- DBI::dbDataType(con, input_data)
+  sql_data_type <- DBI::dbDataType(con, input_data)
   # Convert those with character lengths greater than 255, to be the maximum
   # observed
   for (i in seq_len(ncol(input_data))) {
-    if (substr(sqlDataType[i], 1, 7) == "VARCHAR" && nrow(input_data) > 0) {
+    if (substr(sql_data_type[i], 1, 7) == "VARCHAR" && nrow(input_data) > 0) {
       max_nchar <-
-        input_data[, nchar(eval(parse(text = paste0("`", names(input_data)[i], "`"))))] |>
+        input_data[, nchar(eval(parse(text = paste0("`", names(input_data)[i], "`"))))] |> #nolint
         max(na.rm = TRUE)
       if (!is.na(max_nchar)) {
         if (max_nchar > 255) {
-          sqlDataType[i] <- paste0("VARCHAR(", max_nchar, ")")
+          sql_data_type[i] <- paste0("VARCHAR(", max_nchar, ")")
         }
       }
     }
@@ -121,7 +121,7 @@ ingest_to_snowflake <- function(
   # Snowflake.
   DBI::dbGetQuery(con, DBI::SQL(paste0(
     "create or replace table ", database_name, ".", schema_name, ".",
-    table_name, " ( ", paste0('"', names(input_data), '" ', sqlDataType,
+    table_name, " ( ", paste0('"', names(input_data), '" ', sql_data_type,
     collapse = ", "), ");"
   )))
 
@@ -152,7 +152,7 @@ ingest_to_snowflake <- function(
   DBI::dbGetQuery(con, DBI::SQL(paste0(
     "COPY INTO ", database_name, ".", schema_name, ".", table_name, "
     FROM (
-        SELECT ", paste0("$1:", names(input_data), "::", sqlDataType,
+        SELECT ", paste0("$1:", names(input_data), "::", sql_data_type,
         collapse = ", "), "
         FROM @", database_name, ".", schema_name, ".", table_name, "_STAGE",
         "/", put_output$target, "

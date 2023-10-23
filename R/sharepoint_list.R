@@ -47,21 +47,21 @@ download_sharepoint_list <- function(
     )
     # Extract the list name ####
     ## Extract string after list
-    list_displayName <- substr(
+    list_display_name <- substr(
       x = list_url,
       start = list_url_start + 6,
       stop = nchar(list_url)
     )
     ## Remove the page name if it exists(*.aspx)
-    if (gregexpr("/", list_displayName)[[1]][1] != -1) {
-      list_displayName <- substr(
-        x = list_displayName,
+    if (gregexpr("/", list_display_name)[[1]][1] != -1) {
+      list_display_name <- substr(
+        x = list_display_name,
         start = 1,
-        stop = gregexpr("/", list_displayName)[[1]][1] - 1
+        stop = gregexpr("/", list_display_name)[[1]][1] - 1
       )
     }
     ## Convert URL to plain text
-    list_displayName <- utils::URLdecode(list_displayName)
+    list_display_name <- utils::URLdecode(list_display_name)
   }
 
   # Connect to sharepoint site object ####
@@ -84,15 +84,15 @@ download_sharepoint_list <- function(
     # Combine the list of lists into a single data.table
     dplyr::bind_rows()
 
-  # Check if list_displayName exists
-  # If empty list_displayName, stop due to error
-  if (!(list_displayName %in% all_lists[, "displayName"])) {
+  # Check if list_display_name exists
+  # If empty list_display_name, stop due to error
+  if (!(list_display_name %in% all_lists[, "displayName"])) {
     stop("The URL provided is not a SharePoint list")
   }
 
   # Extract list for chosen sharepoint list ####
   list_data <- site$get_list(
-    list_id = all_lists[all_lists$displayName == list_displayName,
+    list_id = all_lists[all_lists$displayName == list_display_name,
                         "id"])$list_items() |> as.data.frame()
 
   # Output dataset ####

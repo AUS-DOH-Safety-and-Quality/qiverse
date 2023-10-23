@@ -39,8 +39,8 @@ get_az_tk <- function(
     graph_api_shp = Sys.getenv("az_graph_api_sharepoint"),
     app_id_shp = Sys.getenv("az_app_id_sharepoint"),
     cli_sec_shp = Sys.getenv("az_cli_secret_id_sharepoint"),
-    system_type = 'local',
-    db_scope = '',
+    system_type = "local",
+    db_scope = "",
     ...
 ) {
   resource <- list(
@@ -61,8 +61,9 @@ get_az_tk <- function(
 
   # Running on databricks requires extraction of secret
   if (system_type == "databricks") {
-    # Extract the byte-string representation of the AzureAuth token object for the current user
-    token_bytes <- dbutils.secrets.getBytes(
+    # Extract the byte-string representation of the AzureAuth token object for
+    # the current user
+    token_bytes <- dbutils.secrets.getBytes( #nolint
       scope = db_scope, key = "azure_token"
     )
 

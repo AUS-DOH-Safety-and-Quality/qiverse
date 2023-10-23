@@ -125,8 +125,10 @@ db_secrets_api <- function(operation, workspace_url, access_token,
 #' # Store token as databricks secret
 #' update_secret <- qiverse.azure::store_databricks_access_token(
 #'   token = token,
-#'   url = paste0("https://", SparkR::sparkR.conf("spark.databricks.workspaceUrl")),
-#'   user_name = SparkR::first(SparkR::sql("SELECT current_user() AS username"))$username
+#'   url = paste0("https://",
+#'     SparkR::sparkR.conf("spark.databricks.workspaceUrl")),
+#'   user_name =
+#'     SparkR::first(SparkR::sql("SELECT current_user() AS username"))$username
 #' )
 #'
 #' # Check whether the HTTP request returned a success code
@@ -152,7 +154,7 @@ store_databricks_access_token <- function(token, url, username) {
                  workspace_url = url,
                  access_token = token$credentials$access_token,
                  scope_name = username,
-                 secret_name = 'azure_token',
+                 secret_name = "azure_token",
                  secret_value = token_as_bytes,
                  bytestring = TRUE)
 }

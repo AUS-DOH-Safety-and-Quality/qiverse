@@ -135,7 +135,7 @@ download_dataset_table_rest <- function(workspace_name, dataset_name,
     # Returned metadata has a row listing the number of rows in the table,
     # ignore this when extracting the column names
     dplyr::filter(!grepl(pattern = "RowNumber-", .data$column)) %>%
-    dplyr::select('column') |>
+    dplyr::select("column") |>
     t() |>
     c()
 
@@ -143,7 +143,7 @@ download_dataset_table_rest <- function(workspace_name, dataset_name,
   # name in brackets and then collapse all to a single string
   names_coll <- paste0("[", cnames, "]", collapse = ",")
   names_coll <- as.character(names_coll)
-  table_name_mod <- paste0("'", table_name, "'") ######## KEY LINE TO put quotes around table name
+  table_name_mod <- paste0("'", table_name, "'") ######## KEY LINE TO put quotes around table name #nolint
   # Use a SELECTCOLUMNS() query to only return the desired batch of columns
   query <- .construct_query(
     stringr::str_glue("EVALUATE SELECTCOLUMNS({table_name_mod}, {names_coll})")

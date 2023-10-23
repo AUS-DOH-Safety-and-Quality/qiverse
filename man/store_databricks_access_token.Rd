@@ -8,6 +8,9 @@ when run on a databricks cluster}
 store_databricks_access_token(token, url, username)
 }
 \arguments{
+\item{token}{The Azure access token to access the scopes API, and to be
+stored as a secret}
+
 \item{url}{The workspace URL of the databricks instance}
 
 \item{username}{The current user's username, for the secret scope}
@@ -30,8 +33,10 @@ token <- qiverse.azure::get_az_tk(
 # Store token as databricks secret
 update_secret <- qiverse.azure::store_databricks_access_token(
   token = token,
-  url = paste0("https://", SparkR::sparkR.conf("spark.databricks.workspaceUrl")),
-  user_name = SparkR::first(SparkR::sql("SELECT current_user() AS username"))$username
+  url = paste0("https://",
+    SparkR::sparkR.conf("spark.databricks.workspaceUrl")),
+  user_name =
+    SparkR::first(SparkR::sql("SELECT current_user() AS username"))$username
 )
 
 # Check whether the HTTP request returned a success code

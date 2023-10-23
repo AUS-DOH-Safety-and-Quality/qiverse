@@ -43,6 +43,9 @@ either "local" if running on your local machine or virtual machine, or
 will pull the token from your secret created using
 qiverse.azure::store_databricks_access_token}
 
+\item{db_scope}{Optional parameter for the databricks scope to pull the
+Azure access token from}
+
 \item{...}{Additional arguments to be passed to \code{\link[AzureAuth:get_azure_token]{AzureAuth::get_azure_token()}}, #nolint
 such as 'use_cache' or 'auth_type'}
 }
