@@ -13,48 +13,64 @@ status](https://www.r-pkg.org/badges/version/qiverse.azure)](https://CRAN.R-proj
 
 <!-- badges: end -->
 
-The goal of qiverse.azure is to …
+The goal of qiverse.azure is to provide a useful all-in-one package for
+Azure access methods and other tools in the Microsoft ecosystem. This
+includes the ability to create Azure Access Tokens, and apply this to
+PowerBI, SharePoint and Snowflake.
 
 ## Installation
 
-You can install the development version of qiverse.azure like so:
+Before installing the development version of `qiverse.azure`, add a
+Github personal access token to R by:
 
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+#Go to github page to generate token
+usethis::create_github_token()
+
+#paste your PAT into pop-up that follows...
+credentials::set_github_pat()
 ```
 
-## Example
+These credentials will now allow you to download private repositories
+from the AUS-DOH-Safety-and-Quality organisation.
 
-This is a basic example which shows you how to solve a common problem:
+You can now install the development version of `qiverse.azure` like so:
 
 ``` r
-library(qiverse.azure)
-## basic example code
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.azure")
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+Branches of the development version of `qiverse.azure` can also be
+installed through the “ref” option:
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.azure", ref = "branch-a")
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/v1/examples>.
+### Setting up your .Renviron
 
-You can also embed plots, for example:
+In order to enjoy the full functionality of the SharePoint, PowerBI and
+Snowflake connectivity features, you must have your environment
+variables set up correctly in R. This step only needs to be completed
+once. Modify your .Renviron file by entering the following command in R:
 
-<img src="man/figures/README-pressure-1.png" width="100%" />
+``` r
+usethis::edit_r_environ()
+```
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+For internal users from HQIU, you can use [this sharepoint text
+file](https://wahealthdept.sharepoint.com/:t:/r/sites/SafetyandQualityIndicatorSetSQuIS/internal/SQuIS%20O365%20Confidential%20Documents/R/connectivity/example_renviron.txt)
+as a template. Please replace your he number and local github path with
+your unique information.
+
+Save the .Renviron file, and restart your R session. Your envrionment
+variables are now set.
+
+## Package Vignettes
+
+The rendered package vignettes can be viewed after installation in R
+using the following command:
+
+``` r
+browseVignettes("qiverse.azure")
+```
