@@ -102,6 +102,8 @@ db_secrets_api <- function(operation, workspace_url, access_token,
 #' Create an Azure authentication token and store it as a Databricks secret
 #' when run on a databricks cluster
 #'
+#' @param token The Azure access token to access the scopes API, and to be
+#' stored as a secret
 #' @param url The workspace URL of the databricks instance
 #' @param username The current user's username, for the secret scope
 #'

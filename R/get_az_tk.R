@@ -17,6 +17,8 @@
 #' "databricks" if running on a databricks instance. The "databricks" option
 #' will pull the token from your secret created using
 #' qiverse.azure::store_databricks_access_token
+#' @param db_scope Optional parameter for the databricks scope to pull the
+#' Azure access token from
 #' @param ... Additional arguments to be passed to [AzureAuth::get_azure_token()], #nolint
 #' such as 'use_cache' or 'auth_type'
 #'
