@@ -143,7 +143,7 @@ With descriptions for the arguments as follows:
 
 Here is an example code block of this function:
 
-``` R
+``` r
 # Create SharePoint azure token
 tk <- get_az_tk('sp')
 
@@ -163,7 +163,7 @@ upload_sharepoint_file(
 
 The `download_sharepoint_list` function is able to download SharePoint lists into a data.frame object. The function looks as follows:
 
-``` R
+``` r
 download_sharepoint_list(
   list_url,
   token
@@ -178,7 +178,7 @@ With the arguments defined as:
 
 Here is an example code block of this function:
 
-``` R
+``` r
 # Get the token for SharePoint
 tk <- get_az_tk('sp')
 

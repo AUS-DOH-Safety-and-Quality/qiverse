@@ -65,6 +65,6 @@ Save the .Renviron file, and restart your R session. Your envrionment variables 
 
 The rendered package vignettes can be viewed after installation in R using the following command:
 
-``` R
+``` r
 browseVignettes("qiverse.azure")
 ```

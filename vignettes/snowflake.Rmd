@@ -54,7 +54,7 @@ This is to be set to the first part of the server URL.
 
 Before running any queries on Snowflake, the connection to the database needs to be established. This can be done via the `snowflake_con` function.
 
-``` R
+``` r
 # Create Snowflake azure token
 tk <- get_az_tk('sf')
 
@@ -71,7 +71,7 @@ Once connected, you are able to run any SQL code onto the Snowflake database. Pl
 
 We can test our connection with the following code:
 
-``` R
+``` r
 DBI::dbGetQuery(con, DBI::SQL("SELECT 1"))
 ```
 
@@ -83,7 +83,7 @@ This package also includes a function to assist with ingesting in-memory R data 
 
 An example use of this function is as follows:
 
-``` R
+``` r
 # Create Snowflake azure token
 tk <- get_az_tk('sf')
 
