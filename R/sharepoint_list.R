@@ -92,8 +92,9 @@ download_sharepoint_list <- function(
 
   # Extract list for chosen sharepoint list ####
   list_data <- site$get_list(
-    list_id = all_lists[all_lists$displayName == list_display_name,
-                        "id"])$list_items() |> as.data.frame()
+    list_id = all_lists[all_lists$displayName == list_display_name, "id"]
+  )$list_items() |>
+    as.data.frame()
 
   # Output dataset ####
   return(list_data)

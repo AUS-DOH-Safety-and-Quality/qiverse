@@ -27,8 +27,8 @@
 #' con <- snowflake_con(server_name = 'hsswa.australia-east', token = tk)
 #'}
 snowflake_con <- function(
-    server_name = Sys.getenv("snowflake_server"),
-    token
+  server_name = Sys.getenv("snowflake_server"),
+  token
 ) {
   if (server_name == "") {
     stop("No server_name was entered")
@@ -71,11 +71,11 @@ snowflake_con <- function(
 #' )
 #'}
 ingest_to_snowflake <- function(
-    data,
-    con,
-    database_name,
-    schema_name,
-    table_name
+  data,
+  con,
+  database_name,
+  schema_name,
+  table_name
 ) {
   # Convert data into data.table for faster processing
   input_data <- data.table::as.data.table(data)
@@ -122,7 +122,7 @@ ingest_to_snowflake <- function(
   DBI::dbGetQuery(con, DBI::SQL(paste0(
     "create or replace table ", database_name, ".", schema_name, ".",
     table_name, " ( ", paste0('"', names(input_data), '" ', sql_data_type,
-    collapse = ", "), ");"
+                              collapse = ", "), ");"
   )))
 
   # Create a Staging Area for our File ####
@@ -153,9 +153,9 @@ ingest_to_snowflake <- function(
     "COPY INTO ", database_name, ".", schema_name, ".", table_name, "
     FROM (
         SELECT ", paste0("$1:", names(input_data), "::", sql_data_type,
-        collapse = ", "), "
+                         collapse = ", "), "
         FROM @", database_name, ".", schema_name, ".", table_name, "_STAGE",
-        "/", put_output$target, "
+    "/", put_output$target, "
     ) FILE_FORMAT = ( TYPE = PARQUET );"
   )))
 }

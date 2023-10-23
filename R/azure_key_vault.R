@@ -51,7 +51,7 @@
 #' @examples -
 kv_list_secrets <- function(vault_name, token_object = NULL) {
   .secrets_operation(vault_name = vault_name, operation = "list",
-                      token_object = token_object)
+                     token_object = token_object)
 }
 
 #' Retrieve the value of a specified secret from a given Key Vault
@@ -68,7 +68,7 @@ kv_list_secrets <- function(vault_name, token_object = NULL) {
 #' @examples -
 kv_get_secret <- function(vault_name, secret_name, token_object = NULL) {
   secret <- .secrets_operation(vault_name = vault_name, operation = "get",
-                                token_object = token_object, name = secret_name)
+                               token_object = token_object, name = secret_name)
   # The secret is returned as "hidden" and won't print, but simply need to
   # remove the class attribute to change this
   attr(secret$value, "class") <- NULL
@@ -119,7 +119,7 @@ kv_write_secret <- function(vault_name, secret_name, secret_value,
 #' @export
 #' @examples -
 kv_delete_secret <- function(vault_name, secret_name, confirm = TRUE,
-                              token_object = NULL) {
+                             token_object = NULL) {
   .secrets_operation(vault_name = vault_name,
                      operation = "delete",
                      token_object = token_object,

@@ -32,16 +32,16 @@
 #' tk <- get_az_tk('pbi_df', auth_type = 'device_code')
 #'}
 get_az_tk <- function(
-    token_type,
-    tenant_id = Sys.getenv("az_tenant_id"),
-    app_id_pbi_df = Sys.getenv("az_app_id_pbi_dataflow"),
-    app_id_pbi_ds = Sys.getenv("az_app_id_pbi_dataset"),
-    graph_api_shp = Sys.getenv("az_graph_api_sharepoint"),
-    app_id_shp = Sys.getenv("az_app_id_sharepoint"),
-    cli_sec_shp = Sys.getenv("az_cli_secret_id_sharepoint"),
-    system_type = "local",
-    db_scope = "",
-    ...
+  token_type,
+  tenant_id = Sys.getenv("az_tenant_id"),
+  app_id_pbi_df = Sys.getenv("az_app_id_pbi_dataflow"),
+  app_id_pbi_ds = Sys.getenv("az_app_id_pbi_dataset"),
+  graph_api_shp = Sys.getenv("az_graph_api_sharepoint"),
+  app_id_shp = Sys.getenv("az_app_id_sharepoint"),
+  cli_sec_shp = Sys.getenv("az_cli_secret_id_sharepoint"),
+  system_type = "local",
+  db_scope = "",
+  ...
 ) {
   resource <- list(
     "pbi_df" = "https://analysis.windows.net/powerbi/api",

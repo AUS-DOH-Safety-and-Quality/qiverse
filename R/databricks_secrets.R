@@ -63,8 +63,8 @@ db_secret_scopes_api <- function(operation, workspace_url, access_token,
 #' @export
 #' @examples -
 db_secrets_api <- function(operation, workspace_url, access_token,
-                            scope_name, secret_name = NULL, secret_value = NULL,
-                            bytestring = FALSE) {
+                           scope_name, secret_name = NULL, secret_value = NULL,
+                           bytestring = FALSE) {
   if (!(operation %in% c("list", "put", "delete"))) {
     stop("Specified operation: ", operation, " is not valid!",
          "Valid operations are: \"list\", \"put\", and \"delete\"",
@@ -144,7 +144,8 @@ store_databricks_access_token <- function(token, url, username) {
     operation = "create",
     scope_name = username,
     workspace_url = url,
-    access_token = token$credentials$access_token)
+    access_token = token$credentials$access_token
+  )
 
   # Convert token into bytes
   token_as_bytes <- serialize(token, NULL)

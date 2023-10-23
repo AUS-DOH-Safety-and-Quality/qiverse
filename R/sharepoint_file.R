@@ -64,11 +64,11 @@
 #'   read.csv()
 #'}
 download_sharepoint_file <- function(
-    site_url,
-    file_url,
-    token,
-    download = FALSE,
-    download_dest = NULL
+  site_url,
+  file_url,
+  token,
+  download = FALSE,
+  download_dest = NULL
 ) {
   # split up site_url to determine where drive starts
   if (substr(site_url, nchar(site_url), nchar(site_url)) == "/") {
@@ -94,7 +94,8 @@ download_sharepoint_file <- function(
                       collapse = "/")
   file_src <- paste0(
     file_url_split[(length(site_url_split) + 2):length(file_url_split)],
-    collapse = "/") |>
+    collapse = "/"
+  ) |>
     utils::URLdecode()
 
   # Initialise objects ####
@@ -179,10 +180,10 @@ download_sharepoint_file <- function(
 #' }
 
 upload_sharepoint_file <- function(
-    src,
-    site_url,
-    dest_fldr_url,
-    token
+  src,
+  site_url,
+  dest_fldr_url,
+  token
 ) {
   # split up site_url to determine where drive starts
   if (substr(site_url, nchar(site_url), nchar(site_url)) == "/") {
@@ -210,9 +211,11 @@ upload_sharepoint_file <- function(
 
   # Create clean link to destination folder
   dest_fldr <- paste0(
-    dest_fldr_url_split[(length(site_url_split) + 2):
-                          length(dest_fldr_url_split)],
-    collapse = "/") |>
+    dest_fldr_url_split[
+      (length(site_url_split) + 2):length(dest_fldr_url_split)
+    ],
+    collapse = "/"
+  ) |>
     utils::URLdecode()
 
   # Extract file name
