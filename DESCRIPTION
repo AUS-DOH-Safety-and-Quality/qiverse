@@ -20,20 +20,13 @@ Imports:
   jsonlite,
   AzureKeyVault,
   AzureAuth,
-  purrr,
-  readr,
-  dplyr,
-  stats,
-  stringr,
-  utils,
-  Microsoft365R,
-  DBI,
-  odbc,
-  arrow,
-  data.table
+  utils
 Suggests:
-    knitr,
-    rmarkdown,
-    testthat (>= 3.0.0)
+  qiverse.powerbi,
+  qiverse.sharepoint,
+  qiverse.snowflake,
+  knitr,
+  rmarkdown,
+  testthat (>= 3.0.0)
 Remotes:
 VignetteBuilder: knitr
