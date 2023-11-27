@@ -9,7 +9,6 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/qiverse..snowflake)](https://CRAN.R-project.org/package=qiverse..snowflake)
-[![R-CMD-check](https://github.com/AUS-DOH-Safety-and-Quality/qiverse..snowflake/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AUS-DOH-Safety-and-Quality/qiverse..snowflake/actions/workflows/R-CMD-check.yaml)
 
 <!-- badges: end -->
 
