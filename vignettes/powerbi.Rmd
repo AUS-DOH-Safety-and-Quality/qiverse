@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r setup, include = FALSE}
 library(qiverse.azure)
+library(qiverse.powerbi)
 ```
 
 This package defines methods to get Azure Access Tokens and pull in data from the PowerBI, Sharepoint and Snowflake. This vignette covers the steps required to download PowerBI dataflows and PowerBI datasets.
@@ -28,9 +29,11 @@ The `qiverse.powerbi` package stores a function that download PowerBI dataflow t
 
 ``` R
 # Create PowerBI Dataflow azure token
+library(qiverse.azure)
 tk <- get_az_tk('pbi_df')
 
 # Load table from PowerBI dataflow
+library(qiverse.powerbi)
 data_calendar <- download_dataflow_table(
   workspace_name = "DOH - Reference Data",
   dataflow_name = "calendar",
@@ -59,9 +62,11 @@ The `qiverse.powerbi` package stores a function that downloads PowerBI Dataset t
 
 ``` R
 # Create PowerBI Dataset azure token
+library(qiverse.azure)
 tk <- get_az_tk('pbi_ds')
 
 # Load AD dummy file from PowerBI dataflow
+library(qiverse.powerbi)
 data_lbw <- download_dataset_table_rest(
   workspace_name = "DOH - Reference Data",
   dataset_name = "r_datasets",
