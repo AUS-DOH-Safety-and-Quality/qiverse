@@ -22,6 +22,8 @@ Imports:
   dplyr,
   stats,
   stringr,
+  jsonlite,
+  magrittr,
   data.table
 Suggests:
   qiverse.azure,
