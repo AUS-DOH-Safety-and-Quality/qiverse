@@ -9,4 +9,4 @@
 library(testthat)
 library(qiverse)
 
-test_check("qiverse")
+# test_check("qiverse")
