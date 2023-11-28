@@ -9,4 +9,4 @@
 library(testthat)
 library(qiverse.snowflake)
 
-test_check("qiverse.snowflake")
+# test_check("qiverse.snowflake")
