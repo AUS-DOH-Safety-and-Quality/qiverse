@@ -22,9 +22,6 @@ Imports:
   AzureAuth,
   utils
 Suggests:
-  qiverse.powerbi,
-  qiverse.sharepoint,
-  qiverse.snowflake,
   knitr,
   rmarkdown,
   testthat (>= 3.0.0)
