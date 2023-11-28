@@ -31,4 +31,5 @@ Suggests:
   rmarkdown,
   testthat (>= 3.0.0)
 Remotes:
+  AUS-DOH-Safety-and-Quality/qiverse.azure
 VignetteBuilder: knitr
