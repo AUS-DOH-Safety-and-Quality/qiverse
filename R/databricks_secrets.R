@@ -152,10 +152,10 @@ store_databricks_access_token <- function(token, url, username) {
 
   # Put token into databricks secrets
   qiverse.azure::db_secrets_api(operation = "put",
-                 workspace_url = url,
-                 access_token = token$credentials$access_token,
-                 scope_name = username,
-                 secret_name = "azure_token",
-                 secret_value = token_as_bytes,
-                 bytestring = TRUE)
+                                workspace_url = url,
+                                access_token = token$credentials$access_token,
+                                scope_name = username,
+                                secret_name = "azure_token",
+                                secret_value = token_as_bytes,
+                                bytestring = TRUE)
 }
