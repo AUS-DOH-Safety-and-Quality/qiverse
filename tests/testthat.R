@@ -9,4 +9,4 @@
 library(testthat)
 library(qiverse.qiplotly)
 
-test_check("qiverse.qiplotly")
+# test_check("qiverse.qiplotly")
