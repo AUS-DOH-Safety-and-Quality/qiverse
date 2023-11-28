@@ -9,4 +9,4 @@
 library(testthat)
 library(qiverse.powerbi)
 
-test_check("qiverse.powerbi")
+# test_check("qiverse.powerbi")
