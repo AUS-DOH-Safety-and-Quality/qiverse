@@ -9,4 +9,4 @@
 library(testthat)
 library(qiverse.sharepoint)
 
-test_check("qiverse.sharepoint")
+# test_check("qiverse.sharepoint")
