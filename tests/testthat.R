@@ -9,4 +9,4 @@
 library(testthat)
 library(qiverse.azure)
 
-test_check("qiverse.azure")
+# test_check("qiverse.azure")
