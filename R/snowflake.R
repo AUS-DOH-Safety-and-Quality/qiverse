@@ -77,6 +77,9 @@ ingest_to_snowflake <- function(
   schema_name,
   table_name
 ) {
+  # Copy data
+  input_data <- copy(data)
+
   # Convert data into data.table for faster processing
   input_data <- data.table::as.data.table(data)
 
