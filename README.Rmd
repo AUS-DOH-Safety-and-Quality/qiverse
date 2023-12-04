@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: end -->
 
-The goal of qiverse.qimisc is to provide a package ploting SPC and Funnel Plots in Plotly.
+The goal of qiverse.qimisc is to provide a package plotting the Multiple Indicator Sigma Chart in Plotly.
 
 ## Installation
 
@@ -59,7 +59,7 @@ usethis::edit_r_environ()
 
 For internal users from HQIU, you can use [this sharepoint text file](https://wahealthdept.sharepoint.com/:t:/r/sites/SafetyandQualityIndicatorSetSQuIS/internal/SQuIS%20O365%20Confidential%20Documents/R/connectivity/example_renviron.txt) as a template. Please replace your he number and local github path with your unique information.
 
-Save the .Renviron file, and restart your R session. Your envrionment variables are now set.
+Save the .Renviron file, and restart your R session. Your environment variables are now set.
 
 ## Package Vignettes
 

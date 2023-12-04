@@ -1,23 +1,23 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# qiverse.qiplotly
+# qiverse.qimisc
 
 <!-- badges: start -->
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
-status](https://www.r-pkg.org/badges/version/qiverse.qiplotly)](https://CRAN.R-project.org/package=qiverse.qiplotly)
+status](https://www.r-pkg.org/badges/version/qiverse.qimisc)](https://CRAN.R-project.org/package=qiverse.qimisc)
 
 <!-- badges: end -->
 
-The goal of qiverse.qiplotly is to provide a package ploting SPC and
-Funnel Plots in Plotly.
+The goal of qiverse.qimisc is to provide a package plotting the Multiple
+Indicator Sigma Chart in Plotly.
 
 ## Installation
 
-Before installing the development version of `qiverse.qiplotly`, add a
+Before installing the development version of `qiverse.qimisc`, add a
 Github personal access token to R by:
 
 ``` r
@@ -31,18 +31,17 @@ credentials::set_github_pat()
 These credentials will now allow you to download private repositories
 from the AUS-DOH-Safety-and-Quality organisation.
 
-You can now install the development version of `qiverse.qiplotly` like
-so:
+You can now install the development version of `qiverse.qimisc` like so:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.qiplotly")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.qimisc")
 ```
 
-Branches of the development version of `qiverse.qiplotly` can also be
+Branches of the development version of `qiverse.qimisc` can also be
 installed through the “ref” option:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.qiplotly", ref = "branch-a")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.qimisc", ref = "branch-a")
 ```
 
 ### Setting up your .Renviron
@@ -61,7 +60,7 @@ file](https://wahealthdept.sharepoint.com/:t:/r/sites/SafetyandQualityIndicatorS
 as a template. Please replace your he number and local github path with
 your unique information.
 
-Save the .Renviron file, and restart your R session. Your envrionment
+Save the .Renviron file, and restart your R session. Your environment
 variables are now set.
 
 ## Package Vignettes
@@ -70,5 +69,5 @@ The rendered package vignettes can be viewed after installation in R
 using the following command:
 
 ``` r
-browseVignettes("qiverse.qiplotly")
+browseVignettes("qiverse.qimisc")
 ```
