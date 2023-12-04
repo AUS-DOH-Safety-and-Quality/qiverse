@@ -2,3 +2,4 @@
 
 export(misc_plotly)
 export(misc_prep_data)
+import(data.table)
