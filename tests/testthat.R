@@ -9,4 +9,4 @@
 library(testthat)
 library(qiverse.qimisc)
 
-# test_check("qiverse.qimisc")
+# test_check("qiverse.qimisc") #nolint

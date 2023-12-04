@@ -29,27 +29,45 @@ hosp_sizes <- rbind(
   setorder(group)
 
 ## Generate Funnel Plot Data
-gen_fpl_data <- function(seed, input_hosp_sizes, indicator_name, data_type, target = 1, base_denominator, tau2) {
+gen_fpl_data <- function(
+  seed,
+  input_hosp_sizes,
+  indicator_name,
+  data_type,
+  target = 1,
+  base_denominator,
+  tau2
+) {
+  # Dealing with undefined global functions or variables (see datatable-import
+  # vignette)
+  indicator <- denominator <- hosp_multiplier <- numerator <- NULL
+
+  # Set seed
   set.seed(seed)
+
+  # Copy data for usage
   fpl_data <- copy(input_hosp_sizes)
 
+  # Calculate Numerator and Denominator
   fpl_data[, indicator := indicator_name]
   fpl_data[, denominator := base_denominator * hosp_multiplier]
   if (data_type == "SR") {
     fpl_data[, numerator :=
-               # SR SHMI Method for Limits
-               exp(qnorm(runif(fpl_data[, .N])) * sqrt((1/denominator) + tau2))*
-               # Multiply by denominator to get numerator
-               denominator
+        # SR SHMI Method for Limits
+        exp(qnorm(runif(fpl_data[, .N])) *
+              sqrt((1 / denominator) + tau2)) *
+        # Multiply by denominator to get numerator
+        denominator
     ]
   } else if (data_type == "PR") {
     fpl_data[, denominator := round(denominator, 0)]
     fpl_data[, numerator :=
-               # PR Method for Limits
-               sin(asin(sqrt(target)) +
-                     qnorm(runif(fpl_data[, .N])) * sqrt((1/(2*sqrt(denominator)))^2 + tau2))^2 *
-               # Multiply by denominator to get numerator
-               denominator
+        # PR Method for Limits
+        sin(asin(sqrt(target)) +
+              qnorm(runif(fpl_data[, .N])) *
+                sqrt((1 / (2 * sqrt(denominator)))^2 + tau2))^2 *
+        # Multiply by denominator to get numerator
+        denominator
     ]
     fpl_data[, numerator := round(numerator, 0)]
   }
