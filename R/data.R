@@ -1,9 +1,9 @@
-#' Indicator Data
+#' Example Indicator Data
 #'
 #' Example set of indicators used as an input to the data cleaning step for the
 #' Multiple Indicator Sigma Chart.
 #'
-#' @format ## `indicator_data`
+#' @format ## `example_indicator_data`
 #' A data frame with 6 rows and 5 columns:
 #' \describe{
 #'   \item{indicator_theme}{The theme (group) that the indicator belongs to}
@@ -14,14 +14,14 @@
 #'   to "Lower" when the indicator is improving as it decreases, and set to
 #'   "Higher" when the indicator is improving as it increases.}
 #' }
-"indicator_data"
+"example_indicator_data"
 
-#' Funnel Data
+#' Example Funnel Data
 #'
 #' Example funnel plot data used as an input to the data cleaning step for the
 #' Multiple Indicator Sigma Chart.
 #'
-#' @format ## `funnel_data`
+#' @format ## `example_funnel_data`
 #' A data frame with 66 rows and 4 columns:
 #' \describe{
 #'   \item{indicator}{The indicator name that matches the indicator column from
@@ -32,4 +32,4 @@
 #'   \item{denominator}{The denominator value for the indicator and hospital
 #'   combination}
 #' }
-"funnel_data"
+"example_funnel_data"

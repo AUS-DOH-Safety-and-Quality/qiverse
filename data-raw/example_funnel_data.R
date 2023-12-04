@@ -109,7 +109,7 @@ funnel_6_data <- gen_fpl_data(
   base_denominator = 50,
   tau2 = 0.004
 )
-funnel_data <- rbind(
+example_funnel_data <- rbind(
   funnel_1_data,
   funnel_2_data,
   funnel_3_data,
@@ -118,4 +118,4 @@ funnel_data <- rbind(
   funnel_6_data
 )[, .(indicator, group, numerator, denominator)]
 
-usethis::use_data(funnel_data, overwrite = TRUE)
+usethis::use_data(example_funnel_data, overwrite = TRUE)

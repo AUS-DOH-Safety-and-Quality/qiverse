@@ -43,7 +43,7 @@ indicator_6_data <- data.table(
   data_type = "PR",
   betteris = "Higher"
 )
-indicator_data <- rbind(
+example_indicator_data <- rbind(
   indicator_1_data,
   indicator_2_data,
   indicator_3_data,
@@ -52,4 +52,4 @@ indicator_data <- rbind(
   indicator_6_data
 )
 
-usethis::use_data(indicator_data, overwrite = TRUE)
+usethis::use_data(example_indicator_data, overwrite = TRUE)
