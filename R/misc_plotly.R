@@ -18,7 +18,7 @@
 #' \dontrun{
 #'   library(qiverse.qimisc)
 #'   misc_data <- misc_prep_data(example_funnel_data, example_indicator_data)
-#'   misc_plotly(misc_data[GROUP == "A"])
+#'   misc_plotly(misc_data[group == "A"])
 #' }
 
 # Plotting function ####
@@ -29,7 +29,31 @@ misc_plotly <- function(data,
                         y_dp = 2) {
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
-  SUFFIX <- .N <- GROUP <- `:=` <- NULL #nolint
+  suffix <- .N <- group <- `:=` <- NULL #nolint
+
+  # Copy data to load standalone dataset in memory ####
+  data <- data.table::copy(data) |>
+    data.table::as.data.table()
+
+  # Add columns for plotting ####
+  ## Calculate value and apply multiplier to value, to make consistency between
+  ## value and limits
+  data[, value := numerator / denominator *
+         ifelse(data_type == "PR" & multiplier == 1, 100, multiplier)]
+
+  ## Apply betteris to Uzscore for consistency in reporting
+  data[betteris == "Lower", uzscore_betteris := uzscore * (-1)]
+  data[betteris == "Higher", uzscore_betteris := uzscore * (1)]
+
+  ## Set suffix for hovertext label
+  ### Set percentage
+  data[data_type == "PR" & multiplier == 1, suffix := "%"]
+  ### Set rates per x
+  data[data_type == "PR" & multiplier != 1,
+       suffix := paste0(" per ", formatC(multiplier, digits = 0,
+                                         format = "f", big.mark = ","))]
+  ### Set blank for others
+  data[is.na(suffix), suffix := ""]
 
   # Plotly Function ####
   # Helper Function to Create vertical line
@@ -45,49 +69,42 @@ misc_plotly <- function(data,
     )
   }
 
-  # Copy data to load standalone dataset in memory
-  data <- data.table::copy(data) |>
-    data.table::as.data.table()
-
-  ## Fix suffix per 100
-  data[SUFFIX == "per 100", SUFFIX := " per 100"]
-
   # Create Plotly Chart
   plot_data <- plotly::plot_ly(data = data[data[, .N]:1]) |>
     # Add z-scores as a bar chart
     plotly::add_trace(
       name = "Z-score",
-      x = ~ifelse(!is.na(UZSCORE_BETTERIS), UZSCORE_BETTERIS, 0),
-      y = ~list(paste0("<b>", INDICATOR_THEME, "</b>"), INDICATOR),
+      x = ~ifelse(!is.na(uzscore_betteris), uzscore_betteris, 0),
+      y = ~list(paste0("<b>", indicator_theme, "</b>"), indicator),
       type = "bar",
       orientation = "h",
-      marker = ~list(color = ifelse(UZSCORE_BETTERIS < 0, worse_colour,
+      marker = ~list(color = ifelse(uzscore_betteris < 0, worse_colour,
                                     better_colour)),
       textposition = "none",
       hoverinfo = "text",
       ## Implement hovertext tooltip
       text = ~paste0(
-        "<br><b>", INDICATOR_THEME, ": ", INDICATOR, "</b>",
-        "<br><b>Z-score: </b>", formatC(UZSCORE_BETTERIS, digits = 3,
+        "<br><b>", indicator_theme, ": ", indicator, "</b>",
+        "<br><b>Z-score: </b>", formatC(uzscore_betteris, digits = 3,
                                         format = "f", big.mark = ","),
-        "<br><b>Numerator: </b>", formatC(NUMERATOR, digits = y_dp,
+        "<br><b>Numerator: </b>", formatC(numerator, digits = y_dp,
                                           format = "f", big.mark = ",",
                                           drop0trailing = TRUE),
-        "<br><b>Denominator: </b>", formatC(DENOMINATOR, digits = y_dp,
+        "<br><b>Denominator: </b>", formatC(denominator, digits = y_dp,
                                             format = "f", big.mark = ",",
                                             drop0trailing = TRUE),
-        "<br><b>Actual Value: </b>", formatC(VALUE, digits = y_dp,
+        "<br><b>Actual Value: </b>", formatC(value, digits = y_dp,
                                              format = "f", big.mark = ",",
-                                             drop0trailing = TRUE), SUFFIX,
-        "<br><b>Upper 99% Limit: </b>", formatC(UCL99, digits = y_dp,
+                                             drop0trailing = TRUE), suffix,
+        "<br><b>Upper 99% Limit: </b>", formatC(ucl99, digits = y_dp,
                                                 format = "f", big.mark = ",",
-                                                drop0trailing = TRUE), SUFFIX,
-        "<br><b>Centerline: </b>", formatC(CL, digits = y_dp, format = "f",
+                                                drop0trailing = TRUE), suffix,
+        "<br><b>Centerline: </b>", formatC(cl, digits = y_dp, format = "f",
                                            big.mark = ",",
-                                           drop0trailing = TRUE), SUFFIX,
-        "<br><b>Lower 99% Limit: </b>", formatC(LCL99, digits = y_dp,
+                                           drop0trailing = TRUE), suffix,
+        "<br><b>Lower 99% Limit: </b>", formatC(lcl99, digits = y_dp,
                                                 format = "f", big.mark = ",",
-                                                drop0trailing = TRUE), SUFFIX
+                                                drop0trailing = TRUE), suffix
       ),
       hoverlabel = list(bgcolor = brand_colour),
       showlegend = FALSE
@@ -119,7 +136,7 @@ misc_plotly <- function(data,
       ## Create Chart Title
       title = list(
         font = list(size = 20),
-        text = paste0("<b>Multiple Indicator Sigma Chart for ", data[1, GROUP],
+        text = paste0("<b>Multiple Indicator Sigma Chart for ", data[1, group],
                       "</b>")
       ),
       ## Set x-axis options

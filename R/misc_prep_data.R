@@ -60,12 +60,10 @@ misc_prep_data <- function(funnel_data, indicator_data) {
       )
 
       # Extract out values , Uzscore, control limits
-      funnel_data <- funnel$aggregated_data[, c("group", "rr", "Uzscore",
-                                                "LCL95", "UCL95", "LCL99",
-                                                "UCL99")] |>
+      funnel_data <- funnel$aggregated_data[, c("group", "Uzscore",
+                                                "LCL99", "UCL99")] |>
         data.table::as.data.table()
       funnel_data[, group := as.character(group)]
-      data.table::setnames(funnel_data, "rr", "value")
 
       # Merge back in funnel data
       data_ind <- merge(data_ind, funnel_data, by = "group", all.x = TRUE,
@@ -81,35 +79,16 @@ misc_prep_data <- function(funnel_data, indicator_data) {
     # Stack list of data.tables into single table
     data.table::rbindlist()
 
-  # Apply a series of transformation steps to transform data
-  # directly into plotly function formats ####
-  ## Apply multiplier to value, to make consistency between value and limits
-  data_funnel[, value := value * multiplier]
-
-  ## Apply betteris to Uzscore for consistency in reporting
-  data_funnel[betteris == "Lower", Uzscore_betteris := Uzscore * (-1)]
-  data_funnel[betteris == "Higher", Uzscore_betteris := Uzscore * (1)]
-
-  ## Set suffix for hovertext label
-  ### Set percentage
-  data_funnel[data_type == "PR" & multiplier == 1, suffix := "%"]
-  ### Set rates per x
-  data_funnel[data_type == "PR" & multiplier != 1,
-              suffix := paste0(" per ", formatC(multiplier, digits = 0,
-                                                format = "f", big.mark = ","))]
-  ### Set blank for others
-  data_funnel[is.na(suffix), suffix := ""]
-
+  # Apply Multiplier Fix
   ## Multiply by 100 for those that are proportions and multiplier 1
   data_funnel[data_type == "PR" & multiplier == 1,
-              ":=" (value = value * 100,
-                    UCL99 = UCL99 * 100,
+              ":=" (UCL99 = UCL99 * 100,
                     cl = cl * 100,
                     LCL99 = LCL99 * 100)]
 
-  # Change names of columns to uppercase
+  # Change names of columns to lowercase
   data.table::setnames(data_funnel, names(data_funnel),
-                       toupper(names(data_funnel)))
+                      tolower(names(data_funnel)))
 
   # Return output ####
   return(data_funnel)

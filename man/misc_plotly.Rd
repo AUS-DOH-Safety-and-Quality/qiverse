@@ -39,6 +39,6 @@ Chart the Multiple Indicator Sigma Chart in Plotly
 \dontrun{
   library(qiverse.qimisc)
   misc_data <- misc_prep_data(example_funnel_data, example_indicator_data)
-  misc_plotly(misc_data[GROUP == "A"])
+  misc_plotly(misc_data[group == "A"])
 }
 }
