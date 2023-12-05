@@ -3,7 +3,9 @@
 #' @param data A data.frame/data.table of the funnel data with the
 #' columns indicator, group, numerator and denominator. See ?example_funnel_data
 #' for an example and more information on the fields required.
-#' @param brand_colour The colour of the 95% and 99% control limits for the plot
+#' @param hover_colour The background colour for the hoverinfo (default =
+#' "#00667B")
+#' @param control_colour The colour of the 95% and 99% control limits for the plot
 #' (default = "#00667B")
 #' @param worse_colour The colour of the bar in the unfavourable direction
 #' (default = "black")
@@ -23,7 +25,8 @@
 
 # Plotting function ####
 misc_plotly <- function(data,
-                        brand_colour = "#00667B",
+                        hover_colour = "#00667B",
+                        control_colour = "#00667B",
                         worse_colour = "black",
                         better_colour = "grey",
                         y_dp = 2) {
@@ -106,7 +109,7 @@ misc_plotly <- function(data,
                                                 format = "f", big.mark = ",",
                                                 drop0trailing = TRUE), suffix
       ),
-      hoverlabel = list(bgcolor = brand_colour),
+      hoverlabel = list(bgcolor = hover_colour),
       showlegend = FALSE
     ) |>
     # Add 95% control limits to legend only
@@ -116,7 +119,7 @@ misc_plotly <- function(data,
       y = 0,
       type = "scatter",
       mode = "lines",
-      line = list(color = brand_colour, dash = "dot"),
+      line = list(color = control_colour, dash = "dot"),
       showlegend = TRUE
     ) |>
     # Add 99% control limits to legend only
@@ -126,7 +129,7 @@ misc_plotly <- function(data,
       y = 0,
       type = "scatter",
       mode = "lines",
-      line = list(color = brand_colour, dash = "dash"),
+      line = list(color = control_colour, dash = "dash"),
       showlegend = TRUE
     ) |>
     # Format layout options
@@ -171,13 +174,13 @@ misc_plotly <- function(data,
       ## Add vertical lines for control limits
       shapes = list(
         ## 99.9% Lower Control Limit
-        vline(stats::qnorm(0.001), color = brand_colour, dash = "dash"),
+        vline(stats::qnorm(0.001), color = control_colour, dash = "dash"),
         ## 95% Lower Control Limit
-        vline(stats::qnorm(0.025), color = brand_colour, dash = "dot"),
+        vline(stats::qnorm(0.025), color = control_colour, dash = "dot"),
         ## 95% Upper Control Limit
-        vline(stats::qnorm(0.975), color = brand_colour, dash = "dot"),
+        vline(stats::qnorm(0.975), color = control_colour, dash = "dot"),
         ## 99.9% Upper Control Limit
-        vline(stats::qnorm(0.999), color = brand_colour, dash = "dash")
+        vline(stats::qnorm(0.999), color = control_colour, dash = "dash")
       ),
       ## Set legend options
       legend = list(

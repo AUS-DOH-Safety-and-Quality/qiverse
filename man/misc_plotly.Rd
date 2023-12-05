@@ -6,7 +6,8 @@
 \usage{
 misc_plotly(
   data,
-  brand_colour = "#00667B",
+  hover_colour = "#00667B",
+  control_colour = "#00667B",
   worse_colour = "black",
   better_colour = "grey",
   y_dp = 2
@@ -17,7 +18,10 @@ misc_plotly(
 columns indicator, group, numerator and denominator. See ?example_funnel_data
 for an example and more information on the fields required.}
 
-\item{brand_colour}{The colour of the 95\% and 99\% control limits for the plot
+\item{hover_colour}{The background colour for the hoverinfo (default =
+"#00667B")}
+
+\item{control_colour}{The colour of the 95\% and 99\% control limits for the plot
 (default = "#00667B")}
 
 \item{worse_colour}{The colour of the bar in the unfavourable direction
