@@ -39,7 +39,7 @@ indicator_5_data <- data.table(
 indicator_6_data <- data.table(
   indicator_theme = "Staff Experience",
   indicator = "Staff Feel Safe To Speak Up",
-  multiplier = 100,
+  multiplier = 1,
   data_type = "PR",
   betteris = "Higher"
 )
