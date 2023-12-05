@@ -54,6 +54,7 @@ snowflake_con <- function(
 #' @param table_name The name of the table for Snowflake
 #'
 #' @return A data.frame with output metadata on the ingestion process.
+#' @import data.table
 #' @export
 #' @examples
 #'  \dontrun{

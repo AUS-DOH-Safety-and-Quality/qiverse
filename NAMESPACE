@@ -2,3 +2,4 @@
 
 export(ingest_to_snowflake)
 export(snowflake_con)
+import(data.table)
