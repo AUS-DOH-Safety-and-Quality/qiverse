@@ -50,5 +50,5 @@ misc_data
 This package provides a function to plot the MISC output using Plotly. An example of this is as follows:
 
 ```{r, fig.height = 4, fig.width = 10, fig.align = "center"}
-misc_plotly(misc_data[GROUP == "A"])
+misc_plotly(misc_data[group == "A"])
 ```
