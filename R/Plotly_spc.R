@@ -22,7 +22,8 @@
 #' for the start date of the SPC period.
 #' @param spc_period_end A date (or character of format #' "yyyy-mm-dd")
 #' for the end date of the SPC period.
-#' @param y_axis_label A value denoting the y-axis label. Usually NA or "Rate",
+#' @param x_axis_label A value denoting the x-axis label. Usually NA or a specified label.
+#' @param y_axis_label A value denoting the y-axis label. Usually NA, a specified label or "Rate",
 #' for items which are proportion based with multipliers.
 #' @param brand_colour Hex code for the colour of the funnel limits
 #' @param actual_colour Hex code for the colour actual data points
@@ -52,33 +53,34 @@
 #' @export
 #' @examples -
 #' \dontrun{
-#' spc_plotly_create(
-#' x = seq(from = as.Date('2019-02-01'),
-#'         to = as.Date('2022-01-01'),
-#'         by = 'month')-1,
-#' numerator = c(20,25,17,22,18,18,30,29,18,23,17,18,
-#'               15,17,19,21,30,19,15,17,22,24,20,13,
-#'               14,18,14,21,17,27,24,30,25,24,26,24),
-#' denominator = c(86,91,99,110,96,110,96,97,105,87,94,89,
-#'                 102,106,107,95,106,132,95,117,97,99,108,106,
-#'                 101,96,96,98,105,117,94,77,97,90,106,107),
-#' data_type = 'p',
-#' multiplier = 1,
-#' betteris = "Lower",
-#' title = paste0("Example Indicator", " - ", "Hospital"),
-#' spc_period_start = "2019-01-01",
-#' spc_period_end = "2021-12-31",
-#' y_axis_label = "Proportion",
-#' brand_colour = "#00667B",
-#' actual_colour = "black",
-#' annotation_marker_colour = "grey",
-#' y_dp = 1,
-#' y_format = "Percentage",
-#' x_format = "%b %Y",
-#' patterns = "Yes",
-#' pattern_text_ay = 50,
-#' source_text = 'Healthcare Quality Intelligence Unit'
-#' )
+# spc_plotly_create(
+# x = seq(from = as.Date('2019-02-01'),
+#         to = as.Date('2022-01-01'),
+#         by = 'month')-1,
+# numerator = c(20,25,17,22,18,18,30,29,18,23,17,18,
+#               15,17,19,21,30,19,15,17,22,24,20,13,
+#               14,18,14,21,17,27,24,30,25,24,26,24),
+# denominator = c(86,91,99,110,96,110,96,97,105,87,94,89,
+#                 102,106,107,95,106,132,95,117,97,99,108,106,
+#                 101,96,96,98,105,117,94,77,97,90,106,107),
+# data_type = 'p',
+# multiplier = 1,
+# betteris = "Lower",
+# title = paste0("Example Indicator", " - ", "Hospital"),
+# spc_period_start = "2019-01-01",
+# spc_period_end = "2021-12-31",
+# x_axis_label = "X Axis Label",
+# y_axis_label = "Y Axis Label",
+# brand_colour = "#00667B",
+# actual_colour = "black",
+# annotation_marker_colour = "grey",
+# y_dp = 1,
+# y_format = "Percentage",
+# x_format = "%b %Y",
+# patterns = "Yes",
+# pattern_text_ay = 50,
+# source_text = 'Healthcare Quality Intelligence Unit'
+# )
 #' }
 spc_plotly_create <- function(
   x,
@@ -90,7 +92,8 @@ spc_plotly_create <- function(
   title = "",
   spc_period_start = NA,
   spc_period_end = NA,
-  y_axis_label = "Proportion",
+  x_axis_label = NA,
+  y_axis_label = NA,
   brand_colour = "#00667B",
   actual_colour = "black",
   annotation_marker_colour = "grey",
@@ -101,7 +104,9 @@ spc_plotly_create <- function(
   x_format = "%b %Y",
   patterns = "Yes",
   pattern_text_ay = 50,
-  source_text = "Healthcare Quality Intelligence Unit"
+  source_text = "Healthcare Quality Intelligence Unit",
+  b_padding = 80,
+  y_padding = -0.1
 ) {
 
   # Helper function to remove NA's
@@ -171,6 +176,15 @@ spc_plotly_create <- function(
   }
 
   #change y axis label to rate per multiplier as is only label "rate"
+  if (is.na(x_axis_label)) {
+    x_axis_label_full <- ""
+  } else {
+    x_axis_label_full <- x_axis_label
+    b_padding <- 100
+    y_padding <- -0.2
+  }
+
+  #change y axis label to rate per multiplier as is only label "rate"
   if (is.na(y_axis_label)) {
     y_axis_label_full <- ""
   } else if (y_axis_label == "Rate") {
@@ -180,7 +194,7 @@ spc_plotly_create <- function(
                                        big.mark = ","),
                                sep = " ")
   } else {
-    y_axis_label_full <- ""
+    y_axis_label_full <- y_axis_label
   }
 
   # Set up formats for labels, ticks and scale y figures appropriately
@@ -319,7 +333,7 @@ spc_plotly_create <- function(
                       spc_sub_heading, "</sup>")
       ),
       xaxis = list(
-        title = "",
+        title = x_axis_label_full,
         hoverformat = x_format,
         categoryorder = "trace"
       ),
@@ -337,10 +351,10 @@ spc_plotly_create <- function(
   if (source_text != "" && !is.na(source_text)) {
     spc_plotly <- spc_plotly |>
       plotly::layout(
-        margin = list(b = 80, t = 80),
+        margin = list(b = b_padding, t = 80),
         # Add source caption in bottom right
         annotations = list(
-          x = 1, y = -0.1,
+          x = 1, y = y_padding,
           text = paste0("<i>Source: ", source_text, "</i>"),
           showarrow = FALSE, xref = "paper", yref = "paper",
           xanchor = "right", yanchor = "top", xshift = 0, yshift = 0,
