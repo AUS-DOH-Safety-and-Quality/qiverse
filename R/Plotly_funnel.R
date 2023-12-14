@@ -33,7 +33,8 @@
 #' for the end date of the funnel period.
 #' @param y_limit_lower A value denoting the y-axis lower limit range
 #' @param y_limit_upper A value denoting the y-axis upper limit range
-#' @param y_axis_label A value denoting the y-axis label. Usually NA or "Rate",
+#' @param x_axis_label A value denoting the x-axis label. Usually NA or a specified label.
+#' @param y_axis_label A value denoting the y-axis label. Usually NA, a specified label or "Rate",
 #' for items which are proportion based with multipliers.
 #' @param highlight_hosp Optional hospital name(s) to highlight individually
 #' @param highlight_outlier Boolean, if FALSE do not highlight outliers
@@ -78,10 +79,12 @@
 #'   multiplier = 1,
 #'   betteris = "Higher",
 #'   title = "Test Indicator",
-#'   y_format = "Percentage"
+#'   y_format = "Percentage",
+#'   x_axis_label = "This is X Axis",
+#'   y_axis_label = "This is Y Axis"
 #' )
-#'
-#' # Full Example
+#' #'
+#' #' # Full Example
 #' fpl_plotly_create(
 #'   numerator = (sapply(1:5, function(x) rpois(5, x * 20 * 0.6)) |> c() -
 #'                  (runif(25) * 10) |> round(0)) |>
@@ -103,13 +106,15 @@
 #'   funnel_period_end = '2022-06-30',
 #'   y_limit_lower = NA,
 #'   y_limit_upper = 0.8,
-#'   y_axis_label = 'Percentage',
+#'   x_axis_label = "This is X Axis",
+#'   y_axis_label = "This is Y Axis",
 #'   highlight_hosp = c('Q2', 'Q5'),
 #'   highlight_outlier = TRUE,
 #'   y_format = "Percentage",
 #'   source_text = 'Healthcare Quality Intelligence Unit'
 #' )
-#' }
+
+
 fpl_plotly_create <- function(
   numerator,
   denominator,
@@ -126,6 +131,7 @@ fpl_plotly_create <- function(
   funnel_period_end = NA,
   y_limit_lower = NA,
   y_limit_upper = NA,
+  x_axis_label = NA,
   y_axis_label = NA,
   highlight_hosp = NULL,
   highlight_outlier = TRUE,
@@ -137,7 +143,9 @@ fpl_plotly_create <- function(
   y_dp = 1,
   y_format = "Percentage",
   pattern_text_ay = 50,
-  source_text = "Healthcare Quality Intelligence Unit"
+  source_text = "Healthcare Quality Intelligence Unit",
+  b_padding = 80,
+  y_padding = -0.1
 ) {
   # Dealing with undefined global functions or variables
   .data <- NULL
@@ -197,6 +205,16 @@ fpl_plotly_create <- function(
   }
   centre_line <- centre_line * multiplier
 
+
+  #change x axis label if not NA
+  if (is.na(x_axis_label)) {
+    x_axis_label_full <- ""
+  } else {
+    x_axis_label_full <- x_axis_label
+    b_padding <- 100
+    y_padding <- -0.2
+  }
+
   #change y axis label to rate per multiplier as is only label "rate"
   if (is.na(y_axis_label)) {
     y_axis_label_full <- ""
@@ -207,7 +225,7 @@ fpl_plotly_create <- function(
                                        big.mark = ","),
                                sep = " ")
   } else {
-    y_axis_label_full <- ""
+    y_axis_label_full <- y_axis_label
   }
 
   # Set up formats for labels, ticks and scale y figures appropriately
@@ -353,7 +371,7 @@ fpl_plotly_create <- function(
                       "</b><br><sup>", date_range, "</sup>")
       ),
       xaxis = list(
-        title = "",
+        title = x_axis_label_full,
         hoverformat = ".0f"
       ),
       yaxis = list(
@@ -370,10 +388,10 @@ fpl_plotly_create <- function(
   if (source_text != "" && !is.na(source_text)) {
     fpl_plotly <- fpl_plotly |>
       plotly::layout(
-        margin = list(b = 80, t = 80),
+        margin = list(b = b_padding, t = 80),
         # Add source caption in bottom right
         annotations = list(
-          x = 1, y = -0.1,
+          x = 1, y = y_padding,
           text = paste0("<i>Source: ", source_text, "</i>"),
           showarrow = FALSE, xref = "paper", yref = "paper",
           xanchor = "right", yanchor = "top", xshift = 0, yshift = 0,
