@@ -66,7 +66,6 @@
 #' @export
 #' @examples -
 #' \dontrun{
-#'
 #' # Minimal Example
 #'
 #' fpl_plotly_create(
@@ -83,8 +82,8 @@
 #'   x_axis_label = "This is X Axis",
 #'   y_axis_label = "This is Y Axis"
 #' )
-#' #'
-#' #' # Full Example
+#'
+#' # Full Example
 #' fpl_plotly_create(
 #'   numerator = (sapply(1:5, function(x) rpois(5, x * 20 * 0.6)) |> c() -
 #'                  (runif(25) * 10) |> round(0)) |>
@@ -113,8 +112,7 @@
 #'   y_format = "Percentage",
 #'   source_text = 'Healthcare Quality Intelligence Unit'
 #' )
-
-
+#' }
 fpl_plotly_create <- function(
   numerator,
   denominator,
@@ -143,9 +141,7 @@ fpl_plotly_create <- function(
   y_dp = 1,
   y_format = "Percentage",
   pattern_text_ay = 50,
-  source_text = "Healthcare Quality Intelligence Unit",
-  b_padding = 80,
-  y_padding = -0.1
+  source_text = "Healthcare Quality Intelligence Unit"
 ) {
   # Dealing with undefined global functions or variables
   .data <- NULL
@@ -209,10 +205,12 @@ fpl_plotly_create <- function(
   #change x axis label if not NA
   if (is.na(x_axis_label)) {
     x_axis_label_full <- ""
+    margin_b_padding <- 80
+    source_y <- -0.1
   } else {
     x_axis_label_full <- x_axis_label
-    b_padding <- 100
-    y_padding <- -0.2
+    margin_b_padding <- 100
+    source_y <- -0.2
   }
 
   #change y axis label to rate per multiplier as is only label "rate"
@@ -388,10 +386,10 @@ fpl_plotly_create <- function(
   if (source_text != "" && !is.na(source_text)) {
     fpl_plotly <- fpl_plotly |>
       plotly::layout(
-        margin = list(b = b_padding, t = 80),
+        margin = list(b = margin_b_padding, t = 80),
         # Add source caption in bottom right
         annotations = list(
-          x = 1, y = y_padding,
+          x = 1, y = source_y,
           text = paste0("<i>Source: ", source_text, "</i>"),
           showarrow = FALSE, xref = "paper", yref = "paper",
           xanchor = "right", yanchor = "top", xshift = 0, yshift = 0,

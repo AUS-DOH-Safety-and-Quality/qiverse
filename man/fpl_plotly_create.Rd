@@ -20,6 +20,7 @@ fpl_plotly_create(
   funnel_period_end = NA,
   y_limit_lower = NA,
   y_limit_upper = NA,
+  x_axis_label = NA,
   y_axis_label = NA,
   highlight_hosp = NULL,
   highlight_outlier = TRUE,
@@ -83,7 +84,9 @@ for the end date of the funnel period.}
 
 \item{y_limit_upper}{A value denoting the y-axis upper limit range}
 
-\item{y_axis_label}{A value denoting the y-axis label. Usually NA or "Rate",
+\item{x_axis_label}{A value denoting the x-axis label. Usually NA or a specified label.}
+
+\item{y_axis_label}{A value denoting the y-axis label. Usually NA, a specified label or "Rate",
 for items which are proportion based with multipliers.}
 
 \item{highlight_hosp}{Optional hospital name(s) to highlight individually}
@@ -132,7 +135,6 @@ Draw a funnel plot in plotly
 \examples{
 -
 \dontrun{
-
 # Minimal Example
 
 fpl_plotly_create(
@@ -145,7 +147,9 @@ fpl_plotly_create(
   multiplier = 1,
   betteris = "Higher",
   title = "Test Indicator",
-  y_format = "Percentage"
+  y_format = "Percentage",
+  x_axis_label = "This is X Axis",
+  y_axis_label = "This is Y Axis"
 )
 
 # Full Example
@@ -170,7 +174,8 @@ fpl_plotly_create(
   funnel_period_end = '2022-06-30',
   y_limit_lower = NA,
   y_limit_upper = 0.8,
-  y_axis_label = 'Percentage',
+  x_axis_label = "This is X Axis",
+  y_axis_label = "This is Y Axis",
   highlight_hosp = c('Q2', 'Q5'),
   highlight_outlier = TRUE,
   y_format = "Percentage",

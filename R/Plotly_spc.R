@@ -104,9 +104,7 @@ spc_plotly_create <- function(
   x_format = "%b %Y",
   patterns = "Yes",
   pattern_text_ay = 50,
-  source_text = "Healthcare Quality Intelligence Unit",
-  b_padding = 80,
-  y_padding = -0.1
+  source_text = "Healthcare Quality Intelligence Unit"
 ) {
 
   # Helper function to remove NA's
@@ -178,6 +176,8 @@ spc_plotly_create <- function(
   #change y axis label to rate per multiplier as is only label "rate"
   if (is.na(x_axis_label)) {
     x_axis_label_full <- ""
+    b_padding <- 80
+    y_padding <- -0.1
   } else {
     x_axis_label_full <- x_axis_label
     b_padding <- 100
