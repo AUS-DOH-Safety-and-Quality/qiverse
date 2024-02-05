@@ -34,14 +34,14 @@ from the AUS-DOH-Safety-and-Quality organisation.
 You can now install the development version of `qiverse` like so:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse", build_vignettes = TRUE)
 ```
 
 Branches of the development version of `qiverse` can also be installed
 through the “ref” option:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse", ref = "branch-a")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse", build_vignettes = TRUE, ref = "branch-a")
 ```
 
 ### Setting up your .Renviron
