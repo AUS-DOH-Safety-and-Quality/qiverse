@@ -150,8 +150,9 @@ execute_xmla_query <- function(workspace, dataset, query, access_token) {
       url = query_url,
       config = auth_header,
       body = construct_xmla_query(target_dataset$model$dbName, query),
+      httr::progress(),
       httr::add_headers(.headers = c(
-        "x-ms-xmlacaps-negotiation-flags" = "0,0,0,1,1",
+        "X-Transport-Caps-Negotiation-Flags" = "0,0,0,1,1",
         "Content-Type" = "text/xml"
       ))
     )
