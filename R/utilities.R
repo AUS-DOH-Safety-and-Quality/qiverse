@@ -11,12 +11,22 @@ rowset_to_df <- function(xmla_rowset) {
   })
 
   names(metadata) <- purrr::map_chr(xml2::xml_children(schema), \(child) {xml2::xml_attr(child, "name")})
+  
+  xmla_extract_fun <- list(
+    "long" = xml2::xml_integer,
+    "double" = xml2::xml_double,
+    "string" = xml2::xml_text,
+    "dateTime" = \(x) { as.Date(xml2::xml_text(x), format = "%Y-%m-%dT%H:%M:%S") },
+    "boolean" = \(x){ tolower(xml2::xml_text(x)) == "true" }
+  )
 
   purrr::map_dfr(xml2::xml_find_all(xmla_rowset, "//d3:row"), \(row) {
     row_elems <- xml2::xml_children(row)
     row_to_df <- row_elems |>
-      xml2::xml_text() |>
-      as.list() |>
+      purrr::imap(\(x, idx) {
+        curr_type <- metadata[[idx]]$type
+        suppressWarnings(xmla_extract_fun[[curr_type]](x))
+        })
       data.frame()
     names(row_to_df) <- purrr::map_chr(metadata[xml2::xml_name(row_elems)], "name")
     row_to_df
