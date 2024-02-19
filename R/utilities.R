@@ -23,34 +23,6 @@ rowset_to_df <- function(xmla_rowset) {
   })
 }
 
-get_xmla_token <- function(capacity_id, workspace_id, access_token) {
-  request_body <- list(capacityObjectId = capacity_id,
-                       workspaceObjectId = workspace_id)
-  xmla_request <-
-    httr::POST(
-      url = "https://api.powerbi.com/metadata/v201606/generateastoken?PreferClientRouting=true",
-      config = get_auth_header(access_token),
-      body = jsonlite::toJSON(request_body, auto_unbox = TRUE),
-      httr::content_type_json())
-
-  httr::content(xmla_request)$Token
-}
-
-get_xmla_server <- function(capacity_region, capacity_id, access_token) {
-  request_body <- list(databaseName = NA,
-                       premiumPublicXmlaEndpoint = TRUE,
-                       serverName = capacity_id)
-
-  server_request <-
-    httr::POST(
-      url = paste0("https://",capacity_region,".pbidedicated.windows.net/webapi/clusterResolve"),
-      config = get_auth_header(access_token),
-      body = jsonlite::toJSON(request_body, auto_unbox = TRUE),
-      httr::content_type_json())
-
-  httr::content(server_request)
-}
-
 construct_xmla_query <- function(dataset, query) {
   glue::glue('
     <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">

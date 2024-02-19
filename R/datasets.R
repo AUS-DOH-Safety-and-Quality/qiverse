@@ -120,37 +120,39 @@ execute_rest_query <- function(workspace, dataset, query, access_token) {
 #' @param dataset Name of the dataset to execute query against
 #' @param query DAX query to execute
 #' @param access_token The token generated with the correct PowerBI Dataset
-#' permissions. Use get_az_tk('pbi_ds') to create this token.
+#' permissions. Use get_az_tk('pbi_df') to create this token.
 #'
 #' @return DataFrame containing results of query
 #' @export
 execute_xmla_query <- function(workspace, dataset, query, access_token) {
-  workspace_metadata <- list_workspaces(access_token)
-  target_workspace <- workspace_metadata[workspace_metadata$Workspace == workspace, ]
+  auth_header <- get_auth_header(access_token)
+  cluster_details <- httr::PUT(url = "https://api.powerbi.com/spglobalservice/GetOrInsertClusterUrisByTenantlocation",
+                               config = auth_header,
+                               httr::content_type_json()) |>
+    httr::content()
 
-  capacity_id <- target_workspace$CapacityID
-  capacity_uri <- target_workspace$CapacityUri
-  workspace_id <- target_workspace$WorkspaceId
+  cluster_uri <- cluster_details$DynamicClusterUri
 
-  capacity_region <- gsub("(pbidedicated://)(.*).pbidedicated.windows.net(.*)", "\\2", capacity_uri)
-  xmla_server <- get_xmla_server(capacity_region, capacity_id, access_token)
-  xmla_token <- get_xmla_token(capacity_id, workspace_id, access_token)
+  all_datasets <- httr::GET(paste0(cluster_uri,"/metadata/v202303/gallery/sharedDatasets"),
+                            config = auth_header,
+                            httr::content_type_json()) |>
+    httr::content()
+
+  target_dataset <- purrr::keep(all_datasets, function(x) {
+    x$workspaceName == workspace && x$model$displayName == dataset
+  })[[1]]
+
+  query_url <- paste0(cluster_uri, "/xmla?vs=", target_dataset$model$vsName,
+                                    "&db=", target_dataset$model$dbName)
 
   xmla_request <-
     httr::POST(
-      url = paste0("https://", xmla_server$clusterFQDN, "/webapi/xmla"),
-      config = httr::add_headers(Authorization = paste("MwcToken", xmla_token)),
-      httr::progress(),
-      body = construct_xmla_query(dataset, query),
+      url = query_url,
+      config = auth_header,
+      body = construct_xmla_query(target_dataset$model$dbName, query),
       httr::add_headers(.headers = c(
-        "x-ms-xmlaserver" = xmla_server$coreServerName,
         "x-ms-xmlacaps-negotiation-flags" = "0,0,0,1,1",
-        "Content-Type" = "text/xml",
-        "x-ms-request-registration-id" = uuid::UUIDgenerate(),
-        "x-ms-xmlaclienttraits" = 1,
-        "x-ms-xmladedicatedconnection" = 0,
-        "x-ms-accepts-continuations" = 1,
-        "x-ms-round-trip-id" = 0
+        "Content-Type" = "text/xml"
       ))
     )
   request_results <- httr::content(xmla_request, encoding = "UTF-8")
