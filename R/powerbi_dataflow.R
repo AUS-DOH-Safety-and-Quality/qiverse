@@ -10,6 +10,8 @@
 #' accessed.
 #' @param access_token The token generated with the correct PowerBI Dataflow
 #' permissions. Use get_az_tk('pbi_df') to create this token.
+#' @param verbose Whether to print status messages while the function is
+#' running. Default is TRUE.
 #'
 #' @return A tibble of the PowerBI table from the PowerBI dataflow.
 #' @export
@@ -31,7 +33,7 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
                                     verbose = TRUE) {
   # Create the authorisation header that will be needed for all queries
   auth_header <- get_auth_header(access_token)
-  
+
   if (interactive() && isTRUE(verbose)) {
     message("Fetching dataflow metadata...")
   }
@@ -71,7 +73,7 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
 
   # Extract the column names and types
   table_colnames <- purrr::map_chr(target_table[[1]]$attributes, "name")
-  
+
   pbi_to_readr_type_map <- list(
     "string" = readr::col_character(),
     "date" = readr::col_date(format = "%d/%m/%Y"),
@@ -84,41 +86,35 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
   table_coltypes <- purrr::map(target_table[[1]]$attributes, \(x) {
     pbi_to_readr_type_map[[x$dataType]]
   })
-  
-  # Extract the Azure Blob Storage download URL for the most recent
-  # refresh of the selected table
-  location <- target_table[[1]]$partitions[[1]]$location
 
   # While we have the URL for the table, we don't have 'permission' to
   # download it using our current access token. Instead, we need to use the
   # access token to request a Shared Access Signature (SAS). This SAS summarises
   # the extent of data that we are allowed to access, and the length of time
   # that it is valid for use.
-  url <- paste0(cluster_url, "/metadata/v201606/cdsa/dataflows/",
-                dataflow_id, "/storageAccess")
-
-  body_list <- list(
-    "TokenLifetimeInMinutes" = 10,
-    "Permissions" = "Read",
-    "EntityName" = table_name
-  )
-
-  sas_query <- httr::POST(url = url,
-                          body = jsonlite::toJSON(body_list, auto_unbox = TRUE),
-                          config = auth_header,
-                          httr::content_type_json()) |>
+  sas_query <- httr::POST(
+      url = paste0(cluster_url, "/metadata/v201606/cdsa/dataflows/", dataflow_id, "/storageAccess"),
+      body = jsonlite::toJSON(
+        list("TokenLifetimeInMinutes" = 10,
+             "Permissions" = "Read",
+             "EntityName" = table_name),
+        auto_unbox = TRUE
+      ),
+      config = auth_header,
+      httr::content_type_json()
+    ) |>
     httr::content()
 
   sas_key <- sas_query$accessDetails[[1]]$blobContainerSas
-  
+
   if (interactive() && isTRUE(verbose)) {
     message("Downloading dataflow table...")
   }
-  
+
   # Now we can simply append the generated SAS to the blob storage download URL
   # and pass the result to the read_csv function. This will handle downloading
   # the table to R and adding the extracted column names
-  readr::read_csv(paste0(location, "&", sas_key),
+  readr::read_csv(paste0(target_table[[1]]$partitions[[1]]$location, "&", sas_key),
                   col_names = table_colnames,
                   col_types = table_coltypes)
 }
