@@ -2,6 +2,16 @@ get_auth_header <- function(access_token) {
   httr::add_headers(Authorization = paste("Bearer", access_token))
 }
 
+get_cluster_url <- function(access_token) {
+  cluster_details <-
+    httr::GET(url = "https://api.powerbi.com/powerbi/globalservice/v201606/clusterdetails",
+            config = get_auth_header(access_token),
+            httr::content_type_json()) |>
+    httr::content()
+  
+  cluster_details$clusterUrl
+}
+
 rowset_to_df <- function(xmla_rowset) {
   schema <- xml2::xml_find_all(xmla_rowset, "//xsd:complexType[@name='row']/xsd:sequence")
 
