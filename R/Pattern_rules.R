@@ -221,7 +221,25 @@ pattern_rules <- function(numerator, denominator, period_end,
            by = unique_key]
 
   ## Check whether shift hits limit, then flag
-  input_df[spc_shift_cumsum >= shift_size, spc_shift := period_end]
+  input_df[spc_shift_cumsum >= shift_size, spc_shift := 1]
+
+  # Flag all points in the trend
+  spc_shift_all_points <- function(data) {
+    sapply(seq_along(data), function(i) {
+      # Start index is the current record
+      start_index <- i
+      # End index is the current record + shift_size - 1
+      end_index <- i + shift_size - 1
+      # Check if there are any trends within the next shift_size - 1 points
+      sum(!is.na(data[start_index:end_index]))
+    })
+  }
+  input_df[, spc_shift := spc_shift_all_points(spc_shift),
+           by = unique_key]
+
+  # Assign dates to points in trend
+  input_df[, spc_shift := data.table::fifelse(spc_shift == 1, period_end,
+                                              NA_character_)]
 
   ## Clean up
   input_df[, spc_shift_working := NULL]
