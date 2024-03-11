@@ -160,6 +160,27 @@ pattern_rules <- function(numerator, denominator, period_end,
   input_df[spc_twointhree_cumsum >= 2 & spc_twointhree_working == 1,
            spc_twointhree := period_end]
 
+  # Flag other items in two in three that are outside 2 sigma
+  spc_twointhree_other <- function(data_twointhree_working, data_twointhree) {
+    sapply(seq_along(data_twointhree_working), function(i) {
+      # start index is the current record
+      start_index <- i
+      # end index is the current record + 2
+      end_index <- i + 2
+      # check if there are any two in three patterns within the next 2 points
+      flag <- sum(!is.na(data_twointhree[start_index:end_index]))>0
+      # multiply with 2 sigma flag
+      flag * data_twointhree_working[i]
+    })
+  }
+  input_df[, spc_twointhree := spc_twointhree_other(spc_twointhree_working,
+                                                    spc_twointhree),
+           by = unique_key]
+
+  # Assign dates to points in two in three
+  input_df[, spc_twointhree := data.table::fifelse(spc_twointhree == 1,
+                                                   period_end, NA_character_)]
+
   ## Clean up
   input_df[, spc_twointhree_working := NULL][, spc_twointhree_cumsum := NULL]
 
