@@ -23,7 +23,7 @@ pattern_rules <- function(numerator, denominator, period_end,
                           shift_size = 7) {
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
-  . <- Index_Order <- spc_y <- spc_cl <- spc_stdev <- spc_ll99 <- spc_ll95 <-
+  . <- index_order <- spc_y <- spc_cl <- spc_stdev <- spc_ll99 <- spc_ll95 <-
     spc_ul95 <- spc_ul99 <- spc_diff <- spc_mr <- spc_amr <- spc_ulmr <-
     spc_amr2 <- spc_astro <- spc_y_diff <- spc_trend_cumsum <- spc_trend <-
     spc_twointhree_working <- spc_twointhree_cumsum <- spc_shift_working <-
@@ -36,7 +36,7 @@ pattern_rules <- function(numerator, denominator, period_end,
                                      betteris, fpl_astro)
 
   # Set initial order
-  input_dt[, Index_Order := 1:input_dt[, .N]]
+  input_dt[, index_order := 1:input_dt[, .N]]
 
   # Set SPC Limits
   input_dt_p <- .spc_limits_p(input_dt[spccharttype == "p"])
@@ -54,8 +54,8 @@ pattern_rules <- function(numerator, denominator, period_end,
   )
 
   # Reorder back to original order
-  data.table::setorder(input_dt, Index_Order)
-  input_dt[, Index_Order := NULL]
+  data.table::setorder(input_dt, index_order)
+  input_dt[, index_order := NULL]
 
   # PAT010 Identifies the date of the most recent astronomical point for SPC
   # charts beyond a 3 sigma control limit.

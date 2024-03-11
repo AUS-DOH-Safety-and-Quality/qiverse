@@ -7,6 +7,12 @@
 
 # SPC p-charts
 .spc_limits_p <- function(input_data) {
+    # Dealing with undefined global functions or variables (see datatable-import
+  # vignette)
+  . <- spc_y <- numerator <- denominator <- unique_key <- spc_cl <-
+    spc_stdev <- spc_ll99 <- spc_ll95 <- spc_ul95 <- spc_ul99 <- `:=` <-
+    .N <- NULL
+
   if (input_data[, .N] > 0) {
     # Set y
     input_data[, spc_y := numerator / denominator]
@@ -45,6 +51,11 @@
 
 # SPC i-charts
 .spc_limits_i <- function(input_data) {
+  # Dealing with undefined global functions or variables (see datatable-import
+  # vignette)
+  . <- spc_y <- numerator <- denominator <- unique_key <- spc_cl <- spc_stdev <-
+    spc_ll99 <- spc_ll95 <- spc_ul95 <- spc_ul99 <- spc_diff <- spc_mr <-
+    spc_amr <- spc_ulmr <- spc_amr2 <- `:=` <- .N <- NULL
   if (input_data[, .N] > 0) {
     # Set y
     input_data[, spc_y := numerator / denominator]
@@ -104,6 +115,10 @@
 
 # SPC g-charts
 .spc_limits_g <- function(input_data) {
+  # Dealing with undefined global functions or variables (see datatable-import
+  # vignette)
+  . <- spc_y <- numerator <- unique_key <- spc_cl <- spc_stdev <- spc_ll99 <-
+    spc_ll95 <- spc_ul95 <- spc_ul99 <- `:=` <- .N <- NULL
   if (input_data[, .N] > 0) {
     # Set y
     input_data[, spc_y := numerator]
@@ -143,6 +158,11 @@
 
 # SPC t-charts
 .spc_limits_t <- function(input_data) {
+  # Dealing with undefined global functions or variables (see datatable-import
+  # vignette)
+  . <- spc_y <- numerator <- unique_key <- spc_cl <- spc_stdev <- spc_ll99 <-
+    spc_ll95 <- spc_ul95 <- spc_ul99 <- spc_diff <- spc_mr <- spc_amr <-
+    spc_ulmr <- spc_amr2 <- `:=` <- .N <- NULL
   if (input_data[, .N] > 0) {
     # Set y
     input_data[, spc_y := numerator ^ (1 / 3.6)]
