@@ -152,7 +152,7 @@ runFPatterns <- function(input_df = NULL, numerator = NULL, denominator = NULL,
 #' @param trend_size A numeric value for the number of points for a trend
 #' pattern (default = 5)
 #' @param shift_size A numeric value for the number of points for a shift
-#' pattern (defualt = 7)
+#' pattern (default = 7)
 #'
 #' @return A dataframe containing the most recent pattern for each pattern type
 #' @export
@@ -166,8 +166,8 @@ runFPatterns <- function(input_df = NULL, numerator = NULL, denominator = NULL,
 #'   spccharttype = "p",
 #'   multiplier = 100,
 #'   betteris = "Lower",
-#'   trend_length = 5,
-#'   shift_lenght = 7
+#'   trend_size = 5,
+#'   shift_size = 7
 #' )
 runPat <- function(numerator, denominator, period_end,
                    spccharttype, multiplier, betteris,
