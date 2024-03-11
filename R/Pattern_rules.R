@@ -57,15 +57,6 @@ pattern_rules <- function(numerator, denominator, period_end,
   data.table::setorder(input_dt, Index_Order)
   input_dt[, Index_Order := NULL]
 
-  #find the max period end of data present
-  max_period_end <- max(input_dt[, period_end])
-  #find 1 year before max period end to find spc period start
-  min_period_end <- as.Date(paste(lubridate::mday(max_period_end),
-                                  lubridate::month(max_period_end),
-                                  (lubridate::year(max_period_end) - 1),
-                                  sep = "/"),
-                            "%d/%m/%Y")
-
   # PAT010 Identifies the date of the most recent astronomical point for SPC
   # charts beyond a 3 sigma control limit.
 
@@ -196,10 +187,6 @@ pattern_rules <- function(numerator, denominator, period_end,
   ## Clean up
   input_df[, spc_shift_working := NULL]
   input_df[, spc_shift_cumsum := NULL]
-
-  #Remove patterns more than 12 months from last data point - some sites with
-  #incomplete data may show more than 12 months from max displayed period
-  input_df[spc_shift < min_period_end, spc_shift := NA]
 
   input_df <- input_df[, .(unique_key, period_end, numerator, denominator,
                            spccharttype,
