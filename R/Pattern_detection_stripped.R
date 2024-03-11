@@ -19,6 +19,10 @@
 #' @param betteris A character string, either "Lower" or "Higher"
 #' @param indicator A character string
 #' @param establishment A character string
+#' @param trend_size A numeric value for the number of points for a trend
+#' pattern (default = 5)
+#' @param shift_size A numeric value for the number of points for a shift
+#' pattern (defualt = 7)
 #'
 #' @return A dataframe consisting of the pattern detection output with
 #' added indicator and establishment
@@ -37,7 +41,8 @@
 runPatterns <- function(input_df = NULL, numerator = NULL, denominator = NULL,
                       period_end = NULL, spccharttype = NULL,
                       multiplier = NULL, betteris = NULL,
-                      indicator = NULL, establishment = NULL) {
+                      indicator = NULL, establishment = NULL,
+                      trend_size = 5, shift_size = 7) {
 
   # Dealing with undefined global functions or variables
   .data <- NULL
@@ -73,7 +78,8 @@ runPatterns <- function(input_df = NULL, numerator = NULL, denominator = NULL,
 
   runPat(numerator = numerator, denominator = denominator,
          period_end = period_end, spccharttype = spccharttype,
-         multiplier = multiplier, betteris = betteris) |>
+         multiplier = multiplier, betteris = betteris,
+         trend_size = trend_size, shift_size = shift_size) |>
   dplyr::mutate(Indicator = ifelse(is.null(indicator),
                              input_df$descriptionshort[1],
                              indicator),
@@ -143,20 +149,29 @@ runFPatterns <- function(input_df = NULL, numerator = NULL, denominator = NULL,
 #' @param spccharttype A character string
 #' @param multiplier A numeric value
 #' @param betteris A character string, either "Lower" or "Higher"
+#' @param trend_size A numeric value for the number of points for a trend
+#' pattern (default = 5)
+#' @param shift_size A numeric value for the number of points for a shift
+#' pattern (defualt = 7)
 #'
 #' @return A dataframe containing the most recent pattern for each pattern type
 #' @export
 #'
 #' @examples
-#' runPat(numerator = c(1,4,3,6,3),
-#'  denominator = c(2,4,6,8,3),
-#'  period_end = c("2022/01/01", "2022/02/01", "2022/03/01",
-#'  "2022/04/01", "2022/05/01"),
-#'  spccharttype = "p",
-#'  multiplier = 100,
-#'  betteris = "Lower")
+#' runPat(
+#'   numerator = c(1,4,3,6,3),
+#'   denominator = c(2,4,6,8,3),
+#'   period_end = c("2022/01/01", "2022/02/01", "2022/03/01",
+#'   "2022/04/01", "2022/05/01"),
+#'   spccharttype = "p",
+#'   multiplier = 100,
+#'   betteris = "Lower",
+#'   trend_length = 5,
+#'   shift_lenght = 7
+#' )
 runPat <- function(numerator, denominator, period_end,
-                   spccharttype, multiplier, betteris) {
+                   spccharttype, multiplier, betteris,
+                   trend_size = 5, shift_size = 7) {
   # Dealing with undefined global functions or variables
   .data <- NULL
 
@@ -196,7 +211,7 @@ runPat <- function(numerator, denominator, period_end,
     } else {
       count <- 1
     }
-    if (count >= 5) {
+    if (count >= trend_size) {
       output_list$Trend[i] <-  SPC$x[i]
     } else {
       output_list$Trend[i] <- NA_character_
@@ -218,8 +233,8 @@ runPat <- function(numerator, denominator, period_end,
     } else {
       count <- 0
     }
-    #Determines if 7 points in a row are above/below centre line
-    if (count >= 7) {
+    #Determines if shift_size points in a row are above/below centre line
+    if (count >= shift_size) {
       output_list$Shift[i] <- SPC$x[i]
     } else {
       output_list$Shift[i] <- NA_character_
