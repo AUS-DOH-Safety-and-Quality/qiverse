@@ -42,6 +42,14 @@
 #' the data. The "No" option does not display any patterns. (default = "Yes")
 #' @param pattern_text_ay Set the y offset for pattern detection text in
 #' pixels (default = 50)
+#' @param trend_size Set the number of points required for a trend to be
+#' detected (default = 5)
+#' @param shift_size Set the number of points required for a shift to be
+#' detected (default = 7)
+#' @param nhs_colours A list of parameters to enable NHS colours for the SPC
+#' chart. (default = list(enable = FALSE, improvement_direction = betteris,
+#' direction_to_flag = "Both", colours = list(neutral = "#490092",
+#' improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))
 #' @param source_text Set source text of the chart. If empty ("") or NA, no
 #' source will be displayed (default = "Healthcare Quality Intelligence Unit")
 #'
@@ -69,6 +77,7 @@
 #'   title = paste0("Example Indicator", " - ", "Hospital"),
 #'   spc_period_start = "2019-01-01",
 #'   spc_period_end = "2021-12-31",
+#'   x_axis_label = "Date",
 #'   y_axis_label = "Proportion",
 #'   brand_colour = "#00667B",
 #'   actual_colour = "black",
@@ -78,6 +87,19 @@
 #'   x_format = "%b %Y",
 #'   patterns = "Yes",
 #'   pattern_text_ay = 50,
+#'   trend_size = 5,
+#'   shift_size = 7,
+#'   nhs_colours = list(
+#'     enable = TRUE,
+#'     improvement_direction = betteris,
+#'     direction_to_flag = "Both", # TODO add params (Both, Improvement, Deterioration)
+#'     colours = list(
+#'       neutral = "#490092",
+#'       improvement = "#00B0F0",
+#'       deterioration = "#E46C0A",
+#'       common_cause = "#A6A6A6"
+#'     )
+#'   ),
 #'   source_text = 'Healthcare Quality Intelligence Unit'
 #' )
 #' }
@@ -103,6 +125,19 @@ spc_plotly_create <- function(
   x_format = "%b %Y",
   patterns = "Yes",
   pattern_text_ay = 50,
+  trend_size = 5,
+  shift_size = 7,
+  nhs_colours = list(
+    enable = FALSE,
+    improvement_direction = betteris,
+    direction_to_flag = "Both", # TODO add params (Both, Improvement, Deterioration)
+    colours = list(
+      neutral = "#490092", # TODO Currently not used
+      improvement = "#00B0F0",
+      deterioration = "#E46C0A",
+      common_cause = "#A6A6A6"
+    )
+  ),
   source_text = "Healthcare Quality Intelligence Unit"
 ) {
 
@@ -114,7 +149,11 @@ spc_plotly_create <- function(
   }
 
   # Dealing with undefined global functions or variables
-  .data <- NULL
+  .data <- . <- period_end <- spc_astro <- spc_trend <- spc_twointhree <-
+    spc_shift <- `:=` <- spc_imp_text <- .N <- spc_astro_imp <- spc_trend_imp <-
+    spc_twointhree_imp <- spc_shift_imp <- spc_det_text <- spc_astro_det <-
+    spc_trend_det <- spc_twointhree_det <- spc_shift_det <-
+    actual_marker_fill <- actual_marker_border <- NULL
 
   # Set the spc chart headings
   spc_heading <- title
@@ -206,6 +245,150 @@ spc_plotly_create <- function(
   # adjust scaling of y values for multiplier
   hover_scaling <- ifelse(y_format == "Percentage", 100, 1) # nolint
 
+  # Compute patterns for NHS colours
+  if (nhs_colours$enable) {
+    # Run patterns for improvement and deterioration
+    nhs_pat_improvement <- qiverse.qipatterns::pattern_rules(
+      numerator = numerator,
+      denominator = denominator,
+      period_end = as.character(x),
+      unique_key = NA,
+      spccharttype = data_type,
+      multiplier = multiplier,
+      betteris = ifelse(nhs_colours$improvement_direction == "Lower", "Higher", "Lower"),
+      fpl_astro = NA,
+      trend_size = trend_size,
+      shift_size = shift_size
+    )
+    nhs_pat_deterioration <- qiverse.qipatterns::pattern_rules(
+      numerator = numerator,
+      denominator = denominator,
+      period_end = as.character(x),
+      unique_key = NA,
+      spccharttype = data_type,
+      multiplier = multiplier,
+      betteris = nhs_colours$improvement_direction,
+      fpl_astro = NA,
+      trend_size = trend_size,
+      shift_size = shift_size
+    )
+
+    # Combine NHS patterns to a single dataframe
+    nhs_pat <- merge(
+      nhs_pat_improvement[, .(period_end, spc_astro_imp = spc_astro,
+                              spc_trend_imp = spc_trend,
+                              spc_twointhree_imp = spc_twointhree,
+                              spc_shift_imp = spc_shift)],
+      nhs_pat_deterioration[, .(period_end, spc_astro_det = spc_astro,
+                                spc_trend_det = spc_trend,
+                                spc_twointhree_det = spc_twointhree,
+                                spc_shift_det = spc_shift)],
+      by = 'period_end',
+      all.x = TRUE,
+      sort = FALSE
+    )
+
+    # Flag any improvement
+    ## Assign the patterns text when improvement is detected
+    nhs_pat[, spc_imp_text := sapply(1:nhs_pat[,.N], function(i) {
+      patterns <- c(
+        ifelse(!is.na(nhs_pat[i, spc_astro_imp]), 'Astronomical', NA),
+        ifelse(!is.na(nhs_pat[i, spc_trend_imp]), 'Trend', NA),
+        ifelse(!is.na(nhs_pat[i, spc_twointhree_imp]), 'Two in Three', NA),
+        ifelse(!is.na(nhs_pat[i, spc_shift_imp]), 'Shift', NA)
+      )
+      patterns <- patterns[!is.na(patterns)]
+      if (length(patterns) == 0) {
+        NA
+      } else {
+        paste0(
+          patterns[!is.na(patterns)],
+          collapse = ", "
+        )
+      }
+    })]
+
+    # Flag any deterioration
+    ## Assign the patterns text when deterioration is detected
+    nhs_pat[, spc_det_text := sapply(1:nhs_pat[,.N], function(i) {
+      patterns <- c(
+        ifelse(!is.na(nhs_pat[i, spc_astro_det]), 'Astronomical', NA),
+        ifelse(!is.na(nhs_pat[i, spc_trend_det]), 'Trend', NA),
+        ifelse(!is.na(nhs_pat[i, spc_twointhree_det]), 'Two in Three', NA),
+        ifelse(!is.na(nhs_pat[i, spc_shift_det]), 'Shift', NA)
+      )
+      patterns <- patterns[!is.na(patterns)]
+      if (length(patterns) == 0) {
+        NA
+      } else {
+        paste0(
+          patterns[!is.na(patterns)],
+          collapse = ", "
+        )
+      }
+    })]
+
+    # Assign colours
+    if (nhs_colours$direction_to_flag == "Both") {
+      nhs_pat[, actual_marker_fill :=
+                # Prioritise deterioration as fill colour
+                ifelse(
+                  !is.na(spc_det_text),
+                  nhs_colours$colours$deterioration,
+                  # Then improvement
+                  ifelse(
+                    !is.na(spc_imp_text),
+                    nhs_colours$colours$improvement,
+                    nhs_colours$colours$common_cause
+                  )
+                )
+      ]
+      # Assign border colour when flagging both
+      nhs_pat[, actual_marker_border :=
+                # Set improvement as border colour for marker
+                ifelse(
+                  !is.na(spc_det_text) & !is.na(spc_imp_text),
+                  nhs_colours$colours$improvement,
+                  NA_character_
+                )
+      ]
+    } else if (nhs_colours$direction_to_flag == "Improvement") {
+      nhs_pat[, actual_marker_fill := ifelse(
+        !is.na(spc_imp_text),
+        nhs_colours$colours$improvement,
+        nhs_colours$colours$common_cause
+      )]
+      nhs_pat[, actual_marker_border := NA_character_]
+    } else if (nhs_colours$direction_to_flag == "Deterioration") {
+      nhs_pat[, actual_marker_fill := ifelse(
+        !is.na(spc_det_text),
+        nhs_colours$colours$deterioration,
+        nhs_colours$colours$common_cause
+      )]
+      nhs_pat[, actual_marker_border := NA_character_]
+    }
+
+    # Set missing marker border to fill colour
+    nhs_pat[is.na(actual_marker_border),
+            actual_marker_border := actual_marker_fill]
+
+    # Merge back onto hqiu_spc_df
+    hqiu_spc_df <- merge(
+      hqiu_spc_df,
+      nhs_pat[, .(period_end, spc_imp_text, spc_det_text,
+                  actual_marker_fill, actual_marker_border)],
+      by.x = "x",
+      by.y = "period_end",
+      all.x = TRUE,
+      sort = FALSE
+    )
+
+  } else {
+    # Otherwise default to actual_colour preset
+    hqiu_spc_df[, actual_marker_fill := actual_colour]
+    hqiu_spc_df[, actual_marker_border := actual_colour]
+  }
+
   spc_plotly <- plotly::plot_ly(
     data = hqiu_spc_df
   ) |>
@@ -279,7 +462,8 @@ spc_plotly_create <- function(
       y = ~y,
       type = "scatter",
       mode = "markers+lines",
-      marker = list(color = actual_colour, size = marker_size),
+      marker = ~list(color = actual_marker_fill, size = marker_size,
+                    line = list(width = 2, color = actual_marker_border)),
       line = list(color = actual_colour, width = line_width),
       showlegend = FALSE,
       # Create hoverinfo (tooltip) text for this trace
@@ -319,6 +503,16 @@ spc_plotly_create <- function(
                  formatC(lcl * hover_scaling, digits = y_dp,
                          format = "f", big.mark = ","),
                  ifelse(y_format == "Percentage", "%", ""))
+        },
+        if (nhs_colours$enable) {
+          paste0(
+            ifelse(!is.na(spc_imp_text),
+                   paste0("<br><b>Pattern(s) (Improvement) </b>", spc_imp_text),
+                   ""),
+            ifelse(!is.na(spc_det_text),
+                   paste0("<br><b>Pattern(s) (Deterioration): </b>", spc_det_text),
+                   "")
+          )
         }
       ),
       hoverlabel = list(bgcolor = brand_colour)
@@ -373,7 +567,8 @@ spc_plotly_create <- function(
     # Uses the runPat function from Pattern_detection_stripped
     filt_pat <- qiverse.qipatterns::runPat(numerator, denominator,
                                            as.character(x),
-                                           data_type, multiplier, betteris)
+                                           data_type, multiplier, betteris,
+                                           trend_size, shift_size)
   } else {
     filt_pat <- data.frame(NULL)
   }

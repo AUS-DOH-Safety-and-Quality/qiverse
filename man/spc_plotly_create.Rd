@@ -26,6 +26,11 @@ spc_plotly_create(
   x_format = "\%b \%Y",
   patterns = "Yes",
   pattern_text_ay = 50,
+  trend_size = 5,
+  shift_size = 7,
+  nhs_colours = list(enable = FALSE, improvement_direction = betteris, direction_to_flag
+    = "Both", colours = list(neutral = "#490092", improvement = "#00B0F0", deterioration
+    = "#E46C0A", common_cause = "#A6A6A6")),
   source_text = "Healthcare Quality Intelligence Unit"
 )
 }
@@ -93,6 +98,17 @@ the data. The "No" option does not display any patterns. (default = "Yes")}
 \item{pattern_text_ay}{Set the y offset for pattern detection text in
 pixels (default = 50)}
 
+\item{trend_size}{Set the number of points required for a trend to be
+detected (default = 5)}
+
+\item{shift_size}{Set the number of points required for a shift to be
+detected (default = 7)}
+
+\item{nhs_colours}{A list of parameters to enable NHS colours for the SPC
+chart. (default = list(enable = FALSE, improvement_direction = betteris,
+direction_to_flag = "Both", colours = list(neutral = "#490092",
+improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))}
+
 \item{source_text}{Set source text of the chart. If empty ("") or NA, no
 source will be displayed (default = "Healthcare Quality Intelligence Unit")}
 }
@@ -126,6 +142,7 @@ spc_plotly_create(
   title = paste0("Example Indicator", " - ", "Hospital"),
   spc_period_start = "2019-01-01",
   spc_period_end = "2021-12-31",
+  x_axis_label = "Date",
   y_axis_label = "Proportion",
   brand_colour = "#00667B",
   actual_colour = "black",
@@ -135,6 +152,19 @@ spc_plotly_create(
   x_format = "\%b \%Y",
   patterns = "Yes",
   pattern_text_ay = 50,
+  trend_size = 5,
+  shift_size = 7,
+  nhs_colours = list(
+    enable = TRUE,
+    improvement_direction = betteris,
+    direction_to_flag = "Both", # TODO add params (Both, Improvement, Deterioration)
+    colours = list(
+      neutral = "#490092",
+      improvement = "#00B0F0",
+      deterioration = "#E46C0A",
+      common_cause = "#A6A6A6"
+    )
+  ),
   source_text = 'Healthcare Quality Intelligence Unit'
 )
 }
