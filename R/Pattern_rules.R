@@ -111,7 +111,25 @@ pattern_rules <- function(numerator, denominator, period_end,
   #cumulative sum needs to be 1 less than the trend size as we are counting
   #the gaps in between points
   input_df[spc_trend_cumsum == (trend_size - 1),
-           spc_trend := period_end]
+           spc_trend := 1]
+
+  # Flag all points in the trend
+  spc_trend_all_points <- function(data) {
+    sapply(seq_along(data), function(i) {
+      # Start index is the current record
+      start_index <- i
+      # End index is the current record + trend_size - 1
+      end_index <- i + trend_size - 1
+      # Check if there are any trends within the next trend_size - 1 points
+      sum(!is.na(data[start_index:end_index]))
+    })
+  }
+  input_df[, spc_trend := spc_trend_all_points(spc_trend),
+           by = unique_key]
+
+  # Assign dates to points in trend
+  input_df[, spc_trend := data.table::fifelse(spc_trend == 1, period_end,
+                                              NA_character_)]
 
   ## Clean up
   input_df[, spc_y_diff := NULL][, spc_trend_cumsum := NULL]
