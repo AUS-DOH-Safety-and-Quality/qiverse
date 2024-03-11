@@ -14,7 +14,9 @@ runPatterns(
   multiplier = NULL,
   betteris = NULL,
   indicator = NULL,
-  establishment = NULL
+  establishment = NULL,
+  trend_size = 5,
+  shift_size = 7
 )
 }
 \arguments{
@@ -35,6 +37,12 @@ runPatterns(
 \item{indicator}{A character string}
 
 \item{establishment}{A character string}
+
+\item{trend_size}{A numeric value for the number of points for a trend
+pattern (default = 5)}
+
+\item{shift_size}{A numeric value for the number of points for a shift
+pattern (defualt = 7)}
 }
 \value{
 A dataframe consisting of the pattern detection output with

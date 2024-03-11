@@ -4,7 +4,16 @@
 \alias{runPat}
 \title{Generate SPC chart pattern detection output over input data}
 \usage{
-runPat(numerator, denominator, period_end, spccharttype, multiplier, betteris)
+runPat(
+  numerator,
+  denominator,
+  period_end,
+  spccharttype,
+  multiplier,
+  betteris,
+  trend_size = 5,
+  shift_size = 7
+)
 }
 \arguments{
 \item{numerator}{A numeric vector}
@@ -18,6 +27,12 @@ runPat(numerator, denominator, period_end, spccharttype, multiplier, betteris)
 \item{multiplier}{A numeric value}
 
 \item{betteris}{A character string, either "Lower" or "Higher"}
+
+\item{trend_size}{A numeric value for the number of points for a trend
+pattern (default = 5)}
+
+\item{shift_size}{A numeric value for the number of points for a shift
+pattern (default = 7)}
 }
 \value{
 A dataframe containing the most recent pattern for each pattern type
@@ -26,11 +41,15 @@ A dataframe containing the most recent pattern for each pattern type
 Generate SPC chart pattern detection output over input data
 }
 \examples{
-runPat(numerator = c(1,4,3,6,3),
- denominator = c(2,4,6,8,3),
- period_end = c("2022/01/01", "2022/02/01", "2022/03/01",
- "2022/04/01", "2022/05/01"),
- spccharttype = "p",
- multiplier = 100,
- betteris = "Lower")
+runPat(
+  numerator = c(1,4,3,6,3),
+  denominator = c(2,4,6,8,3),
+  period_end = c("2022/01/01", "2022/02/01", "2022/03/01",
+  "2022/04/01", "2022/05/01"),
+  spccharttype = "p",
+  multiplier = 100,
+  betteris = "Lower",
+  trend_size = 5,
+  shift_size = 7
+)
 }
