@@ -32,6 +32,10 @@ fpl_plotly_create(
   y_dp = 1,
   y_format = "Percentage",
   pattern_text_ay = 50,
+  nhs_colours_enable = TRUE,
+  nhs_colours_options = list(improvement_direction = betteris, direction_to_flag =
+    "Both", colours = list(neutral = "#490092", improvement = "#00B0F0", deterioration =
+    "#E46C0A", common_cause = "#A6A6A6")),
   source_text = "Healthcare Quality Intelligence Unit"
 )
 }
@@ -117,6 +121,14 @@ Default is "Percentage"}
 \item{pattern_text_ay}{Set the y offset for pattern detection text in pixels
 (default = 50)}
 
+\item{nhs_colours_enable}{A boolean to enable NHS colours for the SPC chart.
+(default = TRUE)}
+
+\item{nhs_colours_options}{A list of parameters to enable NHS colours for the SPC
+chart. (default = list(improvement_direction = betteris,
+direction_to_flag = "Both", colours = list(neutral = "#490092",
+improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))}
+
 \item{source_text}{Set source text of the chart. If empty ("") or NA, no
 source will be displayed (default = "Healthcare Quality Intelligence Unit")}
 }
@@ -173,11 +185,12 @@ fpl_plotly_create(
   funnel_period_start = '2021-07-01',
   funnel_period_end = '2022-06-30',
   y_limit_lower = NA,
-  y_limit_upper = 0.8,
+  y_limit_upper = 85,
   x_axis_label = "This is X Axis",
   y_axis_label = "This is Y Axis",
   highlight_hosp = c('Q2', 'Q5'),
   highlight_outlier = TRUE,
+  nhs_colours_enable = TRUE,
   y_format = "Percentage",
   source_text = 'Healthcare Quality Intelligence Unit'
 )

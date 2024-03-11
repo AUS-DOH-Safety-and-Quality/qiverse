@@ -54,6 +54,12 @@
 #' Default is "Percentage"
 #' @param pattern_text_ay Set the y offset for pattern detection text in pixels
 #' (default = 50)
+#' @param nhs_colours_enable A boolean to enable NHS colours for the SPC chart.
+#' (default = TRUE)
+#' @param nhs_colours_options A list of parameters to enable NHS colours for the SPC
+#' chart. (default = list(improvement_direction = betteris,
+#' direction_to_flag = "Both", colours = list(neutral = "#490092",
+#' improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))
 #' @param source_text Set source text of the chart. If empty ("") or NA, no
 #' source will be displayed (default = "Healthcare Quality Intelligence Unit")
 #'
@@ -104,47 +110,59 @@
 #'   funnel_period_start = '2021-07-01',
 #'   funnel_period_end = '2022-06-30',
 #'   y_limit_lower = NA,
-#'   y_limit_upper = 0.8,
+#'   y_limit_upper = 85,
 #'   x_axis_label = "This is X Axis",
 #'   y_axis_label = "This is Y Axis",
 #'   highlight_hosp = c('Q2', 'Q5'),
 #'   highlight_outlier = TRUE,
+#'   nhs_colours_enable = TRUE,
 #'   y_format = "Percentage",
 #'   source_text = 'Healthcare Quality Intelligence Unit'
 #' )
 #' }
 fpl_plotly_create <- function(
-  numerator,
-  denominator,
-  group,
-  data_type = "PR",
-  multiplier = 1,
-  betteris = "Higher",
-  title = "",
-  group_name = NULL,
-  short_group_name = NULL,
-  parent_group_name = NULL,
-  parent_group_name_label = NA,
-  funnel_period_start = NA,
-  funnel_period_end = NA,
-  y_limit_lower = NA,
-  y_limit_upper = NA,
-  x_axis_label = NA,
-  y_axis_label = NA,
-  highlight_hosp = NULL,
-  highlight_outlier = TRUE,
-  brand_colour = "#00667B",
-  actual_colour = "black",
-  annotation_marker_colour = "grey",
-  line_width = 3,
-  marker_size = 8,
-  y_dp = 1,
-  y_format = "Percentage",
-  pattern_text_ay = 50,
-  source_text = "Healthcare Quality Intelligence Unit"
+    numerator,
+    denominator,
+    group,
+    data_type = "PR",
+    multiplier = 1,
+    betteris = "Higher",
+    title = "",
+    group_name = NULL,
+    short_group_name = NULL,
+    parent_group_name = NULL,
+    parent_group_name_label = NA,
+    funnel_period_start = NA,
+    funnel_period_end = NA,
+    y_limit_lower = NA,
+    y_limit_upper = NA,
+    x_axis_label = NA,
+    y_axis_label = NA,
+    highlight_hosp = NULL,
+    highlight_outlier = TRUE,
+    brand_colour = "#00667B",
+    actual_colour = "black",
+    annotation_marker_colour = "grey",
+    line_width = 3,
+    marker_size = 8,
+    y_dp = 1,
+    y_format = "Percentage",
+    pattern_text_ay = 50,
+    nhs_colours_enable = TRUE,
+    nhs_colours_options = list(
+      improvement_direction = betteris,
+      direction_to_flag = "Both", # TODO add params (Both, Improvement, Deterioration)
+      colours = list(
+        neutral = "#490092", # TODO Currently not used
+        improvement = "#00B0F0",
+        deterioration = "#E46C0A",
+        common_cause = "#A6A6A6"
+      )
+    ),
+    source_text = "Healthcare Quality Intelligence Unit"
 ) {
   # Dealing with undefined global functions or variables
-  .data <- NULL
+  .data <- LCL99 <- UCL99 <- outlier_3sigma <- rr <- NULL
 
   # Check Inputs
   len_denominator <- length(denominator)
@@ -201,6 +219,70 @@ fpl_plotly_create <- function(
   }
   centre_line <- centre_line * multiplier
 
+
+
+  # Outlier flagging
+  ## Flag 3 sigma outliers
+  funnel_data <- funnel_data |>
+    dplyr::mutate(outlier_3sigma = ifelse(
+      rr * multiplier >= UCL99 | rr * multiplier <= LCL99,
+      1, 0
+    ))
+
+  # NHS Colours
+  if (nhs_colours_enable == TRUE) {
+    if (nhs_colours_options$direction_to_flag == "Both") {
+      if (nhs_colours_options$improvement_direction == "Higher") {
+        funnel_data <- funnel_data |>
+          dplyr::mutate(actual_colour = dplyr::if_else(
+            outlier_3sigma == 1 & rr * multiplier >= UCL99,
+            nhs_colours_options$colours$improvement,
+            dplyr::if_else(outlier_3sigma == 1 & rr * multiplier <= UCL99,
+                           nhs_colours_options$colours$deterioration,
+                           actual_colour)))
+      } else if (nhs_colours_options$improvement_direction == "Lower") {
+        funnel_data <- funnel_data |>
+          dplyr::mutate(actual_colour = dplyr::if_else(
+            outlier_3sigma == 1 & rr * multiplier <= UCL99,
+            nhs_colours_options$colours$improvement,
+            dplyr::if_else(outlier_3sigma == 1 & rr * multiplier >= UCL99,
+                           nhs_colours_options$colours$deterioration,
+                           actual_colour)))
+      }
+    } else if (nhs_colours_options$direction_to_flag == "Improvement") {
+      if (nhs_colours_options$improvement_direction == "Higher") {
+        funnel_data <- funnel_data |>
+          dplyr::mutate(actual_colour = dplyr::if_else(
+            outlier_3sigma == 1 & rr * multiplier >= UCL99,
+            nhs_colours_options$colours$improvement,
+            actual_colour))
+      } else if (nhs_colours_options$improvement_direction == "Lower") {
+        funnel_data <- funnel_data |>
+          dplyr::mutate(actual_colour = dplyr::if_else(
+            outlier_3sigma == 1 & rr * multiplier <= LCL99,
+            nhs_colours_options$colours$improvement,
+            actual_colour))
+      }
+    } else if (nhs_colours_options$direction_to_flag == "Deterioration") {
+      if (nhs_colours_options$improvement_direction == "Higher") {
+        funnel_data <- funnel_data |>
+          dplyr::mutate(actual_colour = dplyr::if_else(
+            outlier_3sigma == 1 & rr * multiplier <= LCL99,
+            nhs_colours_options$colours$deterioration,
+            actual_colour))
+      } else if (nhs_colours_options$improvement_direction == "Lower") {
+        funnel_data <- funnel_data |>
+          dplyr::mutate(actual_colour = dplyr::if_else(
+            outlier_3sigma == 1 & rr * multiplier >= UCL99,
+            nhs_colours_options$colours$deterioration,
+            actual_colour))
+      }
+    }
+  } else {
+    # Set to default actual colour is NHS colours is not enabled
+    funnel_data <- funnel_data |>
+      dplyr::mutate(actual_colour = actual_colour)
+  }
 
   #change x axis label if not NA
   if (is.na(x_axis_label)) {
@@ -280,7 +362,11 @@ fpl_plotly_create <- function(
     "<br><b>Lower 99% Limit: </b>",
     formatC(funnel_data$LCL99 * hover_scaling, digits = y_dp,
             format = "f", big.mark = ","),
-    ifelse(y_format == "Percentage", "%", "")
+    ifelse(y_format == "Percentage", "%", ""),
+    ## Outlier
+    ifelse(funnel_data$outlier_3sigma == 1,
+           "<br><b>Pattern(s): </b>Three Sigma Outlier",
+           "")
   )
 
   # create funnel plotly
@@ -353,7 +439,7 @@ fpl_plotly_create <- function(
       y = ~(rr * multiplier),
       type = "scatter",
       mode = "markers",
-      marker = list(color = actual_colour, size = marker_size),
+      marker = ~list(color = actual_colour, size = marker_size),
       showlegend = FALSE,
       # Create hoverinfo (tooltip) text for this trace
       hoverinfo = "text",
@@ -398,22 +484,12 @@ fpl_plotly_create <- function(
       )
   }
 
-  # check betteris, if higher, set highlight points to be points that are below
-  # the lower 99 limit, else,
-  # if Lower, set it to points above the upper 99 limit
-  if (betteris == "Higher") {
-    # if point value is less than the lower control limit flag the point
-    highlight_points <- ifelse(
-      funnel_data$rr * multiplier < funnel_data$LCL99,
-      funnel_data$rr * multiplier, NA)
-  } else if (betteris == "Lower") {
-    highlight_points <- ifelse(
-      funnel_data$rr * multiplier > funnel_data$UCL99,
-      funnel_data$rr * multiplier, NA)
-  } else {
-    stop("betteris has not been correctly specified as either Higher or Lower")
-  }
-
+  # Set highlight points to those that are NHS coloured
+  highlight_points <- ifelse(
+    funnel_data$actual_colour != actual_colour,
+    funnel_data$rr*multiplier,
+    NA
+  )
   # create a dataframe that holds the establishment and hospital names to serve
   # as a lookup table
   # We only have the establishment code in the plot output so we need this to
@@ -550,3 +626,4 @@ fpl_plotly_create <- function(
   # Otherwise return base chart
   return(fpl_plotly)
 }
+
