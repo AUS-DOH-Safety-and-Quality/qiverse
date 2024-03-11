@@ -99,9 +99,10 @@ source will be displayed (default = "Healthcare Quality Intelligence Unit")}
 \value{
 Statistical process control chart in plotly for the specific
 indicator and establishment.
+\subsection{Additional requirements for this function}{
 
-###Additional requirements for this function
 NA
+}
 }
 \description{
 Draw a statistical process control chart in plotly
@@ -109,5 +110,32 @@ Draw a statistical process control chart in plotly
 \examples{
 -
 \dontrun{
+spc_plotly_create(
+  x = seq(from = as.Date('2019-02-01'),
+          to = as.Date('2022-01-01'),
+          by = 'month')-1,
+  numerator = c(20,25,17,22,18,18,30,29,18,23,17,18,
+                15,17,19,21,30,19,15,17,22,24,20,13,
+                14,18,14,21,17,27,24,30,25,24,26,24),
+  denominator = c(86,91,99,110,96,110,96,97,105,87,94,89,
+                  102,106,107,95,106,132,95,117,97,99,108,106,
+                  101,96,96,98,105,117,94,77,97,90,106,107),
+  data_type = 'p',
+  multiplier = 1,
+  betteris = "Lower",
+  title = paste0("Example Indicator", " - ", "Hospital"),
+  spc_period_start = "2019-01-01",
+  spc_period_end = "2021-12-31",
+  y_axis_label = "Proportion",
+  brand_colour = "#00667B",
+  actual_colour = "black",
+  annotation_marker_colour = "grey",
+  y_dp = 1,
+  y_format = "Percentage",
+  x_format = "\%b \%Y",
+  patterns = "Yes",
+  pattern_text_ay = 50,
+  source_text = 'Healthcare Quality Intelligence Unit'
+)
 }
 }
