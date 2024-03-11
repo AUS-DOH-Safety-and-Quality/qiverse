@@ -46,8 +46,10 @@
 #' detected (default = 5)
 #' @param shift_size Set the number of points required for a shift to be
 #' detected (default = 7)
-#' @param nhs_colours A list of parameters to enable NHS colours for the SPC
-#' chart. (default = list(enable = FALSE, improvement_direction = betteris,
+#' @param nhs_colours_enable A boolean to enable NHS colours for the SPC chart.
+#' (default = TRUE)
+#' @param nhs_colours_options A list of parameters to enable NHS colours for the SPC
+#' chart. (default = list(improvement_direction = betteris,
 #' direction_to_flag = "Both", colours = list(neutral = "#490092",
 #' improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))
 #' @param source_text Set source text of the chart. If empty ("") or NA, no
@@ -89,8 +91,8 @@
 #'   pattern_text_ay = 50,
 #'   trend_size = 5,
 #'   shift_size = 7,
-#'   nhs_colours = list(
-#'     enable = TRUE,
+#'   nhs_colours_enable = TRUE,
+#'   nhs_colours_options = list(
 #'     improvement_direction = betteris,
 #'     direction_to_flag = "Both", # TODO add params (Both, Improvement, Deterioration)
 #'     colours = list(
@@ -127,8 +129,8 @@ spc_plotly_create <- function(
   pattern_text_ay = 50,
   trend_size = 5,
   shift_size = 7,
-  nhs_colours = list(
-    enable = FALSE,
+  nhs_colours_enable = TRUE,
+  nhs_colours_options = list(
     improvement_direction = betteris,
     direction_to_flag = "Both", # TODO add params (Both, Improvement, Deterioration)
     colours = list(
@@ -246,7 +248,7 @@ spc_plotly_create <- function(
   hover_scaling <- ifelse(y_format == "Percentage", 100, 1) # nolint
 
   # Compute patterns for NHS colours
-  if (nhs_colours$enable) {
+  if (nhs_colours_enable) {
     # Run patterns for improvement and deterioration
     nhs_pat_improvement <- qiverse.qipatterns::pattern_rules(
       numerator = numerator,
@@ -255,7 +257,7 @@ spc_plotly_create <- function(
       unique_key = NA,
       spccharttype = data_type,
       multiplier = multiplier,
-      betteris = ifelse(nhs_colours$improvement_direction == "Lower", "Higher", "Lower"),
+      betteris = ifelse(nhs_colours_options$improvement_direction == "Lower", "Higher", "Lower"),
       fpl_astro = NA,
       trend_size = trend_size,
       shift_size = shift_size
@@ -267,14 +269,14 @@ spc_plotly_create <- function(
       unique_key = NA,
       spccharttype = data_type,
       multiplier = multiplier,
-      betteris = nhs_colours$improvement_direction,
+      betteris = nhs_colours_options$improvement_direction,
       fpl_astro = NA,
       trend_size = trend_size,
       shift_size = shift_size
     )
 
     # Combine NHS patterns to a single dataframe
-    nhs_pat <- merge(
+    nhs_pat <- data.table::merge(
       nhs_pat_improvement[, .(period_end, spc_astro_imp = spc_astro,
                               spc_trend_imp = spc_trend,
                               spc_twointhree_imp = spc_twointhree,
@@ -329,17 +331,17 @@ spc_plotly_create <- function(
     })]
 
     # Assign colours
-    if (nhs_colours$direction_to_flag == "Both") {
+    if (nhs_colours_options$direction_to_flag == "Both") {
       nhs_pat[, actual_marker_fill :=
                 # Prioritise deterioration as fill colour
                 ifelse(
                   !is.na(spc_det_text),
-                  nhs_colours$colours$deterioration,
+                  nhs_colours_options$colours$deterioration,
                   # Then improvement
                   ifelse(
                     !is.na(spc_imp_text),
-                    nhs_colours$colours$improvement,
-                    nhs_colours$colours$common_cause
+                    nhs_colours_options$colours$improvement,
+                    nhs_colours_options$colours$common_cause
                   )
                 )
       ]
@@ -348,22 +350,22 @@ spc_plotly_create <- function(
                 # Set improvement as border colour for marker
                 ifelse(
                   !is.na(spc_det_text) & !is.na(spc_imp_text),
-                  nhs_colours$colours$improvement,
+                  nhs_colours_options$colours$improvement,
                   NA_character_
                 )
       ]
-    } else if (nhs_colours$direction_to_flag == "Improvement") {
+    } else if (nhs_colours_options$direction_to_flag == "Improvement") {
       nhs_pat[, actual_marker_fill := ifelse(
         !is.na(spc_imp_text),
-        nhs_colours$colours$improvement,
-        nhs_colours$colours$common_cause
+        nhs_colours_options$colours$improvement,
+        nhs_colours_options$colours$common_cause
       )]
       nhs_pat[, actual_marker_border := NA_character_]
-    } else if (nhs_colours$direction_to_flag == "Deterioration") {
+    } else if (nhs_colours_options$direction_to_flag == "Deterioration") {
       nhs_pat[, actual_marker_fill := ifelse(
         !is.na(spc_det_text),
-        nhs_colours$colours$deterioration,
-        nhs_colours$colours$common_cause
+        nhs_colours_options$colours$deterioration,
+        nhs_colours_options$colours$common_cause
       )]
       nhs_pat[, actual_marker_border := NA_character_]
     }
@@ -504,7 +506,7 @@ spc_plotly_create <- function(
                          format = "f", big.mark = ","),
                  ifelse(y_format == "Percentage", "%", ""))
         },
-        if (nhs_colours$enable) {
+        if (nhs_colours_enable) {
           paste0(
             ifelse(!is.na(spc_imp_text),
                    paste0("<br><b>Pattern(s) (Improvement) </b>", spc_imp_text),

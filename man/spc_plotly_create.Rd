@@ -28,9 +28,10 @@ spc_plotly_create(
   pattern_text_ay = 50,
   trend_size = 5,
   shift_size = 7,
-  nhs_colours = list(enable = FALSE, improvement_direction = betteris, direction_to_flag
-    = "Both", colours = list(neutral = "#490092", improvement = "#00B0F0", deterioration
-    = "#E46C0A", common_cause = "#A6A6A6")),
+  nhs_colours_enable = TRUE,
+  nhs_colours_options = list(improvement_direction = betteris, direction_to_flag =
+    "Both", colours = list(neutral = "#490092", improvement = "#00B0F0", deterioration =
+    "#E46C0A", common_cause = "#A6A6A6")),
   source_text = "Healthcare Quality Intelligence Unit"
 )
 }
@@ -104,8 +105,11 @@ detected (default = 5)}
 \item{shift_size}{Set the number of points required for a shift to be
 detected (default = 7)}
 
-\item{nhs_colours}{A list of parameters to enable NHS colours for the SPC
-chart. (default = list(enable = FALSE, improvement_direction = betteris,
+\item{nhs_colours_enable}{A boolean to enable NHS colours for the SPC chart.
+(default = TRUE)}
+
+\item{nhs_colours_options}{A list of parameters to enable NHS colours for the SPC
+chart. (default = list(improvement_direction = betteris,
 direction_to_flag = "Both", colours = list(neutral = "#490092",
 improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))}
 
@@ -154,8 +158,8 @@ spc_plotly_create(
   pattern_text_ay = 50,
   trend_size = 5,
   shift_size = 7,
-  nhs_colours = list(
-    enable = TRUE,
+  nhs_colours_enable = TRUE,
+  nhs_colours_options = list(
     improvement_direction = betteris,
     direction_to_flag = "Both", # TODO add params (Both, Improvement, Deterioration)
     colours = list(
