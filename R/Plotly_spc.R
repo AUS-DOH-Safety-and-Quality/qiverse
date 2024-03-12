@@ -55,6 +55,8 @@
 #' @param source_text Set source text of the chart. If empty ("") or NA, no
 #' source will be displayed (default = "Healthcare Quality Intelligence Unit")
 #'
+#' @import data.table
+#'
 #' @return Statistical process control chart in plotly for the specific
 #' indicator and establishment.
 #'
@@ -92,16 +94,6 @@
 #'   trend_size = 5,
 #'   shift_size = 7,
 #'   nhs_colours_enable = TRUE,
-#'   nhs_colours_options = list(
-#'     improvement_direction = betteris,
-#'     direction_to_flag = "Both", # TODO add params (Both, Improvement, Deterioration)
-#'     colours = list(
-#'       neutral = "#490092",
-#'       improvement = "#00B0F0",
-#'       deterioration = "#E46C0A",
-#'       common_cause = "#A6A6A6"
-#'     )
-#'   ),
 #'   source_text = 'Healthcare Quality Intelligence Unit'
 #' )
 #' }
@@ -276,7 +268,7 @@ spc_plotly_create <- function(
     )
 
     # Combine NHS patterns to a single dataframe
-    nhs_pat <- data.table::merge(
+    nhs_pat <- data.table::merge.data.table(
       nhs_pat_improvement[, .(period_end, spc_astro_imp = spc_astro,
                               spc_trend_imp = spc_trend,
                               spc_twointhree_imp = spc_twointhree,

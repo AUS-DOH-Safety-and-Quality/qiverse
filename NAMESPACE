@@ -2,3 +2,4 @@
 
 export(fpl_plotly_create)
 export(spc_plotly_create)
+import(data.table)

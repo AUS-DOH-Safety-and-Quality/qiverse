@@ -159,16 +159,6 @@ spc_plotly_create(
   trend_size = 5,
   shift_size = 7,
   nhs_colours_enable = TRUE,
-  nhs_colours_options = list(
-    improvement_direction = betteris,
-    direction_to_flag = "Both", # TODO add params (Both, Improvement, Deterioration)
-    colours = list(
-      neutral = "#490092",
-      improvement = "#00B0F0",
-      deterioration = "#E46C0A",
-      common_cause = "#A6A6A6"
-    )
-  ),
   source_text = 'Healthcare Quality Intelligence Unit'
 )
 }
