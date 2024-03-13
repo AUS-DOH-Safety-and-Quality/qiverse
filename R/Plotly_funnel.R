@@ -14,8 +14,9 @@
 #' 1, but 100 sometime used, e.g. in some hospital mortality ratios.
 #' @param betteris A string identifying the direction that is favourable for
 #' the indicator. "Higher" for points below the lower control limit to be
-#' unfavourable, and "Lower" for points above the upper control limit to be
-#' unfavourable. Default is "Higher".
+#' unfavourable, "Lower" for points above the upper control limit to be
+#' unfavourable, and "Neutral" if the direction is not stated. Default is
+#' "Higher".
 #' @param title A string for the title of the plot.
 #' @param group_name A vector of the group names that may differ from the
 #' initial group identifiers. I.e. group is establishment code, and group_name
@@ -151,7 +152,7 @@ fpl_plotly_create <- function(
     nhs_colours_enable = TRUE,
     nhs_colours_options = list(
       improvement_direction = betteris,
-      direction_to_flag = "Both", # TODO add params (Both, Improvement, Deterioration)
+      direction_to_flag = "Both",
       colours = list(
         neutral = "#490092", # TODO Currently not used
         improvement = "#00B0F0",
@@ -219,8 +220,6 @@ fpl_plotly_create <- function(
   }
   centre_line <- centre_line * multiplier
 
-
-
   # Outlier flagging
   ## Flag 3 sigma outliers
   funnel_data <- funnel_data |>
@@ -232,7 +231,7 @@ fpl_plotly_create <- function(
   # NHS Colours
   if (nhs_colours_enable == TRUE) {
     if (nhs_colours_options$direction_to_flag == "Both") {
-      if (nhs_colours_options$improvement_direction == "Higher") {
+      if (nhs_colours_options$improvement_direction %in% c("Higher", "Neutral")) {
         funnel_data <- funnel_data |>
           dplyr::mutate(actual_colour = dplyr::if_else(
             outlier_3sigma == 1 & rr * multiplier >= UCL99,
@@ -240,7 +239,8 @@ fpl_plotly_create <- function(
             dplyr::if_else(outlier_3sigma == 1 & rr * multiplier <= UCL99,
                            nhs_colours_options$colours$deterioration,
                            actual_colour)))
-      } else if (nhs_colours_options$improvement_direction == "Lower") {
+      } else if (nhs_colours_options$improvement_direction %in%
+                 c("Lower", "Neutral")) {
         funnel_data <- funnel_data |>
           dplyr::mutate(actual_colour = dplyr::if_else(
             outlier_3sigma == 1 & rr * multiplier <= UCL99,
@@ -278,6 +278,17 @@ fpl_plotly_create <- function(
             actual_colour))
       }
     }
+
+    # Update Colours if betteris was set to Neutral
+    actual_colour_original <- actual_colour
+    if (betteris == "Neutral") {
+      funnel_data <- funnel_data |>
+        dplyr::mutate(actual_colour = dplyr::if_else(
+          actual_colour != actual_colour_original,
+          nhs_colours_options$colours$neutral,
+          actual_colour))
+    }
+
   } else {
     # Set to default actual colour is NHS colours is not enabled
     funnel_data <- funnel_data |>
