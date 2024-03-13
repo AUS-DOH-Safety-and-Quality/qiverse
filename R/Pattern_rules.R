@@ -45,7 +45,7 @@ pattern_rules <- function(numerator, denominator, period_end,
   input_dt_t <- .spc_limits_i(input_dt[spccharttype == "t"])
 
   # Combine outputs
-  input_df <- rbind(
+  input_dt <- rbind(
     input_dt_p,
     input_dt_i,
     input_dt_g,
@@ -60,8 +60,8 @@ pattern_rules <- function(numerator, denominator, period_end,
   # PAT010 Identifies the date of the most recent astronomical point for SPC
   # charts beyond a 3 sigma control limit.
 
-  input_df[betteris == "Higher" & spc_y < spc_ll99, spc_astro := period_end]
-  input_df[betteris == "Lower"  & spc_y > spc_ul99, spc_astro := period_end]
+  input_dt[betteris == "Higher" & spc_y < spc_ll99, spc_astro := period_end]
+  input_dt[betteris == "Lower"  & spc_y > spc_ul99, spc_astro := period_end]
 
 
   # PAT030 TREND: identifies the most recent date of five consecutively
@@ -74,16 +74,16 @@ pattern_rules <- function(numerator, denominator, period_end,
   ## Determine direction of change from consecutive observations
 
   #the difference in y values between a point and the point preceeding it
-  input_df[, spc_y_diff := ifelse(betteris == "Lower", 1,
+  input_dt[, spc_y_diff := ifelse(betteris == "Lower", 1,
                                   ifelse(betteris == "Higher", -1, NA)) *
              (spc_y - data.table::shift(spc_y, 1, type = "lag")),
            by = unique_key]
   #first value has no preceding point catch
-  input_df[is.na(spc_y_diff), spc_y_diff := 0]
+  input_dt[is.na(spc_y_diff), spc_y_diff := 0]
   #if a is less than b, the trend is moving favourably for those two points
-  input_df[spc_y_diff < 0, spc_y_diff := -1]
+  input_dt[spc_y_diff < 0, spc_y_diff := -1]
   #if a is more than b, the trend is move unfavourably for those two points
-  input_df[spc_y_diff > 0, spc_y_diff := 1]
+  input_dt[spc_y_diff > 0, spc_y_diff := 1]
 
   #Create custom function to count spc trends
   spc_trend_counter <- function(data) {
@@ -104,14 +104,14 @@ pattern_rules <- function(numerator, denominator, period_end,
   }
 
   ## Calculate cumulative sum of trend_size consecutive observations
-  input_df[, spc_trend_cumsum := spc_trend_counter(spc_y_diff),
+  input_dt[, spc_trend_cumsum := spc_trend_counter(spc_y_diff),
            by = unique_key]
 
   ## Check whether trend hits limit, then flag
   #cumulative sum needs to be 1 less than the trend size as we are counting
   #the gaps in between points
-  input_df[spc_trend_cumsum == (trend_size - 1),
-           spc_trend := 1]
+  input_dt[spc_trend_cumsum == (trend_size - 1),
+           spc_trend_flag := 1]
 
   # Flag all points in the trend
   spc_trend_all_points <- function(data) {
@@ -124,15 +124,16 @@ pattern_rules <- function(numerator, denominator, period_end,
       sum(!is.na(data[start_index:end_index]))
     })
   }
-  input_df[, spc_trend := spc_trend_all_points(spc_trend),
+  input_dt[, spc_trend_flag := spc_trend_all_points(spc_trend_flag),
            by = unique_key]
 
   # Assign dates to points in trend
-  input_df[, spc_trend := data.table::fifelse(spc_trend == 1, period_end,
-                                              NA_character_)]
+  input_dt[spc_trend_flag == 1, spc_trend := period_end]
 
   ## Clean up
-  input_df[, spc_y_diff := NULL][, spc_trend_cumsum := NULL]
+  input_dt[, spc_y_diff := NULL] |>
+    _[, spc_trend_cumsum := NULL] |>
+    _[, spc_trend_flag := NULL]
 
   # PAT040 TWO IN THREE (Proposed): most recent date of where two in three
   # consecutive points which are
@@ -140,24 +141,24 @@ pattern_rules <- function(numerator, denominator, period_end,
   # (2 sigma deviation from the mean).
 
   ## Flag those that meet two sigma above/below
-  input_df[betteris == "Higher" & spc_y < spc_ll95,
+  input_dt[betteris == "Higher" & spc_y < spc_ll95,
            spc_twointhree_working := 1]
-  input_df[betteris == "Lower"  & spc_y > spc_ul95,
+  input_dt[betteris == "Lower"  & spc_y > spc_ul95,
            spc_twointhree_working := 1]
-  input_df[is.na(spc_twointhree_working), spc_twointhree_working := 0]
+  input_dt[is.na(spc_twointhree_working), spc_twointhree_working := 0]
 
   ## Calculate cumulative sum of three consecutive observations
-  input_df[, spc_twointhree_cumsum :=
+  input_dt[, spc_twointhree_cumsum :=
              Reduce(`+`, data.table::shift(spc_twointhree_working, 0:2)),
            by = unique_key]
   ## For those with 2 in three at first two observations
-  input_df[is.na(spc_twointhree_cumsum), spc_twointhree_cumsum :=
+  input_dt[is.na(spc_twointhree_cumsum), spc_twointhree_cumsum :=
              Reduce(`+`, data.table::shift(spc_twointhree_working, 0:1)),
            by = unique_key]
 
   ## Where there is at least 2 above 2 sigma and
   #that the point is above 2 sigma, then flag
-  input_df[spc_twointhree_cumsum >= 2 & spc_twointhree_working == 1,
+  input_dt[spc_twointhree_cumsum >= 2 & spc_twointhree_working == 1,
            spc_twointhree := period_end]
 
   # Flag other items in two in three that are outside 2 sigma
@@ -173,16 +174,17 @@ pattern_rules <- function(numerator, denominator, period_end,
       flag * data_twointhree_working[i]
     })
   }
-  input_df[, spc_twointhree := spc_twointhree_other(spc_twointhree_working,
-                                                    spc_twointhree),
+  input_dt[, spc_twointhree_flag := spc_twointhree_other(spc_twointhree_working,
+                                                         spc_twointhree),
            by = unique_key]
 
   # Assign dates to points in two in three
-  input_df[, spc_twointhree := data.table::fifelse(spc_twointhree == 1,
-                                                   period_end, NA_character_)]
+  input_dt[spc_twointhree_flag == 1, spc_twointhree := period_end]
 
   ## Clean up
-  input_df[, spc_twointhree_working := NULL][, spc_twointhree_cumsum := NULL]
+  input_dt[, spc_twointhree_working := NULL] |>
+    _[, spc_twointhree_cumsum := NULL] |>
+    _[, spc_twointhree_flag := NULL]
 
   # PAT070 SHIFT (Current: Identifies the date of the final point in the most
   # recent unfavourable SHIFT (defined as 7 consecutive points which are
@@ -191,12 +193,12 @@ pattern_rules <- function(numerator, denominator, period_end,
 
   # Shift ####
   ## Determine which size the observation sits and flag it
-  input_df[betteris == "Higher" & spc_y < spc_cl, spc_shift_working := 1]
-  input_df[betteris == "Higher" & spc_y > spc_cl, spc_shift_working := -1]
-  input_df[betteris == "Lower"  & spc_y > spc_cl, spc_shift_working := 1]
-  input_df[betteris == "Lower"  & spc_y < spc_cl, spc_shift_working := -1]
-  input_df[spc_y == spc_cl, spc_shift_working := 0]
-  input_df[is.na(spc_shift_working), spc_shift_working := 0]
+  input_dt[betteris == "Higher" & spc_y < spc_cl, spc_shift_working := 1]
+  input_dt[betteris == "Higher" & spc_y > spc_cl, spc_shift_working := -1]
+  input_dt[betteris == "Lower"  & spc_y > spc_cl, spc_shift_working := 1]
+  input_dt[betteris == "Lower"  & spc_y < spc_cl, spc_shift_working := -1]
+  input_dt[spc_y == spc_cl, spc_shift_working := 0]
+  input_dt[is.na(spc_shift_working), spc_shift_working := 0]
 
   #Create custom function to count spc shifts
   spc_shift_counter <- function(data) {
@@ -217,11 +219,11 @@ pattern_rules <- function(numerator, denominator, period_end,
   }
 
   ## Calculate cumulative sum of shift_size from consecutive observations
-  input_df[, spc_shift_cumsum := spc_shift_counter(spc_shift_working),
+  input_dt[, spc_shift_cumsum := spc_shift_counter(spc_shift_working),
            by = unique_key]
 
   ## Check whether shift hits limit, then flag
-  input_df[spc_shift_cumsum >= shift_size, spc_shift := 1]
+  input_dt[spc_shift_cumsum >= shift_size, spc_shift_flag := 1]
 
   # Flag all points in the trend
   spc_shift_all_points <- function(data) {
@@ -234,31 +236,31 @@ pattern_rules <- function(numerator, denominator, period_end,
       sum(!is.na(data[start_index:end_index]))
     })
   }
-  input_df[, spc_shift := spc_shift_all_points(spc_shift),
+  input_dt[, spc_shift_flag := spc_shift_all_points(spc_shift_flag),
            by = unique_key]
 
   # Assign dates to points in trend
-  input_df[, spc_shift := data.table::fifelse(spc_shift == 1, period_end,
-                                              NA_character_)]
+  input_dt[spc_shift_flag == 1, spc_shift := period_end]
 
   ## Clean up
-  input_df[, spc_shift_working := NULL]
-  input_df[, spc_shift_cumsum := NULL]
+  input_dt[, spc_shift_working := NULL] |>
+    _[, spc_shift_cumsum := NULL] |>
+    _[, spc_shift_flag := NULL]
 
-  input_df <- input_df[, .(unique_key, period_end, numerator, denominator,
+  input_dt <- input_dt[, .(unique_key, period_end, numerator, denominator,
                            spccharttype,
                            multiplier, betteris, fpl_astro, spc_y, spc_cl,
                            spc_ul99, spc_ul95, spc_ll95, spc_ll99, spc_astro,
                            spc_trend, spc_twointhree, spc_shift)]
 
   # Add back in spccharttype run
-  input_df <- rbind(
-    input_df,
+  input_dt <- rbind(
+    input_dt,
     input_dt[spccharttype == "run",
              .(unique_key, period_end, numerator, denominator,
                spccharttype, multiplier, betteris, fpl_astro)],
     fill = TRUE
   )
 
-  return(input_df)
+  return(input_dt)
 }
