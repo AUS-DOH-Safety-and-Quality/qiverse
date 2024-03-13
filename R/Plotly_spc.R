@@ -379,8 +379,8 @@ spc_plotly_create <- function(
 
   } else {
     # Otherwise default to actual_colour preset
-    hqiu_spc_df[, actual_marker_fill := actual_colour]
-    hqiu_spc_df[, actual_marker_border := actual_colour]
+    hqiu_spc_df$actual_marker_fill <- actual_colour
+    hqiu_spc_df$actual_marker_border <- actual_colour
   }
 
   spc_plotly <- plotly::plot_ly(
@@ -655,3 +655,4 @@ spc_plotly_create <- function(
   # Output plotly object
   return(spc_plotly)
 }
+
