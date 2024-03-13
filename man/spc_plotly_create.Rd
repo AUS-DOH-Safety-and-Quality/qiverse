@@ -56,8 +56,9 @@ charts. Default is "p".}
 
 \item{betteris}{A string identifying the direction that is favourable for
 the indicator. "Higher" for points below the lower control limit to be
-unfavourable, and "Lower" for points above the upper control limit to be
-unfavourable. Default is "Higher".}
+unfavourable, "Lower" for points above the upper control limit to be
+unfavourable, and "Neutral" if the direction is not stated. Default is
+"Higher".}
 
 \item{title}{A string for the title of the plot.}
 

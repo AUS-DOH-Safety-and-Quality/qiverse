@@ -15,8 +15,9 @@
 #' 1, but 100 sometime used, e.g. in some hospital mortality ratios.
 #' @param betteris A string identifying the direction that is favourable for
 #' the indicator. "Higher" for points below the lower control limit to be
-#' unfavourable, and "Lower" for points above the upper control limit to be
-#' unfavourable. Default is "Higher".
+#' unfavourable, "Lower" for points above the upper control limit to be
+#' unfavourable, and "Neutral" if the direction is not stated. Default is
+#' "Higher".
 #' @param title A string for the title of the plot.
 #' @param spc_period_start A date (or character of format #' "yyyy-mm-dd")
 #' for the start date of the SPC period.
@@ -124,9 +125,9 @@ spc_plotly_create <- function(
   nhs_colours_enable = TRUE,
   nhs_colours_options = list(
     improvement_direction = betteris,
-    direction_to_flag = "Both", # TODO add params (Both, Improvement, Deterioration)
+    direction_to_flag = "Both",
     colours = list(
-      neutral = "#490092", # TODO Currently not used
+      neutral = "#490092",
       improvement = "#00B0F0",
       deterioration = "#E46C0A",
       common_cause = "#A6A6A6"
@@ -261,7 +262,7 @@ spc_plotly_create <- function(
       unique_key = NA,
       spccharttype = data_type,
       multiplier = multiplier,
-      betteris = nhs_colours_options$improvement_direction,
+      betteris = ifelse(nhs_colours_options$improvement_direction == "Lower", "Lower", "Higher"),
       fpl_astro = NA,
       trend_size = trend_size,
       shift_size = shift_size
@@ -365,6 +366,14 @@ spc_plotly_create <- function(
     # Set missing marker border to fill colour
     nhs_pat[is.na(actual_marker_border),
             actual_marker_border := actual_marker_fill]
+
+    # Update Colours if betteris was set to Neutral
+    if (betteris == "Neutral") {
+      nhs_pat[actual_marker_fill != nhs_colours_options$colours$common_cause,
+              actual_marker_fill := nhs_colours_options$colours$neutral]
+      nhs_pat[actual_marker_border != nhs_colours_options$colours$common_cause,
+              actual_marker_border := nhs_colours_options$colours$neutral]
+    }
 
     # Merge back onto hqiu_spc_df
     hqiu_spc_df <- merge(
@@ -501,10 +510,14 @@ spc_plotly_create <- function(
         if (nhs_colours_enable) {
           paste0(
             ifelse(!is.na(spc_imp_text),
-                   paste0("<br><b>Pattern(s) (Improvement) </b>", spc_imp_text),
+                   paste0("<br><b>Pattern(s) (",
+                          ifelse(betteris == "Neutral", "Higher", "Improvement"),
+                          ") </b>", spc_imp_text),
                    ""),
             ifelse(!is.na(spc_det_text),
-                   paste0("<br><b>Pattern(s) (Deterioration): </b>", spc_det_text),
+                   paste0("<br><b>Pattern(s) (",
+                          ifelse(betteris == "Neutral", "Lower", "Deterioration"),
+                          "): </b>", spc_det_text),
                    "")
           )
         }
@@ -559,10 +572,28 @@ spc_plotly_create <- function(
       denominator <- rep(1, length(numerator))
     }
     # Uses the runPat function from Pattern_detection_stripped
-    filt_pat <- qiverse.qipatterns::runPat(numerator, denominator,
-                                           as.character(x),
-                                           data_type, multiplier, betteris,
-                                           trend_size, shift_size)
+    ## Run both sides for neutral
+    if (betteris == "Neutral") {
+      filt_pat <- rbind(
+        qiverse.qipatterns::runPat(numerator, denominator,
+                                   as.character(x),
+                                   data_type, multiplier, "Lower",
+                                   trend_size, shift_size),
+        qiverse.qipatterns::runPat(numerator, denominator,
+                                   as.character(x),
+                                   data_type, multiplier, "Higher",
+                                   trend_size, shift_size)
+      ) |>
+        # Squash to the last pattern identified
+        apply(2, function(x) suppressWarnings(max(x, na.rm = TRUE))) |>
+        t() |>
+        as.data.frame()
+    } else {
+      filt_pat <- qiverse.qipatterns::runPat(numerator, denominator,
+                                             as.character(x),
+                                             data_type, multiplier, betteris,
+                                             trend_size, shift_size)
+    }
   } else {
     filt_pat <- data.frame(NULL)
   }
