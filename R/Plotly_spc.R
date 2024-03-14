@@ -241,7 +241,7 @@ spc_plotly_create <- function(
   hover_scaling <- ifelse(y_format == "Percentage", 100, 1) # nolint
 
   # Compute patterns for NHS colours
-  if (nhs_colours_enable) {
+  if (nhs_colours_enable & data_type != "run") {
     # Run patterns for improvement and deterioration
     nhs_pat_improvement <- qiverse.qipatterns::pattern_rules(
       numerator = numerator,
@@ -566,7 +566,7 @@ spc_plotly_create <- function(
   # checks if a patterns dataframe is input and if any patterns were detected
   if (is.data.frame(patterns)) {
     filt_pat <- patterns[, c("Astro", "Trend", "TwoInThree", "Shift")]
-  } else if (patterns == "Yes") {
+  } else if (patterns == "Yes" & data_type != "run") {
     # Create dummy denominator when only numerator exists
     if (is.null(denominator)) {
       denominator <- rep(1, length(numerator))
