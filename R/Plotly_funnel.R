@@ -39,6 +39,9 @@
 #' for items which are proportion based with multipliers.
 #' @param highlight_hosp Optional hospital name(s) to highlight individually
 #' @param highlight_outlier Boolean, if FALSE do not highlight outliers
+#' @param highlight_outlier_options Options to apply if highlight_outlier is TRUE.
+#' Default is list(direction_to_flag = "Deterioration"), where direction_to_flag
+#' can be "Deterioration", "Improvement" or "Both".
 #' @param brand_colour Hex code for the colour of the funnel limits. Default is
 #' "#00667b"
 #' @param actual_colour Hex code for the colour actual data points. Default is
@@ -141,6 +144,7 @@ fpl_plotly_create <- function(
     y_axis_label = NA,
     highlight_hosp = NULL,
     highlight_outlier = TRUE,
+    highlight_outlier_options = list(direction_to_flag = "Deterioration"),
     brand_colour = "#00667B",
     actual_colour = "black",
     annotation_marker_colour = "grey",
@@ -496,11 +500,41 @@ fpl_plotly_create <- function(
   }
 
   # Set highlight points to those that are NHS coloured
-  highlight_points <- ifelse(
-    funnel_data$actual_colour != actual_colour,
-    funnel_data$rr*multiplier,
-    NA
-  )
+  if (nhs_colours_enable) {
+    highlight_points <- ifelse(
+      if (highlight_outlier_options == "Both") {
+        funnel_data$actual_colour != actual_colour
+      } else if (highlight_outlier_options == "Improvement") {
+        funnel_data$actual_colour == nhs_colours_options$colours$improvement
+      } else if (highlight_outlier_options == "Deterioration") {
+        funnel_data$actual_colour == nhs_colours_options$colours$deterioration
+      },
+      funnel_data$rr*multiplier,
+      NA
+    )
+  } else {
+    # Otherwise set highlight points to those that are outliers
+    highlight_points <- ifelse(
+      if (highlight_outlier_options == "Both") {
+        funnel_data$outlier_3sigma == 1
+      } else if (highlight_outlier_options == "Improvement") {
+        if (betteris == "Lower") {
+          funnel_data$outlier_3sigma == 1 & funnel_data$rr * multiplier < funnel_data$LCL99
+        } else if (betteris == "Higher") {
+          funnel_data$outlier_3sigma == 1 & funnel_data$rr * multiplier > funnel_data$UCL99
+        }
+      } else if (highlight_outlier_options == "Deterioration") {
+        if (betteris == "Lower") {
+          funnel_data$outlier_3sigma == 1 & funnel_data$rr * multiplier > funnel_data$UCL99
+        } else if (betteris == "Higher") {
+          funnel_data$outlier_3sigma == 1 & funnel_data$rr * multiplier < funnel_data$LCL99
+        }
+      },
+      funnel_data$rr * multiplier,
+      NA
+    )
+  }
+
   # create a dataframe that holds the establishment and hospital names to serve
   # as a lookup table
   # We only have the establishment code in the plot output so we need this to
@@ -519,6 +553,7 @@ fpl_plotly_create <- function(
                                outlier_label = outlier_label) |>
     #drop values that aren't outliers
     tidyr::drop_na(.data$y)
+
   if (highlight_outlier == TRUE && (nrow(outlier_lookup) > 0)) {
     # add to plotly object
     fpl_plotly <- fpl_plotly |>

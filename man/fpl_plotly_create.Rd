@@ -24,6 +24,7 @@ fpl_plotly_create(
   y_axis_label = NA,
   highlight_hosp = NULL,
   highlight_outlier = TRUE,
+  highlight_outlier_options = list(direction_to_flag = "Deterioration"),
   brand_colour = "#00667B",
   actual_colour = "black",
   annotation_marker_colour = "grey",
@@ -97,6 +98,10 @@ for items which are proportion based with multipliers.}
 \item{highlight_hosp}{Optional hospital name(s) to highlight individually}
 
 \item{highlight_outlier}{Boolean, if FALSE do not highlight outliers}
+
+\item{highlight_outlier_options}{Options to apply if highlight_outlier is TRUE.
+Default is list(direction_to_flag = "Deterioration"), where direction_to_flag
+can be "Deterioration", "Improvement" or "Both".}
 
 \item{brand_colour}{Hex code for the colour of the funnel limits. Default is
 "#00667b"}
