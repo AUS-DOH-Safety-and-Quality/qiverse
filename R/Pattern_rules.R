@@ -248,7 +248,7 @@ pattern_rules <- function(numerator, denominator, period_end,
              by = unique_key]
 
     # Assign dates to points in trend
-    input_dt[spc_shift_flag == 1, spc_shift := period_end]
+    input_dt[spc_shift_flag != 0, spc_shift := period_end]
 
     ## Clean up
     input_dt[, spc_shift_working := NULL] |>
