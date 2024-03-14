@@ -117,7 +117,7 @@ pattern_rules <- function(numerator, denominator, period_end,
     ## Check whether trend hits limit, then flag
     #cumulative sum needs to be 1 less than the trend size as we are counting
     #the gaps in between points
-    input_dt[spc_trend_cumsum == (trend_size - 1),
+    input_dt[spc_trend_cumsum >= (trend_size - 1),
              spc_trend_flag := 1]
 
     # Flag all points in the trend
@@ -135,7 +135,7 @@ pattern_rules <- function(numerator, denominator, period_end,
              by = unique_key]
 
     # Assign dates to points in trend
-    input_dt[spc_trend_flag == 1, spc_trend := period_end]
+    input_dt[spc_trend_flag != 0, spc_trend := period_end]
 
     ## Clean up
     input_dt[, spc_y_diff := NULL] |>
