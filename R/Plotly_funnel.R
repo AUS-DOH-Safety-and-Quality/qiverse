@@ -449,7 +449,8 @@ fpl_plotly_create <- function(
     # Add the points line
     plotly::add_trace(
       name = "Hospitals",
-      data = funnel_data,
+      # Exclude those without a denominator
+      data = funnel_data[funnel_data$denominator != 0,],
       x = ~denominator,
       y = ~(rr * multiplier),
       type = "scatter",
@@ -458,7 +459,7 @@ fpl_plotly_create <- function(
       showlegend = FALSE,
       # Create hoverinfo (tooltip) text for this trace
       hoverinfo = "text",
-      text = hover_label_text,
+      text = hover_label_text[funnel_data$denominator != 0],
       hoverlabel = list(bgcolor = brand_colour)
     ) |>
     # add layout options for titles
