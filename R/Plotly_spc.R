@@ -467,7 +467,9 @@ spc_plotly_create <- function(
       mode = "markers+lines",
       marker = ~list(color = actual_marker_fill, size = marker_size,
                     line = list(width = 2, color = actual_marker_border)),
-      line = list(color = actual_colour, width = line_width),
+      line = list(color = ifelse(nhs_colours_enable,
+                                 nhs_colours_options$colours$common_cause,
+                                 actual_colour), width = line_width),
       showlegend = FALSE,
       # Create hoverinfo (tooltip) text for this trace
       hoverinfo = "text",
