@@ -502,11 +502,12 @@ fpl_plotly_create <- function(
   # Set highlight points to those that are NHS coloured
   if (nhs_colours_enable) {
     highlight_points <- ifelse(
-      if (highlight_outlier_options == "Both") {
+      if (highlight_outlier_options$direction_to_flag == "Both") {
         funnel_data$actual_colour != actual_colour
-      } else if (highlight_outlier_options == "Improvement") {
+      } else if (highlight_outlier_options$direction_to_flag == "Improvement") {
         funnel_data$actual_colour == nhs_colours_options$colours$improvement
-      } else if (highlight_outlier_options == "Deterioration") {
+      } else if (highlight_outlier_options$direction_to_flag ==
+                 "Deterioration") {
         funnel_data$actual_colour == nhs_colours_options$colours$deterioration
       },
       funnel_data$rr*multiplier,
@@ -517,17 +518,22 @@ fpl_plotly_create <- function(
     highlight_points <- ifelse(
       if (highlight_outlier_options == "Both") {
         funnel_data$outlier_3sigma == 1
-      } else if (highlight_outlier_options == "Improvement") {
+      } else if (highlight_outlier_options$direction_to_flag == "Improvement") {
         if (betteris == "Lower") {
-          funnel_data$outlier_3sigma == 1 & funnel_data$rr * multiplier < funnel_data$LCL99
+          funnel_data$outlier_3sigma == 1 &
+            funnel_data$rr * multiplier < funnel_data$LCL99
         } else if (betteris == "Higher") {
-          funnel_data$outlier_3sigma == 1 & funnel_data$rr * multiplier > funnel_data$UCL99
+          funnel_data$outlier_3sigma == 1 &
+            funnel_data$rr * multiplier > funnel_data$UCL99
         }
-      } else if (highlight_outlier_options == "Deterioration") {
+      } else if (highlight_outlier_options$direction_to_flag ==
+                 "Deterioration") {
         if (betteris == "Lower") {
-          funnel_data$outlier_3sigma == 1 & funnel_data$rr * multiplier > funnel_data$UCL99
+          funnel_data$outlier_3sigma == 1 &
+            funnel_data$rr * multiplier > funnel_data$UCL99
         } else if (betteris == "Higher") {
-          funnel_data$outlier_3sigma == 1 & funnel_data$rr * multiplier < funnel_data$LCL99
+          funnel_data$outlier_3sigma == 1 &
+            funnel_data$rr * multiplier < funnel_data$LCL99
         }
       },
       funnel_data$rr * multiplier,
