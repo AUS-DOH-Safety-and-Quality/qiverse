@@ -234,18 +234,18 @@ fpl_plotly_create <- function(
       if (nhs_colours_options$improvement_direction %in% c("Higher", "Neutral")) {
         funnel_data <- funnel_data |>
           dplyr::mutate(actual_colour = dplyr::if_else(
-            outlier_3sigma == 1 & rr * multiplier >= UCL99,
+            outlier_3sigma == 1 & rr * multiplier > UCL99,
             nhs_colours_options$colours$improvement,
-            dplyr::if_else(outlier_3sigma == 1 & rr * multiplier <= UCL99,
+            dplyr::if_else(outlier_3sigma == 1 & rr * multiplier < UCL99,
                            nhs_colours_options$colours$deterioration,
                            actual_colour)))
       } else if (nhs_colours_options$improvement_direction %in%
                  c("Lower", "Neutral")) {
         funnel_data <- funnel_data |>
           dplyr::mutate(actual_colour = dplyr::if_else(
-            outlier_3sigma == 1 & rr * multiplier <= UCL99,
+            outlier_3sigma == 1 & rr * multiplier < UCL99,
             nhs_colours_options$colours$improvement,
-            dplyr::if_else(outlier_3sigma == 1 & rr * multiplier >= UCL99,
+            dplyr::if_else(outlier_3sigma == 1 & rr * multiplier > UCL99,
                            nhs_colours_options$colours$deterioration,
                            actual_colour)))
       }
@@ -253,13 +253,13 @@ fpl_plotly_create <- function(
       if (nhs_colours_options$improvement_direction == "Higher") {
         funnel_data <- funnel_data |>
           dplyr::mutate(actual_colour = dplyr::if_else(
-            outlier_3sigma == 1 & rr * multiplier >= UCL99,
+            outlier_3sigma == 1 & rr * multiplier > UCL99,
             nhs_colours_options$colours$improvement,
             actual_colour))
       } else if (nhs_colours_options$improvement_direction == "Lower") {
         funnel_data <- funnel_data |>
           dplyr::mutate(actual_colour = dplyr::if_else(
-            outlier_3sigma == 1 & rr * multiplier <= LCL99,
+            outlier_3sigma == 1 & rr * multiplier < LCL99,
             nhs_colours_options$colours$improvement,
             actual_colour))
       }
@@ -267,13 +267,13 @@ fpl_plotly_create <- function(
       if (nhs_colours_options$improvement_direction == "Higher") {
         funnel_data <- funnel_data |>
           dplyr::mutate(actual_colour = dplyr::if_else(
-            outlier_3sigma == 1 & rr * multiplier <= LCL99,
+            outlier_3sigma == 1 & rr * multiplier < LCL99,
             nhs_colours_options$colours$deterioration,
             actual_colour))
       } else if (nhs_colours_options$improvement_direction == "Lower") {
         funnel_data <- funnel_data |>
           dplyr::mutate(actual_colour = dplyr::if_else(
-            outlier_3sigma == 1 & rr * multiplier >= UCL99,
+            outlier_3sigma == 1 & rr * multiplier > UCL99,
             nhs_colours_options$colours$deterioration,
             actual_colour))
       }
