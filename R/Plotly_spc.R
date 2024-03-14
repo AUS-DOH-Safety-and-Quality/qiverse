@@ -512,7 +512,7 @@ spc_plotly_create <- function(
             ifelse(!is.na(spc_imp_text),
                    paste0("<br><b>Pattern(s) (",
                           ifelse(betteris == "Neutral", "Higher", "Improvement"),
-                          ") </b>", spc_imp_text),
+                          "): </b>", spc_imp_text),
                    ""),
             ifelse(!is.na(spc_det_text),
                    paste0("<br><b>Pattern(s) (",
