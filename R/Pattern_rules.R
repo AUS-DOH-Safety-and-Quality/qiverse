@@ -26,8 +26,9 @@ pattern_rules <- function(numerator, denominator, period_end,
   . <- index_order <- spc_y <- spc_cl <- spc_stdev <- spc_ll99 <- spc_ll95 <-
     spc_ul95 <- spc_ul99 <- spc_diff <- spc_mr <- spc_amr <- spc_ulmr <-
     spc_amr2 <- spc_astro <- spc_y_diff <- spc_trend_cumsum <- spc_trend <-
-    spc_twointhree_working <- spc_twointhree_cumsum <- spc_shift_working <-
-    spc_shift_cumsum <- spc_astro <- spc_trend <- spc_twointhree <-
+    spc_trend_flag <- spc_twointhree_working <- spc_twointhree_cumsum <-
+    spc_twointhree_flag <- spc_shift_working <- spc_shift_cumsum <-
+    spc_shift_flag <- spc_astro <- spc_trend <- spc_twointhree <-
     spc_shift <- `:=` <- .N <- NULL
 
   #create data table
