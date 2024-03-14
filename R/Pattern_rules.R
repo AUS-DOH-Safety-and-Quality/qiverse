@@ -37,16 +37,16 @@ pattern_rules <- function(numerator, denominator, period_end,
                                      betteris, fpl_astro)
 
   # Copy input data table to preserve original copy for run charts
-  init_input_dt <- copy(input_dt)
+  init_input_dt <- data.table::copy(input_dt)
 
   # Set initial order
   input_dt[, index_order := 1:input_dt[, .N]]
 
   # Set SPC Limits
-  input_dt_p <- .spc_limits_p(input_dt[spccharttype == "p"])
-  input_dt_i <- .spc_limits_i(input_dt[spccharttype == "i"])
-  input_dt_g <- .spc_limits_g(input_dt[spccharttype == "g"])
-  input_dt_t <- .spc_limits_t(input_dt[spccharttype == "t"])
+  input_dt_p <- qiverse.qipatterns:::.spc_limits_p(input_dt[spccharttype == "p"]) #nolint
+  input_dt_i <- qiverse.qipatterns:::.spc_limits_i(input_dt[spccharttype == "i"]) #nolint
+  input_dt_g <- qiverse.qipatterns:::.spc_limits_g(input_dt[spccharttype == "g"]) #nolint
+  input_dt_t <- qiverse.qipatterns:::.spc_limits_t(input_dt[spccharttype == "t"]) #nolint
 
   # Combine outputs
   input_dt <- rbind(
