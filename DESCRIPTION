@@ -1,6 +1,6 @@
 Package: qiverse.qiplotly
 Title: Quality Improvement Plotly Charts
-Version: 0.1.0.3
+Version: 0.1.1.0
 Authors@R: 
     person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
     family = "",
