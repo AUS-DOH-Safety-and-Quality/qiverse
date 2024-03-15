@@ -53,6 +53,17 @@
 #' chart. (default = list(improvement_direction = betteris,
 #' direction_to_flag = "Both", colours = list(neutral = "#490092",
 #' improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))
+#' @param nhs_icons_enable A boolean to enable NHS icons for the SPC chart. This
+#' option is only available if nhs_colours_enable is TRUE. (default = FALSE)
+#' @param nhs_icons_options A list of options for the NHS icons:
+#' * flag_last_point_only: A boolean to enable flagging of the last point only
+#' when determining the NHS icons. (default = FALSE)
+#' * sizex: A numeric value to set the size of the NHS icons as a proportion of
+#' the plot's width. (default = 0.075)
+#' * sizey: A numeric value to set the size of the NHS icons as a proportion of
+#' the plot's height. (default = 0.15)
+#'
+#' (default = list(flag_last_point_only = FALSE, sizex = 0.075, sizey = 0.15))
 #' @param source_text Set source text of the chart. If empty ("") or NA, no
 #' source will be displayed (default = "Healthcare Quality Intelligence Unit")
 #'
@@ -132,6 +143,12 @@ spc_plotly_create <- function(
       deterioration = "#E46C0A",
       common_cause = "#A6A6A6"
     )
+  ),
+  nhs_icons_enable = FALSE,
+  nhs_icons_options = list(
+    flag_last_point_only = FALSE,
+    sizex = 0.075,
+    sizey = 0.15
   ),
   source_text = "Healthcare Quality Intelligence Unit"
 ) {
@@ -683,6 +700,89 @@ spc_plotly_create <- function(
           ay = ~ifelse(y > hqiu_spc_df$cl[1], -pattern_text_ay, pattern_text_ay)
         )
     }
+  }
+
+  # Add NHS Icons
+  if (nhs_icons_enable & nhs_colours_enable & data_type != "run") {
+
+    # Detect which type of icon to use, common_cause, concern or improvement
+    if (nhs_icons_options$flag_last_point_only) {
+      # Set the icon pattern depending on the detected pattern on the last point
+      if (!is.na(nhs_pat[, .SD[.N]]$spc_det_text)) {
+        nhs_icon_pattern <- "concern"
+      } else if (!is.na(nhs_pat[, .SD[.N]]$spc_imp_text)) {
+        nhs_icon_pattern <- "improvement"
+      } else {
+        nhs_icon_pattern <- "common_cause"
+      }
+    } else {
+      # Extract the last pattern detected in the SPC
+      imp_max_period_end <- nhs_pat[!is.na(spc_imp_text), .SD[.N]]
+      det_max_period_end <- nhs_pat[!is.na(spc_det_text), .SD[.N]]
+
+      # Set the icon pattern depending on the last detected pattern
+      if (imp_max_period_end[,.N] == 0 & det_max_period_end[,.N] == 0) {
+        nhs_icon_pattern <- "common_cause"
+      } else if (imp_max_period_end[,.N] == 0) {
+        nhs_icon_pattern <- "concern"
+      } else if (det_max_period_end[,.N] == 0) {
+        nhs_icon_pattern <- "improvement"
+      } else if (det_max_period_end$period_end >=
+                 imp_max_period_end$period_end) {
+        nhs_icon_pattern <- "concern"
+      } else {
+        nhs_icon_pattern <- "improvement"
+      }
+    }
+
+    # If betteris direction is neutral, set the icon pattern to neutral
+    if (nhs_colours_options$improvement_direction == "Neutral" &
+        nhs_icon_pattern != "common_cause") {
+      if (nhs_icon_pattern == "concern") {
+        nhs_icon_pattern <- "neutral_low"
+      } else if (nhs_icon_pattern == "improvement") {
+        nhs_icon_pattern <- "neutral_high"
+      }
+    } else if (nhs_colours_options$improvement_direction == "Higher") {
+      # Apply correct direction for icon pattern
+      if (nhs_icon_pattern == "concern") {
+        nhs_icon_pattern <- paste0(nhs_icon_pattern, "_low")
+      } else if (nhs_icon_pattern == "improvement") {
+        nhs_icon_pattern <- paste0(nhs_icon_pattern, "_high")
+      }
+    } else if (nhs_colours_options$improvement_direction == "Lower") {
+      if (nhs_icon_pattern == "concern") {
+        nhs_icon_pattern <- paste0(nhs_icon_pattern, "_high")
+      } else if (nhs_icon_pattern == "improvement") {
+        nhs_icon_pattern <- paste0(nhs_icon_pattern, "_low")
+      }
+    }
+
+    # Extract Icon from package
+    icon_name <- paste0(nhs_icon_pattern, ".svg")
+    icon_loc <- system.file("icons", "spc", "variation", icon_name, package = "qiverse.qiplotly")
+    ## Base64 encode the icon as it can't be read directly into plotly
+    txt <- RCurl::base64Encode(readBin(icon_loc, "raw", file.info(icon_loc)[1, "size"]), "txt")
+
+    # Add NHS Icon
+    spc_plotly <- spc_plotly  |>
+      plotly::layout(
+        images = list(
+          list(
+            source = paste("data:image/svg+xml;base64", txt, sep=","),
+            layer = "above",
+            sizex = nhs_icons_options$sizex,
+            sizey = nhs_icons_options$sizey,
+            x = 1,
+            y = 1,
+            xref = "paper",
+            yref = "paper",
+            xanchor = "right",
+            yanchor = "bottom",
+            opacity = 1
+          )
+        )
+      )
   }
 
   # Output plotly object

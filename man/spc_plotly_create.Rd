@@ -32,6 +32,8 @@ spc_plotly_create(
   nhs_colours_options = list(improvement_direction = betteris, direction_to_flag =
     "Both", colours = list(neutral = "#490092", improvement = "#00B0F0", deterioration =
     "#E46C0A", common_cause = "#A6A6A6")),
+  nhs_icons_enable = FALSE,
+  nhs_icons_options = list(flag_last_point_only = FALSE, sizex = 0.075, sizey = 0.15),
   source_text = "Healthcare Quality Intelligence Unit"
 )
 }
@@ -113,6 +115,21 @@ detected (default = 7)}
 chart. (default = list(improvement_direction = betteris,
 direction_to_flag = "Both", colours = list(neutral = "#490092",
 improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))}
+
+\item{nhs_icons_enable}{A boolean to enable NHS icons for the SPC chart. This
+option is only available if nhs_colours_enable is TRUE. (default = FALSE)}
+
+\item{nhs_icons_options}{A list of options for the NHS icons:
+\itemize{
+\item flag_last_point_only: A boolean to enable flagging of the last point only
+when determining the NHS icons. (default = FALSE)
+\item sizex: A numeric value to set the size of the NHS icons as a proportion of
+the plot's width. (default = 0.075)
+\item sizey: A numeric value to set the size of the NHS icons as a proportion of
+the plot's height. (default = 0.15)
+}
+
+(default = list(flag_last_point_only = FALSE, sizex = 0.075, sizey = 0.15))}
 
 \item{source_text}{Set source text of the chart. If empty ("") or NA, no
 source will be displayed (default = "Healthcare Quality Intelligence Unit")}
