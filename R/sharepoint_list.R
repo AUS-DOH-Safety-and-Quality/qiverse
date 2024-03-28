@@ -86,13 +86,13 @@ download_sharepoint_list <- function(
 
   # Check if list_display_name exists
   # If empty list_display_name, stop due to error
-  if (!(list_display_name %in% all_lists[, "displayName"])) {
+  if (!(list_display_name %in% all_lists[, "name"])) {
     stop("The URL provided is not a SharePoint list")
   }
 
   # Extract list for chosen sharepoint list ####
   list_data <- site$get_list(
-    list_id = all_lists[all_lists$displayName == list_display_name, "id"]
+    list_id = all_lists[all_lists$name == list_display_name, "id"]
   )$list_items() |>
     as.data.frame()
 
