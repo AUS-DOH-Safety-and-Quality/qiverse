@@ -8,7 +8,8 @@ download_dataflow_table(
   workspace_name,
   dataflow_name,
   table_name,
-  access_token
+  access_token,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ accessed.}
 
 \item{access_token}{The token generated with the correct PowerBI Dataflow
 permissions. Use get_az_tk('pbi_df') to create this token.}
+
+\item{verbose}{Whether to print status messages while the function is
+running. Default is TRUE.}
 }
 \value{
 A tibble of the PowerBI table from the PowerBI dataflow.

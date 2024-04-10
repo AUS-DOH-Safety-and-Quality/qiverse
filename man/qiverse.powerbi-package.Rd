@@ -3,6 +3,7 @@
 \docType{package}
 \name{qiverse.powerbi-package}
 \alias{qiverse.powerbi-package}
+\alias{_PACKAGE}
 \alias{qiverse.powerbi}
 \title{The qiverse.powerbi package.}
 \description{

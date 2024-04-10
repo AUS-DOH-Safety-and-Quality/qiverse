@@ -57,6 +57,19 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
       }
     })
 
+  # Keep last edited target dataflow
+  if (length(target_dataflow) > 1) {
+    # Find max last edited date
+    max_last_edit_date <- purrr::map(target_dataflow, \(x) {
+      x$cdsaModel$lastEditedTimeUTC})|>
+      # extract max of list
+      purrr::reduce(max)
+    # Choose last edited date dataflow
+    target_dataflow <- target_dataflow |>
+      purrr::keep(\(x) {x$cdsaModel$lastEditedTimeUTC == max_last_edit_date})
+  }
+
+  # Extract
   dataflow_id <- target_dataflow[[1]]$cdsaModel$objectId
 
   # Now we can request detailed metadata for the dataflow, including column names
