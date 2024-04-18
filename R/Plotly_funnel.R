@@ -557,7 +557,8 @@ fpl_plotly_create <- function(
   # overlay them with a circle and hospital name
   outlier_lookup <- data.frame(x = denominator,
                                y = highlight_points,
-                               outlier_label = outlier_label) |>
+                               outlier_label = outlier_label,
+                               group = group) |>
     #drop values that aren't outliers
     tidyr::drop_na(.data$y)
 
@@ -598,6 +599,10 @@ fpl_plotly_create <- function(
 
   }
   # check if the hospital input is in the data provided
+  if (nrow(outlier_lookup) > 0) {
+    highlight_hosp <- highlight_hosp[!(highlight_hosp %in% outlier_lookup$group)]
+  }
+
   if (length(highlight_hosp) > 0) {
     # define highlighted hospitals and set labels
     highlight <- data.frame(
