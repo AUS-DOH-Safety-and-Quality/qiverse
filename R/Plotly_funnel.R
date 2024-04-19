@@ -599,7 +599,7 @@ fpl_plotly_create <- function(
 
   }
   # check if the hospital input is in the data provided
-  if (nrow(outlier_lookup) > 0) {
+  if (nrow(outlier_lookup) > 0 & highlight_outlier == TRUE) {
     highlight_hosp <- highlight_hosp[!(highlight_hosp %in% outlier_lookup$group)]
   }
 
