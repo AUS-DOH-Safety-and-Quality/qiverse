@@ -27,8 +27,9 @@
 misc_plotly <- function(data,
                         hover_colour = "#00667B",
                         control_colour = "#00667B",
-                        worse_colour = "black",
-                        better_colour = "grey",
+                        worse_colour = "#E46C0A",
+                        neutral_colour = "#A6A6A6",
+                        better_colour = "#00B0F0",
                         y_dp = 2) {
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
@@ -82,8 +83,17 @@ misc_plotly <- function(data,
       y = ~list(paste0("<b>", indicator_theme, "</b>"), indicator),
       type = "bar",
       orientation = "h",
-      marker = ~list(color = ifelse(uzscore_betteris < 0, worse_colour,
-                                    better_colour)),
+      marker = ~list(color =
+                       ifelse(
+                         uzscore_betteris < stats::qnorm(0.001),
+                         worse_colour,
+                         ifelse(
+                           uzscore_betteris > stats::qnorm(0.999),
+                           better_colour,
+                           neutral_colour
+                         )
+                       )
+                     ),
       textposition = "none",
       hoverinfo = "text",
       ## Implement hovertext tooltip
