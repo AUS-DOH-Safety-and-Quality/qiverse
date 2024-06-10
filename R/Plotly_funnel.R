@@ -214,18 +214,50 @@ fpl_plotly_create <- function(
   }
 
   # Generate funnel plot data
-  funnel <- FunnelPlotR::funnel_plot(denominator = denominator,
-                                     numerator = numerator,
-                                     group = group,
-                                     limit = 99,
-                                     data_type = data_type,
-                                     sr_method = "CQC",
-                                     multiplier = multiplier,
-                                     draw_unadjusted = TRUE,
-                                     draw_adjusted = TRUE,
-                                     label = NA,
-                                     x_range = c(0, max(denominator) * 1.15),
-                                     highlight  = NA)
+  FunnelPlotR_version <-
+    asNamespace("FunnelPlotR")$`.__NAMESPACE__.`$spec[["version"]]
+  # For FunnelPlotR versions below 0.5.0
+  if (FunnelPlotR_version < "0.5.0") {
+    funnel <- FunnelPlotR::funnel_plot(
+      denominator = denominator,
+      numerator = numerator,
+      group = group,
+      limit = 99,
+      data_type = data_type,
+      sr_method = "CQC",
+      multiplier = multiplier,
+      draw_unadjusted = TRUE,
+      draw_adjusted = TRUE,
+      label = NA,
+      x_range = c(0, max(denominator) * 1.15),
+      highlight  = NA
+    )
+  }
+
+  # For FunnelPlotR version 0.5.0 and above
+  if (FunnelPlotR_version >= "0.5.0") {
+    funnel <- FunnelPlotR::funnel_plot(
+      .data = data.frame(
+        denominator = denominator,
+        numerator = numerator,
+        group = group
+      ),
+      denominator = denominator,
+      numerator = numerator,
+      group = group,
+      limit = 99,
+      data_type = data_type,
+      sr_method = "CQC",
+      multiplier = multiplier,
+      draw_unadjusted = TRUE,
+      draw_adjusted = TRUE,
+      label = NA,
+      x_range = c(0, max(denominator) * 1.15),
+      highlight  = NA
+    )
+  }
+
+  # Extract funnel data
   funnel_data <- funnel$plot$data
   ## Reorder data to match initial group
   funnel_data <- funnel_data[match(group, funnel_data$group), ]
