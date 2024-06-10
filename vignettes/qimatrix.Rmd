@@ -1,0 +1,26 @@
+---
+title: "QI Matrix"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Multiple Indicator Sigma Chart}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = TRUE}
+library(qiverse.qimatrix)
+```
+
+This package provides functions to prepare data ready for the SPC Funnel Matrix, and display this using flextable.
+
+## Prepare SPC Funnel Matrix
+
+## Charting SPC Funnel Matrix in Flextable
+
