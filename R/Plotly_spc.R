@@ -150,6 +150,7 @@ spc_plotly_create <- function(
     sizex = 0.075,
     sizey = 0.15
   ),
+  show_legend = FALSE,
   source_text = "Healthcare Quality Intelligence Unit"
 ) {
 
@@ -409,66 +410,61 @@ spc_plotly_create <- function(
     hqiu_spc_df$actual_marker_border <- actual_colour
   }
 
+  # Initialise the plotly object
   spc_plotly <- plotly::plot_ly(
     data = hqiu_spc_df
-  ) |>
-    # Add the centre line
-    plotly::add_trace(
-      name = "Mean",
-      x = ~x,
-      y = ~cl,
-      type = "scatter",
-      mode = "lines",
-      line = list(color = actual_colour, width = line_width),
-      showlegend = FALSE,
-      hoverinfo = "none"
-    )
+  )
+
+  # Add legend entry for Upper NHS Colour if enabled
+  if (nhs_colours_enable & show_legend) {
+    spc_plotly <- spc_plotly |>
+      plotly::add_trace(
+        name = ifelse(
+          betteris == "Lower",
+          "Deterioration SPC Pattern",
+          "Improvement SPC Pattern"
+        ),
+        x = ~x,
+        y = ~cl,
+        type = "scatter",
+        mode = "markers",
+        marker = list(
+          color = ifelse(
+            betteris == "Lower",
+            nhs_colours_options$colours$deterioration,
+            nhs_colours_options$colours$improvement
+          ),
+          size = marker_size
+        ),
+        showlegend = show_legend,
+        visible = "legendonly"
+      )
+  }
+
 
   # Check if run chart. If not, add control limits
   if (data_type != "run") {
     spc_plotly <- spc_plotly |>
       # Add the upper control limit
       plotly::add_trace(
-        name = "Upper Control Limit (95%)",
-        x = ~x,
-        y = ~ucl.95,
-        type = "scatter",
-        mode = "lines",
-        line = list(color = brand_colour, width = line_width, dash = "dot"),
-        showlegend = FALSE,
-        hoverinfo = "none"
-      ) |>
-      # Add the upper warning limit
-      plotly::add_trace(
-        name = "Upper Warning Limit (99%)",
+        name = "Upper Control Limit (99.8%)",
         x = ~x,
         y = ~ucl,
         type = "scatter",
         mode = "lines",
         line = list(color = brand_colour, width = line_width, dash = "dash"),
-        showlegend = FALSE,
+        showlegend = show_legend,
         hoverinfo = "none"
       ) |>
-      # Add the lower warning limit
+      # Add the upper warning limit
       plotly::add_trace(
-        name = "Lower Warning Limit (99%)",
+        name = "Upper Warning Limit (95%)",
         x = ~x,
-        y = ~lcl,
-        type = "scatter",
-        mode = "lines",
-        line = list(color = brand_colour, width = line_width, dash = "dash"),
-        showlegend = FALSE,
-        hoverinfo = "none"
-      ) |>
-      # Add the lower control limit
-      plotly::add_trace(
-        name = "Lower Control Limit (95%)",
-        x = ~x,
-        y = ~lcl.95,
+        y = ~ucl.95,
         type = "scatter",
         mode = "lines",
         line = list(color = brand_colour, width = line_width, dash = "dot"),
-        showlegend = FALSE,
+        showlegend = show_legend,
         hoverinfo = "none"
       )
   }
@@ -477,7 +473,7 @@ spc_plotly_create <- function(
   spc_plotly <- spc_plotly |>
     # Add the data's line, with points added
     plotly::add_trace(
-      name = "Actual",
+      name = "Actuals",
       x = ~x,
       y = ~y,
       type = "scatter",
@@ -487,7 +483,7 @@ spc_plotly_create <- function(
       line = list(color = ifelse(nhs_colours_enable,
                                  nhs_colours_options$colours$common_cause,
                                  actual_colour), width = line_width),
-      showlegend = FALSE,
+      showlegend = show_legend,
       # Create hoverinfo (tooltip) text for this trace
       hoverinfo = "text",
       text = ~paste0(
@@ -542,8 +538,78 @@ spc_plotly_create <- function(
         }
       ),
       hoverlabel = list(bgcolor = brand_colour)
-    ) |>
-    #labels, see start of chunk for setup
+    )
+
+  # Add the centre line
+  spc_plotly <- spc_plotly |>
+    plotly::add_trace(
+      name = "Centreline",
+      x = ~x,
+      y = ~cl,
+      type = "scatter",
+      mode = "lines",
+      line = list(color = actual_colour, width = line_width),
+      showlegend = show_legend,
+      hoverinfo = "none"
+    )
+
+
+
+  # Check if run chart. If not, add control limits
+  if (data_type != "run") {
+    spc_plotly <- spc_plotly |>
+      # Add the lower control limit
+      plotly::add_trace(
+        name = "Lower Warning Limit (95%)",
+        x = ~x,
+        y = ~lcl.95,
+        type = "scatter",
+        mode = "lines",
+        line = list(color = brand_colour, width = line_width, dash = "dot"),
+        showlegend = show_legend,
+        hoverinfo = "none"
+      ) |>
+      # Add the lower warning limit
+      plotly::add_trace(
+        name = "Lower Control Limit (99.8%)",
+        x = ~x,
+        y = ~lcl,
+        type = "scatter",
+        mode = "lines",
+        line = list(color = brand_colour, width = line_width, dash = "dash"),
+        showlegend = show_legend,
+        hoverinfo = "none"
+      )
+  }
+
+  # Add legend entry for Lower NHS Colour if enabled
+  if (nhs_colours_enable & show_legend) {
+    spc_plotly <- spc_plotly |>
+      plotly::add_trace(
+        name = ifelse(
+          betteris == "Higher",
+          "Deterioration SPC Pattern",
+          "Improvement SPC Pattern"
+        ),
+        x = ~x,
+        y = ~cl,
+        type = "scatter",
+        mode = "markers",
+        marker = list(
+          color = ifelse(
+            betteris == "Higher",
+            nhs_colours_options$colours$deterioration,
+            nhs_colours_options$colours$improvement
+          ),
+          size = marker_size
+        ),
+        showlegend = show_legend,
+        visible = "legendonly"
+      )
+  }
+
+  #labels, see start of chunk for setup
+  spc_plotly <- spc_plotly |>
     plotly::layout(
       font = list(family = "Arial", color = "black"),
       title = list(
@@ -565,6 +631,23 @@ spc_plotly_create <- function(
       hovermode = "x",
       margin = list(b = 0, t = 80)
     )
+
+  # Add legend if enabled
+  if (show_legend) {
+    spc_plotly <- spc_plotly |>
+      plotly::layout(
+        showlegend = TRUE,
+        legend = list(
+          x = 1, y = 0.5,
+          xanchor = "left",
+          yanchor = "middle",
+          orientation = "v",
+          traceorder = "normal",
+          itemclick = FALSE,
+          itemdoubleclick = FALSE
+        )
+      )
+  }
 
   # Add source text if exists
   if (source_text != "" && !is.na(source_text)) {
@@ -685,6 +768,7 @@ spc_plotly_create <- function(
               width = line_width
             )
           ),
+          showlegend = FALSE,
           hoverinfo = "none"
         ) |>
         # Add tag around points
