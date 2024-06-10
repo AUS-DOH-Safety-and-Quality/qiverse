@@ -220,6 +220,7 @@ fpl_plotly_create <- function(
                                      draw_unadjusted = TRUE,
                                      draw_adjusted = TRUE,
                                      label = NA,
+                                     x_range = c(0, max(denominator) * 1.15),
                                      highlight  = NA)
   funnel_data <- funnel$plot$data
   ## Reorder data to match initial group
