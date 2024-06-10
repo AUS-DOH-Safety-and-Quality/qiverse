@@ -58,6 +58,16 @@
 #' Default is "Percentage"
 #' @param pattern_text_ay Set the y offset for pattern detection text in pixels
 #' (default = 50)
+#' @param target Set a target value for the SPC chart. If NA, no target will be
+#' displayed. (default = NA)
+#' @param target_options A list of parameters to set the target line:
+#' * legend_name: A string to set the legend name for the target line
+#' * line_colour: A hex code to set the colour of the target line
+#' * line_width: A numeric value to set the width of the target line
+#' * line_dash: A string to set the dash of the target line. Options are
+#' "solid", "dot", "dash", "longdash", "dashdot", "longdashdot"
+#' (default = list(legend_name = "Target", line_colour = "#FF0000",
+#' line_width = 2, line_dash = "solid"))
 #' @param nhs_colours_enable A boolean to enable NHS colours for the SPC chart.
 #' (default = TRUE)
 #' @param nhs_colours_options A list of parameters to enable NHS colours for the SPC
@@ -156,6 +166,13 @@ fpl_plotly_create <- function(
     y_dp = 1,
     y_format = "Percentage",
     pattern_text_ay = 50,
+    target = NA,
+    target_options = list(
+      legend_name = "Target",
+      line_colour = "#FF0000",
+      line_width = 2,
+      line_dash = "solid"
+    ),
     nhs_colours_enable = TRUE,
     nhs_colours_options = list(
       improvement_direction = betteris,
@@ -388,6 +405,26 @@ fpl_plotly_create <- function(
            "")
   )
 
+  # Add function to add target line to plotly object
+  fpl_plotly_target <- function(p) {
+    p |>
+      plotly::add_trace(
+        name = target_options$legend_name,
+        data = lim_data,
+        x = ~number.seq,
+        y = target,
+        type = "scatter",
+        mode = "lines",
+        line = list(
+          color = target_options$line_colour,
+          width = target_options$line_width,
+          dash = target_options$line_dash
+        ),
+        showlegend = show_legend,
+        hoverinfo = "none"
+      )
+  }
+
   # create funnel plotly
   fpl_plotly <- plotly::plot_ly()
 
@@ -444,6 +481,11 @@ fpl_plotly_create <- function(
       hoverinfo = "none"
     )
 
+  # Add Target here if it is above the centerline
+  if (!is.na(target) & target > centre_line) {
+    fpl_plotly <- fpl_plotly_target(fpl_plotly)
+  }
+
   # Add the points line
   fpl_plotly <- fpl_plotly |>
     plotly::add_trace(
@@ -475,6 +517,11 @@ fpl_plotly_create <- function(
       showlegend = show_legend,
       hoverinfo = "none"
     )
+
+  # Add Target here if it is above the centerline
+  if (!is.na(target) & target <= centre_line) {
+    fpl_plotly <- fpl_plotly_target(fpl_plotly)
+  }
 
   # Add the lower limits
   fpl_plotly <- fpl_plotly |>

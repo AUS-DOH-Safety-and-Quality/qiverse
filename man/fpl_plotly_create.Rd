@@ -33,6 +33,9 @@ fpl_plotly_create(
   y_dp = 1,
   y_format = "Percentage",
   pattern_text_ay = 50,
+  target = NA,
+  target_options = list(legend_name = "Target", line_colour = "#FF0000", line_width = 2,
+    line_dash = "solid"),
   nhs_colours_enable = TRUE,
   nhs_colours_options = list(improvement_direction = betteris, direction_to_flag =
     "Both", colours = list(neutral = "#490092", improvement = "#00B0F0", deterioration =
@@ -127,6 +130,20 @@ Default is "Percentage"}
 
 \item{pattern_text_ay}{Set the y offset for pattern detection text in pixels
 (default = 50)}
+
+\item{target}{Set a target value for the SPC chart. If NA, no target will be
+displayed. (default = NA)}
+
+\item{target_options}{A list of parameters to set the target line:
+\itemize{
+\item legend_name: A string to set the legend name for the target line
+\item line_colour: A hex code to set the colour of the target line
+\item line_width: A numeric value to set the width of the target line
+\item line_dash: A string to set the dash of the target line. Options are
+"solid", "dot", "dash", "longdash", "dashdot", "longdashdot"
+(default = list(legend_name = "Target", line_colour = "#FF0000",
+line_width = 2, line_dash = "solid"))
+}}
 
 \item{nhs_colours_enable}{A boolean to enable NHS colours for the SPC chart.
 (default = TRUE)}
