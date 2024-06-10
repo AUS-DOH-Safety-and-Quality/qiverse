@@ -34,6 +34,7 @@ spc_plotly_create(
     "#E46C0A", common_cause = "#A6A6A6")),
   nhs_icons_enable = FALSE,
   nhs_icons_options = list(flag_last_point_only = FALSE, sizex = 0.075, sizey = 0.15),
+  show_legend = FALSE,
   source_text = "Healthcare Quality Intelligence Unit"
 )
 }
@@ -127,9 +128,11 @@ when determining the NHS icons. (default = FALSE)
 the plot's width. (default = 0.075)
 \item sizey: A numeric value to set the size of the NHS icons as a proportion of
 the plot's height. (default = 0.15)
-}
+(default = list(flag_last_point_only = FALSE, sizex = 0.075, sizey = 0.15))
+}}
 
-(default = list(flag_last_point_only = FALSE, sizex = 0.075, sizey = 0.15))}
+\item{show_legend}{A boolean to enable legend for the SPC Chart
+(default = FALSE)}
 
 \item{source_text}{Set source text of the chart. If empty ("") or NA, no
 source will be displayed (default = "Healthcare Quality Intelligence Unit")}
@@ -177,6 +180,7 @@ spc_plotly_create(
   trend_size = 5,
   shift_size = 7,
   nhs_colours_enable = TRUE,
+  show_legend = FALSE,
   source_text = 'Healthcare Quality Intelligence Unit'
 )
 }
