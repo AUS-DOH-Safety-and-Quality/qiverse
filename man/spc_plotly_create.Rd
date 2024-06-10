@@ -28,6 +28,9 @@ spc_plotly_create(
   pattern_text_ay = 50,
   trend_size = 5,
   shift_size = 7,
+  target = NA,
+  target_options = list(legend_name = "Target", line_colour = "#FF0000", line_width = 2,
+    line_dash = "solid"),
   nhs_colours_enable = TRUE,
   nhs_colours_options = list(improvement_direction = betteris, direction_to_flag =
     "Both", colours = list(neutral = "#490092", improvement = "#00B0F0", deterioration =
@@ -108,6 +111,20 @@ detected (default = 5)}
 
 \item{shift_size}{Set the number of points required for a shift to be
 detected (default = 7)}
+
+\item{target}{Set a target value for the SPC chart. If NA, no target will be
+displayed. (default = NA)}
+
+\item{target_options}{A list of parameters to set the target line:
+\itemize{
+\item legend_name: A string to set the legend name for the target line
+\item line_colour: A hex code to set the colour of the target line
+\item line_width: A numeric value to set the width of the target line
+\item line_dash: A string to set the dash of the target line. Options are
+"solid", "dot", "dash", "longdash", "dashdot", "longdashdot"
+(default = list(legend_name = "Target", line_colour = "#FF0000",
+line_width = 2, line_dash = "solid"))
+}}
 
 \item{nhs_colours_enable}{A boolean to enable NHS colours for the SPC chart.
 (default = TRUE)}

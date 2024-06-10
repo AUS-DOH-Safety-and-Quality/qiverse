@@ -47,6 +47,16 @@
 #' detected (default = 5)
 #' @param shift_size Set the number of points required for a shift to be
 #' detected (default = 7)
+#' @param target Set a target value for the SPC chart. If NA, no target will be
+#' displayed. (default = NA)
+#' @param target_options A list of parameters to set the target line:
+#' * legend_name: A string to set the legend name for the target line
+#' * line_colour: A hex code to set the colour of the target line
+#' * line_width: A numeric value to set the width of the target line
+#' * line_dash: A string to set the dash of the target line. Options are
+#' "solid", "dot", "dash", "longdash", "dashdot", "longdashdot"
+#' (default = list(legend_name = "Target", line_colour = "#FF0000",
+#' line_width = 2, line_dash = "solid"))
 #' @param nhs_colours_enable A boolean to enable NHS colours for the SPC chart.
 #' (default = TRUE)
 #' @param nhs_colours_options A list of parameters to enable NHS colours for the SPC
@@ -135,6 +145,13 @@ spc_plotly_create <- function(
   pattern_text_ay = 50,
   trend_size = 5,
   shift_size = 7,
+  target = NA,
+  target_options = list(
+    legend_name = "Target",
+    line_colour = "#FF0000",
+    line_width = 2,
+    line_dash = "solid"
+  ),
   nhs_colours_enable = TRUE,
   nhs_colours_options = list(
     improvement_direction = betteris,
@@ -412,6 +429,28 @@ spc_plotly_create <- function(
     hqiu_spc_df$actual_marker_border <- actual_colour
   }
 
+  # Add Target to dataframe
+  hqiu_spc_df$target <- target
+
+  # Add function to add target line to plotly object
+  spc_plotly_target <- function(p) {
+    p |>
+      plotly::add_trace(
+        name = target_options$legend_name,
+        x = ~x,
+        y = ~target,
+        type = "scatter",
+        mode = "lines",
+        line = list(
+          color = target_options$line_colour,
+          width = target_options$line_width,
+          dash = target_options$line_dash
+        ),
+        showlegend = show_legend,
+        hoverinfo = "none"
+      )
+  }
+
   # Initialise the plotly object
   spc_plotly <- plotly::plot_ly(
     data = hqiu_spc_df
@@ -469,6 +508,11 @@ spc_plotly_create <- function(
         showlegend = show_legend,
         hoverinfo = "none"
       )
+  }
+
+  # Add Target here if it is above the centerline
+  if (!is.na(target) & target > hqiu_spc_df$cl[1]) {
+    spc_plotly <- spc_plotly_target(spc_plotly)
   }
 
   # Add actual line
@@ -555,7 +599,10 @@ spc_plotly_create <- function(
       hoverinfo = "none"
     )
 
-
+  # Add Target here if it is below the centerline
+  if (!is.na(target) & target <= hqiu_spc_df$cl[1]) {
+    spc_plotly <- spc_plotly_target(spc_plotly)
+  }
 
   # Check if run chart. If not, add control limits
   if (data_type != "run") {
