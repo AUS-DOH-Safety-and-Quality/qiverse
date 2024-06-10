@@ -37,6 +37,7 @@ fpl_plotly_create(
   nhs_colours_options = list(improvement_direction = betteris, direction_to_flag =
     "Both", colours = list(neutral = "#490092", improvement = "#00B0F0", deterioration =
     "#E46C0A", common_cause = "#A6A6A6")),
+  show_legend = FALSE,
   source_text = "Healthcare Quality Intelligence Unit"
 )
 }
@@ -135,6 +136,9 @@ chart. (default = list(improvement_direction = betteris,
 direction_to_flag = "Both", colours = list(neutral = "#490092",
 improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))}
 
+\item{show_legend}{A boolean to enable legend for the Funnel Plot
+(default = FALSE)}
+
 \item{source_text}{Set source text of the chart. If empty ("") or NA, no
 source will be displayed (default = "Healthcare Quality Intelligence Unit")}
 }
@@ -197,6 +201,7 @@ fpl_plotly_create(
   highlight_hosp = c('Q2', 'Q5'),
   highlight_outlier = TRUE,
   nhs_colours_enable = TRUE,
+  show_legend = FALSE,
   y_format = "Percentage",
   source_text = 'Healthcare Quality Intelligence Unit'
 )

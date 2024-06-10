@@ -64,6 +64,8 @@
 #' chart. (default = list(improvement_direction = betteris,
 #' direction_to_flag = "Both", colours = list(neutral = "#490092",
 #' improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))
+#' @param show_legend A boolean to enable legend for the Funnel Plot
+#' (default = FALSE)
 #' @param source_text Set source text of the chart. If empty ("") or NA, no
 #' source will be displayed (default = "Healthcare Quality Intelligence Unit")
 #'
@@ -120,6 +122,7 @@
 #'   highlight_hosp = c('Q2', 'Q5'),
 #'   highlight_outlier = TRUE,
 #'   nhs_colours_enable = TRUE,
+#'   show_legend = FALSE,
 #'   y_format = "Percentage",
 #'   source_text = 'Healthcare Quality Intelligence Unit'
 #' )
@@ -164,6 +167,7 @@ fpl_plotly_create <- function(
         common_cause = "#A6A6A6"
       )
     ),
+    show_legend = FALSE,
     source_text = "Healthcare Quality Intelligence Unit"
 ) {
   # Dealing with undefined global functions or variables
@@ -385,70 +389,65 @@ fpl_plotly_create <- function(
   )
 
   # create funnel plotly
-  fpl_plotly <- plotly::plot_ly() |>
+  fpl_plotly <- plotly::plot_ly()
+
+  # Add legend entry for Upper NHS Colour if enabled
+  if (nhs_colours_enable & show_legend) {
+    fpl_plotly <- fpl_plotly |>
+      plotly::add_trace(
+        name = ifelse(
+          betteris == "Lower",
+          "Unfavourable Funnel Outlier",
+          "Favourable Funnel Outlier"
+        ),
+        x = 0,
+        y = centre_line,
+        type = "scatter",
+        mode = "markers",
+        marker = list(
+          color = ifelse(
+            betteris == "Lower",
+            nhs_colours_options$colours$deterioration,
+            nhs_colours_options$colours$improvement
+          ),
+          size = marker_size
+        ),
+        showlegend = show_legend,
+        visible = "legendonly"
+      )
+  }
+
+  # Add the Upper Limits
+  fpl_plotly <- fpl_plotly |>
     # Add the upper control limit
     plotly::add_trace(
-      name = "Upper Control Limit (95%)",
-      data = lim_data,
-      x = ~number.seq,
-      y = ~ul95,
-      type = "scatter",
-      mode = "lines",
-      line = list(color = brand_colour, width = line_width, dash = "dot"),
-      showlegend = FALSE,
-      hoverinfo = "none"
-    ) |>
-    # Add the upper warning limit
-    plotly::add_trace(
-      name = "Upper Warning Limit (99%)",
+      name = "Upper Control Limit (99.8%)",
       data = lim_data,
       x = ~number.seq,
       y = ~ul998,
       type = "scatter",
       mode = "lines",
       line = list(color = brand_colour, width = line_width, dash = "dash"),
-      showlegend = FALSE,
+      showlegend = show_legend,
       hoverinfo = "none"
     ) |>
-    # Add the lower warning limit
+    # Add the upper warning limit
     plotly::add_trace(
-      name = "Lower Warning Limit (99%)",
+      name = "Upper Warning Limit (95%)",
       data = lim_data,
       x = ~number.seq,
-      y = ~ll998,
-      type = "scatter",
-      mode = "lines",
-      line = list(color = brand_colour, width = line_width, dash = "dash"),
-      showlegend = FALSE,
-      hoverinfo = "none"
-    ) |>
-    # Add the lower control limit
-    plotly::add_trace(
-      name = "Lower Control Limit (95%)",
-      data = lim_data,
-      x = ~number.seq,
-      y = ~ll95,
+      y = ~ul95,
       type = "scatter",
       mode = "lines",
       line = list(color = brand_colour, width = line_width, dash = "dot"),
-      showlegend = FALSE,
+      showlegend = show_legend,
       hoverinfo = "none"
-    ) |>
-    # Add the mean line
+    )
+
+  # Add the points line
+  fpl_plotly <- fpl_plotly |>
     plotly::add_trace(
-      name = "Mean",
-      data = lim_data,
-      x = ~number.seq,
-      y = centre_line,
-      type = "scatter",
-      mode = "lines",
-      line = list(color = actual_colour, width = line_width / 2),
-      showlegend = FALSE,
-      hoverinfo = "none"
-    ) |>
-    # Add the points line
-    plotly::add_trace(
-      name = "Hospitals",
+      name = "Sites",
       # Exclude those without a denominator
       data = funnel_data[funnel_data$denominator != 0,],
       x = ~denominator,
@@ -456,13 +455,82 @@ fpl_plotly_create <- function(
       type = "scatter",
       mode = "markers",
       marker = ~list(color = actual_colour, size = marker_size),
-      showlegend = FALSE,
+      showlegend = show_legend,
       # Create hoverinfo (tooltip) text for this trace
       hoverinfo = "text",
       text = hover_label_text[funnel_data$denominator != 0],
       hoverlabel = list(bgcolor = brand_colour)
+    )
+
+  # Add the centerline
+  fpl_plotly <- fpl_plotly |>
+    plotly::add_trace(
+      name = "Centerline",
+      data = lim_data,
+      x = ~number.seq,
+      y = centre_line,
+      type = "scatter",
+      mode = "lines",
+      line = list(color = actual_colour, width = line_width / 2),
+      showlegend = show_legend,
+      hoverinfo = "none"
+    )
+
+  # Add the lower limits
+  fpl_plotly <- fpl_plotly |>
+    # Add the lower warning limit
+    plotly::add_trace(
+      name = "Lower Warning Limit (95%)",
+      data = lim_data,
+      x = ~number.seq,
+      y = ~ll95,
+      type = "scatter",
+      mode = "lines",
+      line = list(color = brand_colour, width = line_width, dash = "dot"),
+      showlegend = show_legend,
+      hoverinfo = "none"
     ) |>
-    # add layout options for titles
+    # Add the lower control limit
+    plotly::add_trace(
+      name = "Lower Control Limit (99.8%)",
+      data = lim_data,
+      x = ~number.seq,
+      y = ~ll998,
+      type = "scatter",
+      mode = "lines",
+      line = list(color = brand_colour, width = line_width, dash = "dash"),
+      showlegend = show_legend,
+      hoverinfo = "none"
+    )
+
+  # Add legend entry for Upper NHS Colour if enabled
+  if (nhs_colours_enable & show_legend) {
+    fpl_plotly <- fpl_plotly |>
+      plotly::add_trace(
+        name = ifelse(
+          betteris == "Higher",
+          "Unfavourable Funnel Outlier",
+          "Favourable Funnel Outlier"
+        ),
+        x = 0,
+        y = centre_line,
+        type = "scatter",
+        mode = "markers",
+        marker = list(
+          color = ifelse(
+            betteris == "Higher",
+            nhs_colours_options$colours$deterioration,
+            nhs_colours_options$colours$improvement
+          ),
+          size = marker_size
+        ),
+        showlegend = show_legend,
+        visible = "legendonly"
+      )
+  }
+
+  # add layout options for titles
+  fpl_plotly <- fpl_plotly |>
     plotly::layout(
       font = list(family = "Arial", color = "black"),
       title = list(
@@ -479,10 +547,26 @@ fpl_plotly_create <- function(
         hoverformat = y_format_d3,
         tickformat = y_format_d3
       ),
-      showlegend = FALSE,
       hovermode = "closest",
       margin = list(b = 0, t = 80)
     )
+
+  # Add legend if enabled
+  if (show_legend) {
+    fpl_plotly <- fpl_plotly |>
+      plotly::layout(
+        showlegend = TRUE,
+        legend = list(
+          x = 1, y = 0.5,
+          xanchor = "left",
+          yanchor = "middle",
+          orientation = "v",
+          traceorder = "normal",
+          itemclick = FALSE,
+          itemdoubleclick = FALSE
+        )
+      )
+  }
 
   # Add source text if exists
   if (source_text != "" && !is.na(source_text)) {
@@ -581,6 +665,7 @@ fpl_plotly_create <- function(
             width = line_width
           )
         ),
+        showlegend = FALSE,
         hoverinfo = "none"
       ) |>
       # Add tag around points, over the top of outliers, that is text relaying
