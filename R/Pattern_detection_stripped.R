@@ -322,13 +322,40 @@ runFPat <- function(numerator, denominator, establishment,
   # Dealing with undefined global functions or variables
   .data <- NULL
 
-  ind_funnel <- FunnelPlotR::funnel_plot(denominator = denominator,
-                             numerator = numerator,
-                             group = establishment,
-                             limit = 99,
-                             data_type = funnelcharttype,
-                             sr_method = "CQC",
-                             multiplier = multiplier)$plot$data |>
+  FunnelPlotR_version <-
+    asNamespace("FunnelPlotR")$`.__NAMESPACE__.`$spec[["version"]]
+  # For FunnelPlotR versions below 0.5.0
+  if (FunnelPlotR_version < "0.5.0") {
+    ind_funnel <- FunnelPlotR::funnel_plot(
+      denominator = denominator,
+      numerator = numerator,
+      group = establishment,
+      limit = 99,
+      data_type = funnelcharttype,
+      sr_method = "CQC",
+      multiplier = multiplier
+    )
+  }
+
+  # For FunnelPlotR version 0.5.0 and above
+  if (FunnelPlotR_version >= "0.5.0") {
+    ind_funnel <- FunnelPlotR::funnel_plot(
+      .data = data.frame(
+        denominator = denominator,
+        numerator = numerator,
+        group = establishment
+      ),
+      denominator = denominator,
+      numerator = numerator,
+      group = establishment,
+      limit = 99,
+      data_type = funnelcharttype,
+      sr_method = "CQC",
+      multiplier = multiplier
+    )
+  }
+
+  ind_funnel_data <- ind_funnel$plot$data |>
     dplyr::mutate(betteris = betteris, multiplier = multiplier,
            fpl_row_value = .data$rr * .data$multiplier,
            outlier = dplyr::if_else(betteris == "Lower" &
@@ -337,6 +364,6 @@ runFPat <- function(numerator, denominator, establishment,
                              .data$fpl_row_value < .data$LCL99,
                              "Yes", NA_character_)) |>
     dplyr::select(.data$group, .data$outlier)
-  return(ind_funnel)
+  return(ind_funnel_data)
 
 }

@@ -42,18 +42,47 @@ appendFplVal <- function(numerator, denominator, establishment,
   }
 
   # Create Funnel
-  ind_funnel <-
-    FunnelPlotR::funnel_plot(denominator = denominator,
-                             numerator = numerator,
-                             group = establishment,
-                             limit = 99,
-                             data_type = funnelcharttype[1],
-                             sr_method = "CQC",
-                             multiplier = multiplier[1],
-                             draw_adjusted = TRUE,
-                             label = NA,
-                             highlight  = NA) |>
-    suppressWarnings()
+  FunnelPlotR_version <-
+    asNamespace("FunnelPlotR")$`.__NAMESPACE__.`$spec[["version"]]
+  # For FunnelPlotR versions below 0.5.0
+  if (FunnelPlotR_version < "0.5.0") {
+    ind_funnel <- FunnelPlotR::funnel_plot(
+      denominator = denominator,
+      numerator = numerator,
+      group = establishment,
+      limit = 99,
+      data_type = funnelcharttype[1],
+      sr_method = "CQC",
+      multiplier = multiplier[1],
+      draw_adjusted = TRUE,
+      label = NA,
+      highlight  = NA
+    ) |>
+      suppressWarnings()
+  }
+
+  # For FunnelPlotR version 0.5.0 and above
+  if (FunnelPlotR_version >= "0.5.0") {
+    ind_funnel <- FunnelPlotR::funnel_plot(
+      .data = data.frame(
+        denominator = denominator,
+        numerator = numerator,
+        group = establishment
+      ),
+      denominator = denominator,
+      numerator = numerator,
+      group = group,
+      limit = 99,
+      data_type = funnelcharttype[1],
+      sr_method = "CQC",
+      multiplier = multiplier[1],
+      draw_adjusted = TRUE,
+      label = NA,
+      highlight  = NA
+    ) |>
+      suppressWarnings()
+  }
+
   #extract data from funnel object as data table
   funnel_data <- ind_funnel$plot$data |>
     data.table::as.data.table()
