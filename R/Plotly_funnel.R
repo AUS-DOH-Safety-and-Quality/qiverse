@@ -60,12 +60,15 @@
 #' (default = 50)
 #' @param target Set a target value for the SPC chart. If NA, no target will be
 #' displayed. (default = NA)
+#' @param target_annotation A string to annotate the target line with a text on the plot.
+#' A value of NA indicates no annotation. (default = NA)
 #' @param target_options A list of parameters to set the target line:
 #' * legend_name: A string to set the legend name for the target line
 #' * line_colour: A hex code to set the colour of the target line
 #' * line_width: A numeric value to set the width of the target line
 #' * line_dash: A string to set the dash of the target line. Options are
 #' "solid", "dot", "dash", "longdash", "dashdot", "longdashdot"
+#'
 #' (default = list(legend_name = "Target", line_colour = "#FF0000",
 #' line_width = 2, line_dash = "solid"))
 #' @param nhs_colours_enable A boolean to enable NHS colours for the SPC chart.
@@ -167,6 +170,7 @@ fpl_plotly_create <- function(
     y_format = "Percentage",
     pattern_text_ay = 50,
     target = NA,
+    target_annotation = NA,
     target_options = list(
       legend_name = "Target",
       line_colour = "#FF0000",
@@ -408,7 +412,7 @@ fpl_plotly_create <- function(
 
   # Add function to add target line to plotly object
   fpl_plotly_target <- function(p) {
-    p |>
+    output <- p |>
       plotly::add_trace(
         name = target_options$legend_name,
         data = lim_data,
@@ -424,6 +428,29 @@ fpl_plotly_create <- function(
         showlegend = show_legend,
         hoverinfo = "none"
       )
+
+    if (!is.na(target_annotation)) {
+      output <- output |>
+        plotly::layout(
+          annotations =
+            list(
+              list(
+                x = 1, xref = "paper", xanchor = "right",
+                y = target, yref = "y",
+                yanchor = ifelse(
+                  target > centre_line,
+                  "bottom",
+                  "top"
+                ),
+                text = target_annotation,
+                showarrow = FALSE,
+                font = list(color = target_options$line_colour)
+              )
+            )
+        )
+    }
+
+    output
   }
 
   # create funnel plotly

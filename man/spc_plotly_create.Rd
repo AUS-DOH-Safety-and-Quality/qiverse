@@ -29,6 +29,7 @@ spc_plotly_create(
   trend_size = 5,
   shift_size = 7,
   target = NA,
+  target_annotation = NA,
   target_options = list(legend_name = "Target", line_colour = "#FF0000", line_width = 2,
     line_dash = "solid"),
   nhs_colours_enable = TRUE,
@@ -115,6 +116,9 @@ detected (default = 7)}
 \item{target}{Set a target value for the SPC chart. If NA, no target will be
 displayed. (default = NA)}
 
+\item{target_annotation}{A string to annotate the target line with a text on the plot.
+A value of NA indicates no annotation. (default = NA)}
+
 \item{target_options}{A list of parameters to set the target line:
 \itemize{
 \item legend_name: A string to set the legend name for the target line
@@ -122,9 +126,10 @@ displayed. (default = NA)}
 \item line_width: A numeric value to set the width of the target line
 \item line_dash: A string to set the dash of the target line. Options are
 "solid", "dot", "dash", "longdash", "dashdot", "longdashdot"
+}
+
 (default = list(legend_name = "Target", line_colour = "#FF0000",
-line_width = 2, line_dash = "solid"))
-}}
+line_width = 2, line_dash = "solid"))}
 
 \item{nhs_colours_enable}{A boolean to enable NHS colours for the SPC chart.
 (default = TRUE)}

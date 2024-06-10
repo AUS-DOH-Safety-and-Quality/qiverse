@@ -49,12 +49,15 @@
 #' detected (default = 7)
 #' @param target Set a target value for the SPC chart. If NA, no target will be
 #' displayed. (default = NA)
+#' @param target_annotation A string to annotate the target line with a text on the plot.
+#' A value of NA indicates no annotation. (default = NA)
 #' @param target_options A list of parameters to set the target line:
 #' * legend_name: A string to set the legend name for the target line
 #' * line_colour: A hex code to set the colour of the target line
 #' * line_width: A numeric value to set the width of the target line
 #' * line_dash: A string to set the dash of the target line. Options are
 #' "solid", "dot", "dash", "longdash", "dashdot", "longdashdot"
+#'
 #' (default = list(legend_name = "Target", line_colour = "#FF0000",
 #' line_width = 2, line_dash = "solid"))
 #' @param nhs_colours_enable A boolean to enable NHS colours for the SPC chart.
@@ -122,55 +125,56 @@
 #' )
 #' }
 spc_plotly_create <- function(
-  x,
-  numerator,
-  denominator = NULL,
-  data_type = "p",
-  multiplier = 1,
-  betteris = "Lower",
-  title = "",
-  spc_period_start = NA,
-  spc_period_end = NA,
-  x_axis_label = NA,
-  y_axis_label = NA,
-  brand_colour = "#00667B",
-  actual_colour = "black",
-  annotation_marker_colour = "grey",
-  line_width = 2,
-  marker_size = 10,
-  y_dp = 1,
-  y_format = "Percentage",
-  x_format = "%b %Y",
-  patterns = "Yes",
-  pattern_text_ay = 50,
-  trend_size = 5,
-  shift_size = 7,
-  target = NA,
-  target_options = list(
-    legend_name = "Target",
-    line_colour = "#FF0000",
+    x,
+    numerator,
+    denominator = NULL,
+    data_type = "p",
+    multiplier = 1,
+    betteris = "Lower",
+    title = "",
+    spc_period_start = NA,
+    spc_period_end = NA,
+    x_axis_label = NA,
+    y_axis_label = NA,
+    brand_colour = "#00667B",
+    actual_colour = "black",
+    annotation_marker_colour = "grey",
     line_width = 2,
-    line_dash = "solid"
-  ),
-  nhs_colours_enable = TRUE,
-  nhs_colours_options = list(
-    improvement_direction = betteris,
-    direction_to_flag = "Both",
-    colours = list(
-      neutral = "#490092",
-      improvement = "#00B0F0",
-      deterioration = "#E46C0A",
-      common_cause = "#A6A6A6"
-    )
-  ),
-  nhs_icons_enable = FALSE,
-  nhs_icons_options = list(
-    flag_last_point_only = FALSE,
-    sizex = 0.075,
-    sizey = 0.15
-  ),
-  show_legend = FALSE,
-  source_text = "Healthcare Quality Intelligence Unit"
+    marker_size = 10,
+    y_dp = 1,
+    y_format = "Percentage",
+    x_format = "%b %Y",
+    patterns = "Yes",
+    pattern_text_ay = 50,
+    trend_size = 5,
+    shift_size = 7,
+    target = NA,
+    target_annotation = NA,
+    target_options = list(
+      legend_name = "Target",
+      line_colour = "#FF0000",
+      line_width = 2,
+      line_dash = "solid"
+    ),
+    nhs_colours_enable = TRUE,
+    nhs_colours_options = list(
+      improvement_direction = betteris,
+      direction_to_flag = "Both",
+      colours = list(
+        neutral = "#490092",
+        improvement = "#00B0F0",
+        deterioration = "#E46C0A",
+        common_cause = "#A6A6A6"
+      )
+    ),
+    nhs_icons_enable = FALSE,
+    nhs_icons_options = list(
+      flag_last_point_only = FALSE,
+      sizex = 0.075,
+      sizey = 0.15
+    ),
+    show_legend = FALSE,
+    source_text = "Healthcare Quality Intelligence Unit"
 ) {
 
   # Helper function to remove NA's
@@ -434,7 +438,7 @@ spc_plotly_create <- function(
 
   # Add function to add target line to plotly object
   spc_plotly_target <- function(p) {
-    p |>
+    output <- p |>
       plotly::add_trace(
         name = target_options$legend_name,
         x = ~x,
@@ -449,6 +453,29 @@ spc_plotly_create <- function(
         showlegend = show_legend,
         hoverinfo = "none"
       )
+
+    if (!is.na(target_annotation)) {
+      output <- output |>
+        plotly::layout(
+          annotations =
+            list(
+              list(
+                x = max(hqiu_spc_df$x), xref = "x", xanchor = "right",
+                y = target, yref = "y",
+                yanchor = ifelse(
+                  target > hqiu_spc_df$cl[1],
+                  "bottom",
+                  "top"
+                ),
+                text = target_annotation,
+                showarrow = FALSE,
+                font = list(color = target_options$line_colour)
+              )
+            )
+        )
+    }
+
+    output
   }
 
   # Initialise the plotly object
@@ -525,7 +552,7 @@ spc_plotly_create <- function(
       type = "scatter",
       mode = "markers+lines",
       marker = ~list(color = actual_marker_fill, size = marker_size,
-                    line = list(width = 2, color = actual_marker_border)),
+                     line = list(width = 2, color = actual_marker_border)),
       line = list(color = ifelse(nhs_colours_enable,
                                  nhs_colours_options$colours$common_cause,
                                  actual_colour), width = line_width),
