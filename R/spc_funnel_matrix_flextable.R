@@ -100,12 +100,13 @@ spc_funnel_matrix_flextable <- function(
     spc_flag == "Unfavourable SPC Patterns" & fpl_flag == "Unfavourable Funnel Plot Outlier", 9
   )]
 
-  paste0("\u123")
-
   # Collapse long patterns to each unique_id
+  spc_patterns_long[, spc_pattern_utf8 :=
+                      sapply(spc_patterns_long$spc_pattern,
+                             function(x) intToUtf8(x))]
   spc_patterns_long_collapsed <-
     spc_patterns_long[,
-                      .(patterns = paste0(intToUtf8(spc_pattern), collapse = ",")),
+                      .(patterns = paste0(spc_pattern_utf8, collapse = ",")),
                       by = unique_id]
   spc_patterns_long_collapsed[, patterns := paste0("(", patterns, ")")]
 
