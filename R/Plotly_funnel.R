@@ -174,7 +174,7 @@ fpl_plotly_create <- function(
     target_options = list(
       legend_name = "Target",
       line_colour = "#FF0000",
-      line_width = 2,
+      line_width = 1.5,
       line_dash = "solid"
     ),
     nhs_colours_enable = TRUE,
