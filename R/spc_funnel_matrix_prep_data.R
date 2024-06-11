@@ -36,8 +36,6 @@
 #' Default establishment variable
 #' @param funneldatapoints A vector of "Yes" or NA, marks which data points
 #' are included in the funnel plot calculation. Default "Yes"
-#' @param upload_snowflake A string of "Yes" or "No" noting if the result
-#' of pattern detection is to be uploaded to snowflake. Default "No"
 #'
 #' @return A data.table with the required fields for the SPC Funnel Matrix.
 #'

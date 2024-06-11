@@ -70,9 +70,6 @@ Default establishment variable}
 
 \item{funneldatapoints}{A vector of "Yes" or NA, marks which data points
 are included in the funnel plot calculation. Default "Yes"}
-
-\item{upload_snowflake}{A string of "Yes" or "No" noting if the result
-of pattern detection is to be uploaded to snowflake. Default "No"}
 }
 \value{
 A data.table with the required fields for the SPC Funnel Matrix.
