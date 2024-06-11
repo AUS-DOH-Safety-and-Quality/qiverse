@@ -823,6 +823,7 @@ fpl_plotly_create <- function(
               width = line_width
             )
           ),
+          showlegend = FALSE,
           hoverinfo = "none"
         ) |>
         # Add tag around points with hospitalshortname, over the top of
