@@ -21,10 +21,12 @@
 #' the indicator. "Higher" for points below the lower control limit to be
 #' unfavourable, "Lower" for points above the upper control limit to be
 #' unfavourable, and "Neutral" if the direction is not stated.
+#' Default is "Higher"
 #' @param parent_group_name A vector of parent group names which are to be
 #' displayed in the tooltip. These are the major categories for the groups, i.e.
-#' HSP names.
-#' @param indicatorgroup A vector used for indicator grouping i.e. QSG Theme
+#' HSP names. Default is "All"
+#' @param indicatorgroup A vector used for indicator grouping i.e. QSG Theme.
+#' Default is "All"
 #' @param spccharttype A string identifying the type of spc chart. Default "p"
 #' @param funnelcharttype A string identifying the type of funnel plot.
 #' Default "PR"
@@ -52,16 +54,15 @@
 #'     period_start,
 #'     numerator,
 #'     denominator,
-#'     multiplier,
-#'     betteris,
-#'     parent_group_name,
-#'     indicatorgroup,
+#'     multiplier = 1,
+#'     betteris = "Higher",
+#'     parent_group_name = "All",
+#'     indicatorgroup = "All",
 #'     spccharttype = "p",
 #'     funnelcharttype = "PR",
 #'     descriptionshort = indicator,
 #'     shorthospitalname = establishment,
-#'     funneldatapoints = "Yes",
-#'     upload_snowflake = "No"
+#'     funneldatapoints = "Yes"
 #'   )
 #' }
 spc_funnel_matrix_prep_data <- function(
@@ -71,16 +72,15 @@ spc_funnel_matrix_prep_data <- function(
   period_start,
   numerator,
   denominator,
-  multiplier,
-  betteris,
-  parent_group_name,
-  indicatorgroup,
+  multiplier = 1,
+  betteris = "Higher",
+  parent_group_name = "All",
+  indicatorgroup = "All",
   spccharttype = "p",
   funnelcharttype = "PR",
   descriptionshort = indicator,
   shorthospitalname = establishment,
-  funneldatapoints = "Yes",
-  upload_snowflake = "No"
+  funneldatapoints = "Yes"
 ) {
 
   # Dealing with undefined global functions or variables

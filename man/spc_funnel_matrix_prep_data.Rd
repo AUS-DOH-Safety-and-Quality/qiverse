@@ -11,16 +11,15 @@ spc_funnel_matrix_prep_data(
   period_start,
   numerator,
   denominator,
-  multiplier,
-  betteris,
-  parent_group_name,
-  indicatorgroup,
+  multiplier = 1,
+  betteris = "Higher",
+  parent_group_name = "All",
+  indicatorgroup = "All",
   spccharttype = "p",
   funnelcharttype = "PR",
   descriptionshort = indicator,
   shorthospitalname = establishment,
-  funneldatapoints = "Yes",
-  upload_snowflake = "No"
+  funneldatapoints = "Yes"
 )
 }
 \arguments{
@@ -48,13 +47,15 @@ the value for SPC and Funnel plots}
 \item{betteris}{A string identifying the direction that is favourable for
 the indicator. "Higher" for points below the lower control limit to be
 unfavourable, "Lower" for points above the upper control limit to be
-unfavourable, and "Neutral" if the direction is not stated.}
+unfavourable, and "Neutral" if the direction is not stated.
+Default is "Higher"}
 
 \item{parent_group_name}{A vector of parent group names which are to be
 displayed in the tooltip. These are the major categories for the groups, i.e.
-HSP names.}
+HSP names. Default is "All"}
 
-\item{indicatorgroup}{A vector used for indicator grouping i.e. QSG Theme}
+\item{indicatorgroup}{A vector used for indicator grouping i.e. QSG Theme.
+Default is "All"}
 
 \item{spccharttype}{A string identifying the type of spc chart. Default "p"}
 
@@ -91,16 +92,15 @@ patterns, and export into the SPC Funnel Matrix format.
     period_start,
     numerator,
     denominator,
-    multiplier,
-    betteris,
-    parent_group_name,
-    indicatorgroup,
+    multiplier = 1,
+    betteris = "Higher",
+    parent_group_name = "All",
+    indicatorgroup = "All",
     spccharttype = "p",
     funnelcharttype = "PR",
     descriptionshort = indicator,
     shorthospitalname = establishment,
-    funneldatapoints = "Yes",
-    upload_snowflake = "No"
+    funneldatapoints = "Yes"
   )
 }
 }
