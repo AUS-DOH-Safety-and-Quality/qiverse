@@ -8,9 +8,11 @@
 #' @param control_colour The colour of the 95% and 99% control limits for the plot
 #' (default = "#00667B")
 #' @param worse_colour The colour of the bar in the unfavourable direction
-#' (default = "black")
+#' (default = "#E46C0A")
+#' @param neutral_colour The colour of the bar in the favourable direction
+#' (default = "#A6A6A6")
 #' @param better_colour The colour of the bar in the favourable direction
-#' (default = "grey")
+#' (default = "#00B0F0")
 #' @param y_dp The number of decimal places displayed on the chart (default = 2)
 #'
 #' @return A data.table with the required fields for the MISC plotly chart.
