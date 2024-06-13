@@ -65,11 +65,13 @@ The dummy values should be replaced with the actual values. each of these variab
 
 **PowerBI Dataflows**
 
--   `az_app_id_pbi_dataflow`
+-   `az_app_id_pbi_dataflow` - Set this to the First-Party App ID for Microsoft Azure PowerShell <https://learn.microsoft.com/en-us/troubleshoot/azure/entra/entra-id/governance/verify-first-party-apps-sign-in>
+
+    -   1950a258-227b-4e31-a9cf-717495945fc2
 
 **PowerBI Datasets**
 
--   `az_app_id_pbi_dataset` and `az_cli_secret_pbi_dataset`
+-   `az_app_id_pbi_dataset` and `az_cli_secret_pbi_dataset` - Create a new App Registration in the Azure Portal and set the permissions to read/write to PowerBI datasets (Semantic Models) <https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app>
 
 **Sharepoint**
 
