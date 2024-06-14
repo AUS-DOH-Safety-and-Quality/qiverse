@@ -44,20 +44,45 @@ misc_prep_data <- function(funnel_data, indicator_data) {
 
     # Do not generate funnel data for indicator with only one group
     if (data_ind[, .N] > 1) {
-      # Generate funnel plot data
-      funnel <- FunnelPlotR::funnel_plot(
-        denominator = data_ind$denominator,
-        numerator = data_ind$numerator,
-        group = data_ind$group,
-        limit = 99,
-        data_type = data_ind[1, data_type],
-        sr_method = "CQC",
-        multiplier = data_ind[1, multiplier],
-        draw_unadjusted = TRUE,
-        draw_adjusted = TRUE,
-        label = NA,
-        highlight  = NA
-      )
+
+      # Create Funnel plot
+      FunnelPlotR_version <-
+        asNamespace("FunnelPlotR")$`.__NAMESPACE__.`$spec[["version"]]
+
+      # For FunnelPlotR versions below 0.5.0
+      if (FunnelPlotR_version < "0.5.0") {
+        funnel <- FunnelPlotR::funnel_plot(
+          denominator = data_ind$denominator,
+          numerator = data_ind$numerator,
+          group = data_ind$group,
+          limit = 99,
+          data_type = data_ind[1, data_type],
+          sr_method = "CQC",
+          multiplier = data_ind[1, multiplier],
+          draw_unadjusted = TRUE,
+          draw_adjusted = TRUE,
+          label = NA,
+          highlight  = NA
+        )
+      }
+
+      # For FunnelPlotR version 0.5.0 and above
+      if (FunnelPlotR_version >= "0.5.0") {
+        funnel <- FunnelPlotR::funnel_plot(
+          .data = data_ind,
+          denominator = denominator,
+          numerator = numerator,
+          group = group,
+          limit = 99,
+          data_type = data_ind[1, data_type],
+          sr_method = "CQC",
+          multiplier = data_ind[1, multiplier],
+          draw_unadjusted = TRUE,
+          draw_adjusted = TRUE,
+          label = NA,
+          highlight  = NA
+        )
+      }
 
       # Extract out values , Uzscore, control limits
       funnel_data <- funnel$aggregated_data[, c("group", "Uzscore",
