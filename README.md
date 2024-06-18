@@ -34,14 +34,14 @@ from the AUS-DOH-Safety-and-Quality organisation.
 You can now install the development version of `qiverse` like so:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse", build_vignettes = TRUE)
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse")
 ```
 
 Branches of the development version of `qiverse` can also be installed
 through the “ref” option:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse", build_vignettes = TRUE, ref = "branch-a")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse", ref = "branch-a")
 ```
 
 ### Setting up your .Renviron
@@ -63,6 +63,9 @@ your unique information.
 Save the .Renviron file, and restart your R session. Your environment
 variables are now set.
 
+For external users, please read through the vignette on how to set up
+your environment variables.
+
 ## Package Vignettes
 
 The rendered package vignettes can be viewed after installation in R
@@ -71,3 +74,19 @@ using the following command:
 ``` r
 browseVignettes("qiverse")
 ```
+
+## Included Packages
+
+The following packages are included in `qiverse`:
+
+| qiverse Package     | Description                                          |
+|---------------------|------------------------------------------------------|
+| qiverse.azure       | Creating Azure Access Tokens                         |
+| qiverse.hqiuhelpers | Helper Functions used across HQIU products           |
+| qiverse.powerbi     | Accessing data from PowerBI                          |
+| qiverse.qimatrix    | Creating QI Matrices including the SPC Funnel Matrix |
+| qiverse.qimisc      | Creating the Multiple Indicator Sigma Chart          |
+| qiverse.qipatterns  | Identify SPC Patterns and Funnel Outliers            |
+| qiverse.qiplotly    | QI charts using the plotly package                   |
+| qiverse.sharepoint  | Accessing Microsoft Sharepoint                       |
+| qiverse.snowflake   | Accessing Snowflake                                  |
