@@ -494,8 +494,8 @@ fpl_plotly_create <- function(
       plotly::add_trace(
         name = ifelse(
           betteris == "Lower",
-          "Unfavourable Funnel Outlier",
-          "Favourable Funnel Outlier"
+          "Unfavourable",
+          "Favourable"
         ),
         x = 0,
         y = centre_line,
@@ -518,7 +518,7 @@ fpl_plotly_create <- function(
   fpl_plotly <- fpl_plotly |>
     # Add the upper control limit
     plotly::add_trace(
-      name = "Upper Control Limit (99.8%)",
+      name = "Upper Control Limit 99.8%",
       data = lim_data,
       x = ~number.seq,
       y = ~ul998,
@@ -530,7 +530,7 @@ fpl_plotly_create <- function(
     ) |>
     # Add the upper warning limit
     plotly::add_trace(
-      name = "Upper Warning Limit (95%)",
+      name = "Upper Warning Limit 95%",
       data = lim_data,
       x = ~number.seq,
       y = ~ul95,
@@ -587,7 +587,7 @@ fpl_plotly_create <- function(
   fpl_plotly <- fpl_plotly |>
     # Add the lower warning limit
     plotly::add_trace(
-      name = "Lower Warning Limit (95%)",
+      name = "Lower Warning Limit 95%",
       data = lim_data,
       x = ~number.seq,
       y = ~ll95,
@@ -599,7 +599,7 @@ fpl_plotly_create <- function(
     ) |>
     # Add the lower control limit
     plotly::add_trace(
-      name = "Lower Control Limit (99.8%)",
+      name = "Lower Control Limit 99.8%",
       data = lim_data,
       x = ~number.seq,
       y = ~ll998,
@@ -616,8 +616,8 @@ fpl_plotly_create <- function(
       plotly::add_trace(
         name = ifelse(
           betteris == "Higher",
-          "Unfavourable Funnel Outlier",
-          "Favourable Funnel Outlier"
+          "Unfavourable",
+          "Favourable"
         ),
         x = 0,
         y = centre_line,

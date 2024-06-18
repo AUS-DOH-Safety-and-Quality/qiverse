@@ -489,8 +489,8 @@ spc_plotly_create <- function(
       plotly::add_trace(
         name = ifelse(
           betteris == "Lower",
-          "Deterioration SPC Pattern",
-          "Improvement SPC Pattern"
+          "Deterioration",
+          "Improvement"
         ),
         x = ~x,
         y = ~cl,
@@ -515,7 +515,7 @@ spc_plotly_create <- function(
     spc_plotly <- spc_plotly |>
       # Add the upper control limit
       plotly::add_trace(
-        name = "Upper Control Limit (99.8%)",
+        name = "Upper Control Limit 99.8%",
         x = ~x,
         y = ~ucl,
         type = "scatter",
@@ -526,7 +526,7 @@ spc_plotly_create <- function(
       ) |>
       # Add the upper warning limit
       plotly::add_trace(
-        name = "Upper Warning Limit (95%)",
+        name = "Upper Warning Limit 95%",
         x = ~x,
         y = ~ucl.95,
         type = "scatter",
@@ -636,7 +636,7 @@ spc_plotly_create <- function(
     spc_plotly <- spc_plotly |>
       # Add the lower control limit
       plotly::add_trace(
-        name = "Lower Warning Limit (95%)",
+        name = "Lower Warning Limit 95%",
         x = ~x,
         y = ~lcl.95,
         type = "scatter",
@@ -647,7 +647,7 @@ spc_plotly_create <- function(
       ) |>
       # Add the lower warning limit
       plotly::add_trace(
-        name = "Lower Control Limit (99.8%)",
+        name = "Lower Control Limit 99.8%",
         x = ~x,
         y = ~lcl,
         type = "scatter",
@@ -664,8 +664,8 @@ spc_plotly_create <- function(
       plotly::add_trace(
         name = ifelse(
           betteris == "Higher",
-          "Deterioration SPC Pattern",
-          "Improvement SPC Pattern"
+          "Deterioration",
+          "Improvement"
         ),
         x = ~x,
         y = ~cl,
