@@ -79,6 +79,8 @@
 #' improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))
 #' @param show_legend A boolean to enable legend for the Funnel Plot
 #' (default = FALSE)
+#' @param legend_font_size A numeric value to set the font size of the legend
+#' (default = 12)
 #' @param source_text Set source text of the chart. If empty ("") or NA, no
 #' source will be displayed (default = "Healthcare Quality Intelligence Unit")
 #'
@@ -136,6 +138,7 @@
 #'   highlight_outlier = TRUE,
 #'   nhs_colours_enable = TRUE,
 #'   show_legend = FALSE,
+#'   legend_font_size = 12,
 #'   y_format = "Percentage",
 #'   source_text = 'Healthcare Quality Intelligence Unit'
 #' )
@@ -189,6 +192,7 @@ fpl_plotly_create <- function(
       )
     ),
     show_legend = FALSE,
+    legend_font_size = 12,
     source_text = "Healthcare Quality Intelligence Unit"
 ) {
   # Dealing with undefined global functions or variables
@@ -670,7 +674,8 @@ fpl_plotly_create <- function(
           orientation = "v",
           traceorder = "normal",
           itemclick = FALSE,
-          itemdoubleclick = FALSE
+          itemdoubleclick = FALSE,
+          font = list(size = legend_font_size)
         )
       )
   }

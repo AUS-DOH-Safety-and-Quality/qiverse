@@ -35,13 +35,14 @@ fpl_plotly_create(
   pattern_text_ay = 50,
   target = NA,
   target_annotation = NA,
-  target_options = list(legend_name = "Target", line_colour = "#FF0000", line_width = 2,
-    line_dash = "solid"),
+  target_options = list(legend_name = "Target", line_colour = "#FF0000", line_width =
+    1.5, line_dash = "solid"),
   nhs_colours_enable = TRUE,
   nhs_colours_options = list(improvement_direction = betteris, direction_to_flag =
     "Both", colours = list(neutral = "#490092", improvement = "#00B0F0", deterioration =
     "#E46C0A", common_cause = "#A6A6A6")),
   show_legend = FALSE,
+  legend_font_size = 12,
   source_text = "Healthcare Quality Intelligence Unit"
 )
 }
@@ -161,6 +162,9 @@ improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))}
 \item{show_legend}{A boolean to enable legend for the Funnel Plot
 (default = FALSE)}
 
+\item{legend_font_size}{A numeric value to set the font size of the legend
+(default = 12)}
+
 \item{source_text}{Set source text of the chart. If empty ("") or NA, no
 source will be displayed (default = "Healthcare Quality Intelligence Unit")}
 }
@@ -224,6 +228,7 @@ fpl_plotly_create(
   highlight_outlier = TRUE,
   nhs_colours_enable = TRUE,
   show_legend = FALSE,
+  legend_font_size = 12,
   y_format = "Percentage",
   source_text = 'Healthcare Quality Intelligence Unit'
 )

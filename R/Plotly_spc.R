@@ -78,6 +78,8 @@
 #' (default = list(flag_last_point_only = FALSE, sizex = 0.075, sizey = 0.15))
 #' @param show_legend A boolean to enable legend for the SPC Chart
 #' (default = FALSE)
+#' @param legend_font_size A numeric value to set the font size of the legend
+#' (default = 12)
 #' @param source_text Set source text of the chart. If empty ("") or NA, no
 #' source will be displayed (default = "Healthcare Quality Intelligence Unit")
 #'
@@ -121,6 +123,7 @@
 #'   shift_size = 7,
 #'   nhs_colours_enable = TRUE,
 #'   show_legend = FALSE,
+#'   legend_font_size = 12,
 #'   source_text = 'Healthcare Quality Intelligence Unit'
 #' )
 #' }
@@ -174,6 +177,7 @@ spc_plotly_create <- function(
       sizey = 0.15
     ),
     show_legend = FALSE,
+    legend_font_size = 12,
     source_text = "Healthcare Quality Intelligence Unit"
 ) {
 
@@ -720,7 +724,8 @@ spc_plotly_create <- function(
           orientation = "v",
           traceorder = "normal",
           itemclick = FALSE,
-          itemdoubleclick = FALSE
+          itemdoubleclick = FALSE,
+          font = list(size = legend_font_size)
         )
       )
   }

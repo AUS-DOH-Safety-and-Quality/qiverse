@@ -39,6 +39,7 @@ spc_plotly_create(
   nhs_icons_enable = FALSE,
   nhs_icons_options = list(flag_last_point_only = FALSE, sizex = 0.075, sizey = 0.15),
   show_legend = FALSE,
+  legend_font_size = 12,
   source_text = "Healthcare Quality Intelligence Unit"
 )
 }
@@ -156,6 +157,9 @@ the plot's height. (default = 0.15)
 \item{show_legend}{A boolean to enable legend for the SPC Chart
 (default = FALSE)}
 
+\item{legend_font_size}{A numeric value to set the font size of the legend
+(default = 12)}
+
 \item{source_text}{Set source text of the chart. If empty ("") or NA, no
 source will be displayed (default = "Healthcare Quality Intelligence Unit")}
 }
@@ -203,6 +207,7 @@ spc_plotly_create(
   shift_size = 7,
   nhs_colours_enable = TRUE,
   show_legend = FALSE,
+  legend_font_size = 12,
   source_text = 'Healthcare Quality Intelligence Unit'
 )
 }
