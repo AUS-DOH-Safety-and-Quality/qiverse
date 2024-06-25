@@ -127,8 +127,8 @@ spc_funnel_matrix_prep_data <- function(
     shorthospitalname, funneldatapoints)
 
   ## Remove standing downs
-  unfav <- unfav[`QSG Recommendation` != "Standing down"]
-  fav <- fav[`QSG Recommendation` != "Standing down"]
+  #unfav <- unfav[`QSG Recommendation` != "Standing down"]
+  #fav <- fav[`QSG Recommendation` != "Standing down"]
 
   # Rename columns
   unfav <- unfav[, .(indicator, hospital, indicatorgroup,
@@ -244,10 +244,10 @@ spc_funnel_matrix_prep_data <- function(
     # Convert favourable SPC patterns to long
     patterns[spc_flag != "Neutral" & spc_fav_flag == "Y",
              .(indicator, hospital,
-               astro = ifelse(astro_fav_flag == "Y", 8786, NA),
-               trend = ifelse(trend_fav_flag == "Y", 9443, NA),
-               twointhree = ifelse(twointhree_fav_flag == "Y", 8532, NA),
-               shift = ifelse(shift_fav_flag == "Y", 9442, NA)
+               astro = ifelse(astro_fav_flag == "Y", "8786", NA_character_),
+               trend = ifelse(trend_fav_flag == "Y", "9443", NA_character_),
+               twointhree = ifelse(twointhree_fav_flag == "Y", "8532", NA_character_),
+               shift = ifelse(shift_fav_flag == "Y", "9442", NA_character_)
              )] |>
       melt(
         id.vars = c("indicator", "hospital"),
@@ -258,10 +258,10 @@ spc_funnel_matrix_prep_data <- function(
     # Convert unfavourable SPC patterns to long
     patterns[spc_flag != "Neutral" & spc_unfav_flag == "Y",
              .(indicator, hospital,
-               astro = ifelse(astro_unfav_flag == "Y", 8786, NA),
-               trend = ifelse(trend_unfav_flag == "Y", 9443, NA),
-               twointhree = ifelse(twointhree_unfav_flag == "Y", 8532, NA),
-               shift = ifelse(shift_unfav_flag == "Y", 9442, NA)
+               astro = ifelse(astro_unfav_flag == "Y", "8786", NA_character_),
+               trend = ifelse(trend_unfav_flag == "Y", "9443", NA_character_),
+               twointhree = ifelse(twointhree_unfav_flag == "Y", "8532", NA_character_),
+               shift = ifelse(shift_unfav_flag == "Y", "9442", NA_character_)
              )] |>
       melt(
         id.vars = c("indicator", "hospital"),
