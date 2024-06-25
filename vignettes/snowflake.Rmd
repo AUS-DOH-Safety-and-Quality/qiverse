@@ -82,6 +82,38 @@ DBI::dbGetQuery(con, DBI::SQL("SELECT 1"))
 
 A returned result indicates that the connection has been established.
 
+### R example
+
+``` r
+library(tidyverse)
+
+library(qiverse.azure) # https://github.com/AUS-DOH-Safety-and-Quality/qiverse.azure
+library(qiverse.snowflake) # https://github.com/AUS-DOH-Safety-and-Quality/qiverse.snowflake
+
+snowflake_query <- function(query_string) {
+  # Create Snowflake azure token
+  tk <- qiverse.azure::get_az_tk('sf')
+  # Establish connection to Snowflake
+  con <- snowflake_con(
+    server_name = 'hsswa.australia-east', 
+    token = tk
+  )
+  # Set the Snowflake warehouse here
+  DBI::dbGetQuery(con, DBI::SQL("USE WAREHOUSE DOH_WH"))
+  # Run the query
+  table <- DBI::dbGetQuery(con, DBI::SQL(query_string))
+  # Return the results of the query
+  return(table)
+}
+
+my_query <- "
+  SELECT *
+  FROM HQIU_SANDPIT.ICD.CARDIOVASCULAR
+" 
+
+snowflake_query(my_query)
+```
+
 ## Ingesting an R table held in-memory into Snowflake
 
 This package also includes a function to assist with ingesting in-memory R data into your Snowflake data warehouse. The `ingest_to_snowflake` function converts your data into a parquet format, initialises an empty table into Snowflake, uploads the parquet format into a staging area and then overwrites the table in Snowflake with the data.
