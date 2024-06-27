@@ -6,27 +6,27 @@
 \usage{
 spc_funnel_matrix_prep_data(
   indicator,
-  establishment,
+  group,
   period_end,
   period_start,
   numerator,
   denominator,
   multiplier = 1,
-  betteris = "Higher",
+  better_is = "Higher",
   parent_group_name = "All",
-  indicatorgroup = "All",
-  spccharttype = "p",
-  funnelcharttype = "PR",
-  descriptionshort = indicator,
-  shorthospitalname = establishment,
-  funneldatapoints = "Yes"
+  indicator_group = "All",
+  spc_chart_type = "p",
+  funnel_chart_type = "PR",
+  indicator_name = indicator,
+  group_name = group,
+  funnel_data_points = "Yes"
 )
 }
 \arguments{
 \item{indicator}{A vector to denote the indicator group.
 Used to calculate aggregate SPC and Funnel Plots}
 
-\item{establishment}{A vector of group names.
+\item{group}{A vector of group names.
 Used to aggregate and group points on plots}
 
 \item{period_end}{A date (or character of format "yyyy-mm-dd")
@@ -44,7 +44,7 @@ the value for SPC and Funnel plots}
 \item{multiplier}{Scale relative risk and funnel by this factor. Default to
 1, but 100 sometime used, e.g. in some hospital mortality ratios.}
 
-\item{betteris}{A string identifying the direction that is favourable for
+\item{better_is}{A string identifying the direction that is favourable for
 the indicator. "Higher" for points below the lower control limit to be
 unfavourable, "Lower" for points above the upper control limit to be
 unfavourable, and "Neutral" if the direction is not stated.
@@ -54,21 +54,21 @@ Default is "Higher"}
 displayed in the tooltip. These are the major categories for the groups, i.e.
 HSP names. Default is "All"}
 
-\item{indicatorgroup}{A vector used for indicator grouping i.e. QSG Theme.
+\item{indicator_group}{A vector used for indicator grouping i.e. QSG Theme.
 Default is "All"}
 
-\item{spccharttype}{A string identifying the type of spc chart. Default "p"}
+\item{spc_chart_type}{A string identifying the type of spc chart. Default "p"}
 
-\item{funnelcharttype}{A string identifying the type of funnel plot.
+\item{funnel_chart_type}{A string identifying the type of funnel plot.
 Default "PR"}
 
-\item{descriptionshort}{A vector of descriptive names for indicator.
+\item{indicator_name}{A vector of descriptive names for indicator.
 Default indicator variable}
 
-\item{shorthospitalname}{A vector of descriptive names for establishments
-Default establishment variable}
+\item{group_name}{A vector of descriptive names for groups
+Default group variable}
 
-\item{funneldatapoints}{A vector of "Yes" or NA, marks which data points
+\item{funnel_data_points}{A vector of "Yes" or NA, marks which data points
 are included in the funnel plot calculation. Default "Yes"}
 }
 \value{
@@ -83,21 +83,21 @@ patterns, and export into the SPC Funnel Matrix format.
 \dontrun{
   library(qiverse.qimatrix)
   spc_funnel_matrix_data <- spc_funnel_matrix_prep_data(
-    indicator,
-    establishment,
-    period_end,
-    period_start,
-    numerator,
-    denominator,
-    multiplier = 1,
-    betteris = "Higher",
+    indicator = example_spc_data$indicator,
+    group = example_spc_data$group,
+    period_end = example_spc_data$period_end,
+    period_start = example_spc_data$period_start,
+    numerator = example_spc_data$numerator,
+    denominator = example_spc_data$denominator,
+    multiplier = example_spc_data$multiplier,
+    better_is = example_spc_data$better_is,
     parent_group_name = "All",
-    indicatorgroup = "All",
-    spccharttype = "p",
-    funnelcharttype = "PR",
-    descriptionshort = indicator,
-    shorthospitalname = establishment,
-    funneldatapoints = "Yes"
+    indicator_group = "All",
+    spc_chart_type = example_spc_data$spc_chart_type,
+    funnel_chart_type = example_spc_data$funnel_chart_type,
+    indicator_name = indicator,
+    group_name = group,
+    funnel_data_points = "Yes"
   )
 }
 }

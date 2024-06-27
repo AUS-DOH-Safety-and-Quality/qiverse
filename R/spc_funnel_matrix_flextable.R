@@ -4,7 +4,7 @@
 #'
 #' @param data A data.table output from the spc_funnel_matrix_prep_data
 #' function
-#' @param filter_indicatorgroup A vector of indicatorgroup to filter the data by. Data
+#' @param filter_indicator_group A vector of indicator_group to filter the data by. Data
 #' will not be filtered by default (NA)
 #' @param filter_indicator A vector of indicator to filter the data by. Data
 #' will not be filtered by default (NA)
@@ -22,28 +22,28 @@
 #' \dontrun{
 #'   library(qiverse.qimatrix)
 #'   spc_funnel_matrix_data <- spc_funnel_matrix_prep_data(
-#'     indicator,
-#'     establishment,
-#'     period_end,
-#'     period_start,
-#'     numerator,
-#'     denominator,
-#'     multiplier,
-#'     betteris,
-#'     parent_group_name,
-#'     indicatorgroup,
-#'     spccharttype = "p",
-#'     funnelcharttype = "PR",
-#'     descriptionshort = indicator,
-#'     shorthospitalname = establishment,
-#'     funneldatapoints = "Yes"
+#'     indicator = example_spc_data$indicator,
+#'     group = example_spc_data$group,
+#'     period_end = example_spc_data$period_end,
+#'     period_start = example_spc_data$period_start,
+#'     numerator = example_spc_data$numerator,
+#'     denominator = example_spc_data$denominator,
+#'     multiplier = example_spc_data$multiplier,
+#'     better_is = example_spc_data$better_is,
+#'     parent_group_name = "All",
+#'     indicator_group = "All",
+#'     spc_chart_type = example_spc_data$spc_chart_type,
+#'     funnel_chart_type = example_spc_data$funnel_chart_type,
+#'     indicator_name = indicator,
+#'     group_name = group,
+#'     funnel_data_points = "Yes"
 #'   )
 #'   spc_funnel_matrix_flextable(data = spc_funnel_matrix_data)
 #' }
 
 spc_funnel_matrix_flextable <- function(
     data,
-    filter_indicatorgroup = NULL,
+    filter_indicator_group = NULL,
     filter_indicator = NULL,
     filter_parent_group = NULL,
     filter_hospital = NULL
@@ -59,9 +59,9 @@ spc_funnel_matrix_flextable <- function(
   spc_patterns_long <- data$spc_patterns_long
 
   # Apply optional pre-filtering
-  ## Filter by indicatorgroup
-  if (length(filter_indicatorgroup) > 0) {
-    spc_funnel_matrix <- spc_funnel_matrix[indicatorgroup %in% filter_indicatorgroup]
+  ## Filter by indicator_group
+  if (length(filter_indicator_group) > 0) {
+    spc_funnel_matrix <- spc_funnel_matrix[indicator_group %in% filter_indicator_group]
     spc_patterns_long <-
       spc_patterns_long[indicator %in% spc_funnel_matrix[, unique(indicator)]]
   }

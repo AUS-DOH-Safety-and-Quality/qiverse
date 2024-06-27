@@ -5,7 +5,7 @@
 #'
 #' @param indicator A vector to denote the indicator group.
 #' Used to calculate aggregate SPC and Funnel Plots
-#' @param establishment A vector of group names.
+#' @param group A vector of group names.
 #' Used to aggregate and group points on plots
 #' @param period_end A date (or character of format "yyyy-mm-dd")
 #' for the end date of the period.
@@ -17,7 +17,7 @@
 #' the value for SPC and Funnel plots
 #' @param multiplier Scale relative risk and funnel by this factor. Default to
 #' 1, but 100 sometime used, e.g. in some hospital mortality ratios.
-#' @param betteris A string identifying the direction that is favourable for
+#' @param better_is A string identifying the direction that is favourable for
 #' the indicator. "Higher" for points below the lower control limit to be
 #' unfavourable, "Lower" for points above the upper control limit to be
 #' unfavourable, and "Neutral" if the direction is not stated.
@@ -25,16 +25,16 @@
 #' @param parent_group_name A vector of parent group names which are to be
 #' displayed in the tooltip. These are the major categories for the groups, i.e.
 #' HSP names. Default is "All"
-#' @param indicatorgroup A vector used for indicator grouping i.e. QSG Theme.
+#' @param indicator_group A vector used for indicator grouping i.e. QSG Theme.
 #' Default is "All"
-#' @param spccharttype A string identifying the type of spc chart. Default "p"
-#' @param funnelcharttype A string identifying the type of funnel plot.
+#' @param spc_chart_type A string identifying the type of spc chart. Default "p"
+#' @param funnel_chart_type A string identifying the type of funnel plot.
 #' Default "PR"
-#' @param descriptionshort A vector of descriptive names for indicator.
+#' @param indicator_name A vector of descriptive names for indicator.
 #' Default indicator variable
-#' @param shorthospitalname A vector of descriptive names for establishments
-#' Default establishment variable
-#' @param funneldatapoints A vector of "Yes" or NA, marks which data points
+#' @param group_name A vector of descriptive names for groups
+#' Default group variable
+#' @param funnel_data_points A vector of "Yes" or NA, marks which data points
 #' are included in the funnel plot calculation. Default "Yes"
 #'
 #' @return A data.table with the required fields for the SPC Funnel Matrix.
@@ -46,39 +46,39 @@
 #' \dontrun{
 #'   library(qiverse.qimatrix)
 #'   spc_funnel_matrix_data <- spc_funnel_matrix_prep_data(
-#'     indicator,
-#'     establishment,
-#'     period_end,
-#'     period_start,
-#'     numerator,
-#'     denominator,
-#'     multiplier = 1,
-#'     betteris = "Higher",
+#'     indicator = example_spc_data$indicator,
+#'     group = example_spc_data$group,
+#'     period_end = example_spc_data$period_end,
+#'     period_start = example_spc_data$period_start,
+#'     numerator = example_spc_data$numerator,
+#'     denominator = example_spc_data$denominator,
+#'     multiplier = example_spc_data$multiplier,
+#'     better_is = example_spc_data$better_is,
 #'     parent_group_name = "All",
-#'     indicatorgroup = "All",
-#'     spccharttype = "p",
-#'     funnelcharttype = "PR",
-#'     descriptionshort = indicator,
-#'     shorthospitalname = establishment,
-#'     funneldatapoints = "Yes"
+#'     indicator_group = "All",
+#'     spc_chart_type = example_spc_data$spc_chart_type,
+#'     funnel_chart_type = example_spc_data$funnel_chart_type,
+#'     indicator_name = indicator,
+#'     group_name = group,
+#'     funnel_data_points = "Yes"
 #'   )
 #' }
 spc_funnel_matrix_prep_data <- function(
   indicator,
-  establishment,
+  group,
   period_end,
   period_start,
   numerator,
   denominator,
   multiplier = 1,
-  betteris = "Higher",
+  better_is = "Higher",
   parent_group_name = "All",
-  indicatorgroup = "All",
-  spccharttype = "p",
-  funnelcharttype = "PR",
-  descriptionshort = indicator,
-  shorthospitalname = establishment,
-  funneldatapoints = "Yes"
+  indicator_group = "All",
+  spc_chart_type = "p",
+  funnel_chart_type = "PR",
+  indicator_name = indicator,
+  group_name = group,
+  funnel_data_points = "Yes"
 ) {
 
   # Dealing with undefined global functions or variables
@@ -101,66 +101,66 @@ spc_funnel_matrix_prep_data <- function(
 
   #create data table
   input_data <- data.table::data.table(
-    indicator, establishment, period_end,
+    indicator, group, period_end,
     period_start, numerator,
-    denominator, multiplier, parent_group_name, spccharttype,
-    funnelcharttype, indicatorgroup, betteris,
-    descriptionshort, shorthospitalname,
-    funneldatapoints
+    denominator, multiplier, parent_group_name, spc_chart_type,
+    funnel_chart_type, indicator_group, better_is,
+    indicator_name, group_name,
+    funnel_data_points
   )
 
-  # Invert betteris to detect favourable patterns
-  worseis <- fifelse(betteris == "Higher", "Lower", "Higher")
+  # Invert better_is to detect favourable patterns
+  worseis <- fifelse(better_is == "Higher", "Lower", "Higher")
 
   # Apply pattern detection script for unfavourable and favourable
   unfav <- qiverse.qipatterns::pattern_detection(
-    indicator, establishment,
+    indicator, group,
     period_end, numerator, denominator, multiplier,
-    betteris, spccharttype, funnelcharttype,
-    indicatorgroup, descriptionshort,
-    shorthospitalname, funneldatapoints)
+    better_is, spc_chart_type, funnel_chart_type,
+    indicator_group, indicator_name,
+    group_name, funnel_data_points)
   fav <- qiverse.qipatterns::pattern_detection(
-    indicator, establishment,
+    indicator, group,
     period_end, numerator, denominator, multiplier,
-    worseis, spccharttype, funnelcharttype,
-    indicatorgroup, descriptionshort,
-    shorthospitalname, funneldatapoints)
+    worseis, spc_chart_type, funnel_chart_type,
+    indicator_group, indicator_name,
+    group_name, funnel_data_points)
 
   ## Remove standing downs
   #unfav <- unfav[`QSG Recommendation` != "Standing down"]
   #fav <- fav[`QSG Recommendation` != "Standing down"]
 
   # Rename columns
-  unfav <- unfav[, .(indicator, hospital, indicatorgroup,
+  unfav <- unfav[, .(indicator, hospital, indicator_group,
                      fpl_astro_unfav = fpl_astro,
                      astro_unfav = astro, shift_unfav = shift,
                      trend_unfav = trend, twointhree_unfav = twointhree)]
-  fav <- fav[, .(indicator, hospital, indicatorgroup,
+  fav <- fav[, .(indicator, hospital, indicator_group,
                  fpl_astro_fav = fpl_astro,
                  astro_fav = astro, shift_fav = shift,
                  trend_fav = trend, twointhree_fav = twointhree)]
 
   # Export into a single patterns file ####
   patterns <- rbind(
-    unfav[, .(indicator, hospital, indicatorgroup)],
-    fav[, .(indicator, hospital, indicatorgroup)]
+    unfav[, .(indicator, hospital, indicator_group)],
+    fav[, .(indicator, hospital, indicator_group)]
   ) |>
     unique() |>
-    merge(unfav, by = c("indicator", "hospital", "indicatorgroup"),
+    merge(unfav, by = c("indicator", "hospital", "indicator_group"),
                       all.x = TRUE) |>
-    merge(fav, by = c("indicator", "hospital", "indicatorgroup"),
+    merge(fav, by = c("indicator", "hospital", "indicator_group"),
                       all.x = TRUE)
 
   ## get last 12 months for each indicator
   pattern_end_date <- input_data[
-    funneldatapoints == "Yes",
+    funnel_data_points == "Yes",
     .(pattern_period_start = min(as.Date(period_start, format = "%d/%m/%Y")),
       pattern_period_end = max(as.Date(period_end, format = "%d/%m/%Y"))),
-    keyby = .(descriptionshort)]
+    keyby = .(indicator_name)]
 
   # Merge funnel dates into data
   patterns <- merge(patterns, pattern_end_date,
-                                by.x = "indicator", by.y = "descriptionshort",
+                                by.x = "indicator", by.y = "indicator_name",
                                 all.x = TRUE)
 
   ## Add flags for astros
@@ -277,17 +277,17 @@ spc_funnel_matrix_prep_data <- function(
   output_patterns <- input_data |>
     merge(
       input_data[
-        funneldatapoints == "Yes",
+        funnel_data_points == "Yes",
         .(pattern_period_start = min(as.Date(period_start, format = "%d/%m/%Y")), #nolint
           pattern_period_end = max(as.Date(period_end, format = "%d/%m/%Y"))),
-        keyby = .(descriptionshort)],
-      by = "descriptionshort",
+        keyby = .(indicator_name)],
+      by = "indicator_name",
       all.x = TRUE,
       sort = FALSE) |>
     _[period_start >= pattern_period_start & period_end <= pattern_period_end] |> #nolint
-    _[, .(unique_id = paste0(descriptionshort, "_", shorthospitalname),
-          indicatorgroup = indicatorgroup, indicator = descriptionshort,
-          hospital = shorthospitalname, parent_group = parent_group_name)] |>
+    _[, .(unique_id = paste0(indicator_name, "_", group_name),
+          indicator_group = indicator_group, indicator = indicator_name,
+          hospital = group_name, parent_group = parent_group_name)] |>
     unique() |>
     ## Merge patterns back on it
     merge(
@@ -298,7 +298,7 @@ spc_funnel_matrix_prep_data <- function(
     ## Those without patterns are deemed neutral
     _[is.na(spc_flag), spc_flag := "Neutral"] |>
     _[is.na(fpl_flag), fpl_flag := "Neutral"]
-  data.table::setorder(output_patterns, indicatorgroup, indicator,
+  data.table::setorder(output_patterns, indicator_group, indicator,
                        parent_group, hospital)
 
   # Return Output

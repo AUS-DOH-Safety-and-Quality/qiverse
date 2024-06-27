@@ -6,7 +6,7 @@
 \usage{
 spc_funnel_matrix_flextable(
   data,
-  filter_indicatorgroup = NULL,
+  filter_indicator_group = NULL,
   filter_indicator = NULL,
   filter_parent_group = NULL,
   filter_hospital = NULL
@@ -16,7 +16,7 @@ spc_funnel_matrix_flextable(
 \item{data}{A data.table output from the spc_funnel_matrix_prep_data
 function}
 
-\item{filter_indicatorgroup}{A vector of indicatorgroup to filter the data by. Data
+\item{filter_indicator_group}{A vector of indicator_group to filter the data by. Data
 will not be filtered by default (NA)}
 
 \item{filter_indicator}{A vector of indicator to filter the data by. Data
@@ -39,21 +39,21 @@ Construct a Flextable from the SPC Funnel Matrix Data
 \dontrun{
   library(qiverse.qimatrix)
   spc_funnel_matrix_data <- spc_funnel_matrix_prep_data(
-    indicator,
-    establishment,
-    period_end,
-    period_start,
-    numerator,
-    denominator,
-    multiplier,
-    betteris,
-    parent_group_name,
-    indicatorgroup,
-    spccharttype = "p",
-    funnelcharttype = "PR",
-    descriptionshort = indicator,
-    shorthospitalname = establishment,
-    funneldatapoints = "Yes"
+    indicator = example_spc_data$indicator,
+    group = example_spc_data$group,
+    period_end = example_spc_data$period_end,
+    period_start = example_spc_data$period_start,
+    numerator = example_spc_data$numerator,
+    denominator = example_spc_data$denominator,
+    multiplier = example_spc_data$multiplier,
+    better_is = example_spc_data$better_is,
+    parent_group_name = "All",
+    indicator_group = "All",
+    spc_chart_type = example_spc_data$spc_chart_type,
+    funnel_chart_type = example_spc_data$funnel_chart_type,
+    indicator_name = indicator,
+    group_name = group,
+    funnel_data_points = "Yes"
   )
   spc_funnel_matrix_flextable(data = spc_funnel_matrix_data)
 }
