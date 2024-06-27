@@ -52,7 +52,7 @@ spc_funnel_matrix_flextable <- function(
   # Dealing with undefined global functions or variables
   . <- position <- spc_flag <- fpl_flag <- spc_pattern <- unique_id <-
     patterns <- indicator <- hospital <- num <- indicator_group <-
-    parent_group <- NULL
+    parent_group <- spc_pattern_utf8 <- NULL
 
   # Load the data
   spc_funnel_matrix <- data$spc_funnel_matrix
