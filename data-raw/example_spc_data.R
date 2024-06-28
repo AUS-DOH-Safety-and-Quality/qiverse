@@ -262,7 +262,7 @@ gen_spc_data <- function(
 
 example_spc_data <- lapply(1:example_funnel_data[,.N], function(i) {
   gen_spc_data(
-    seed = 2000 + i,
+    seed = 3000 + i,
     indicator = example_funnel_data[i, indicator],
     group = example_funnel_data[i, group],
     fpl_numerator = example_funnel_data[i, numerator],
