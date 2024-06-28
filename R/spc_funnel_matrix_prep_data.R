@@ -58,8 +58,6 @@
 #'     indicator_group = "All",
 #'     spc_chart_type = example_spc_data$spc_chart_type,
 #'     funnel_chart_type = example_spc_data$funnel_chart_type,
-#'     indicator_name = indicator,
-#'     group_name = group,
 #'     funnel_data_points = "Yes"
 #'   )
 #' }
