@@ -108,8 +108,12 @@ execute_rest_query <- function(workspace, dataset, query, access_token) {
     }
   }
 
-  query_content$results[[1]]$tables[[1]]$rows |>
-    purrr::map_dfr(~purrr::modify_if(.x, is.null, ~as.numeric(NA)))
+  output <- query_content$results[[1]]$tables[[1]]$rows |>
+    dplyr::bind_rows()
+
+  names(output) <- gsub("\\[|\\]", "", names(output))
+
+  return(output)
 }
 
 
