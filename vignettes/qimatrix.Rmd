@@ -22,5 +22,54 @@ This package provides functions to prepare data ready for the SPC Funnel Matrix,
 
 ## Prepare SPC Funnel Matrix
 
+The data that feeds into the SPC Funnel Matrix visual requires preparation using the `spc_funnel_matrix_prep_data` function. This takes the following inputs:
+
+-   `indicator` - A vector to denote the indicator group. Used to calculate aggregate SPC and Funnel Plots
+-   `group` - A vector of group names. Used to aggregate and group points on plots
+-   `period_end` - A date (or character of format "yyyy-mm-dd") for the end date of the period.
+-   `period_start` - A date (or character of format "yyyy-mm-dd") for the start date of the period.
+-   `numerator` - A vector of the numerator. Used to calculate the value for SPC and Funnel plots
+-   `denominator` - A vector of the denominator Used to calculate the value for SPC and Funnel plots
+-   `multiplier` - Scale relative risk and funnel by this factor.
+-   `better_is` - A string identifying the direction that is favourable for the indicator. "Higher" for points below the lower control limit to be unfavourable, "Lower" for points above the upper control limit to be unfavourable, and "Neutral" if the direction is not stated.
+-   `parent_group_name` - A vector of parent group names which are to be displayed in the tooltip. These are the major categories for the groups, i.e. HSP names.
+-   `indicator_group` - A vector used for indicator grouping i.e. QSG Theme.
+-   `spc_chart_type` - A string identifying the type of spc chart.
+-   `funnel_chart_type` - A string identifying the type of funnel plot.
+-   `indicator_name` - A vector of descriptive names for indicator.
+-   `group_name` - A vector of descriptive names for groups Default group variable
+-   `funnel_data_points` - A vector of "Yes" or NA, marks which data points are included in the funnel plot calculation.
+
+An example of this is shown below using the `example_spc_data` dataset:
+
+```{r}
+head(example_spc_data)
+```
+
+The dataset is then passed to the `spc_funnel_matrix_prep_data` function to prepare the data for the SPC Funnel Matrix:
+
+```{r spc-funnel-matrix-prep-data, include = TRUE}
+spc_funnel_matrix_data <- spc_funnel_matrix_prep_data(
+  indicator = example_spc_data$indicator,
+  group = example_spc_data$group,
+  period_end = example_spc_data$period_end,
+  period_start = example_spc_data$period_start,
+  numerator = example_spc_data$numerator,
+  denominator = example_spc_data$denominator,
+  multiplier = example_spc_data$multiplier,
+  better_is = example_spc_data$better_is,
+  parent_group_name = "All",
+  indicator_group = "All",
+  spc_chart_type = example_spc_data$spc_chart_type,
+  funnel_chart_type = example_spc_data$funnel_chart_type,
+  funnel_data_points = "Yes"
+)
+```
+
 ## Charting SPC Funnel Matrix in Flextable
 
+This package provides a function to plot the SPC Funnel Matrix output using flextable. An example of this is as follows:
+
+```{r spc-funnel-matrix-flextable, include = TRUE}
+spc_funnel_matrix_flextable(data = spc_funnel_matrix_data)
+```
