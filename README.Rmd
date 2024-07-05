@@ -69,11 +69,13 @@ once. Modify your .Renviron file by entering the following command in R:
 ``` r
 usethis::edit_r_environ()
 ```
-
-For internal users from HQIU, you can use [this sharepoint text
-file](https://wahealthdept.sharepoint.com/:t:/r/sites/SafetyandQualityIndicatorSetSQuIS/internal/SQuIS%20O365%20Confidential%20Documents/R/connectivity/example_renviron.txt)
-as a template. Please replace your he number and local github path with
-your unique information.
+---
+#KGS: recommend removing this, not the sort of link I would want to expose publicly 
+#For internal users from HQIU, you can use [this sharepoint text
+#file](https://wahealthdept.sharepoint.com/:t:/r/sites/SafetyandQualityIndicatorSetSQuIS/internal/SQuIS%20O365%20Confidential%20Documents/R/connectivity/example_renviron.txt)
+#as a template. Please replace your he number and local github path with
+#your unique information.
+---
 
 Save the .Renviron file, and restart your R session. Your environment
 variables are now set.
@@ -89,6 +91,14 @@ using the following command:
 ``` r
 browseVignettes("qiverse")
 ```
+---
+# running browseVignettes in an active session with qiverse generates:
+# No vignettes found by browseVignettes("qiverse")
+# No landing pages are available on the most recent version for any dependencies other than powerbi
+# i.e. ?qiverse.powerbi works, ?qiverse.azure does not
+# Vignettes available for: azure, powerbi
+# Vignettes not available for: qiplotly
+---
 
 ## Included Packages
 
@@ -105,3 +115,6 @@ The following packages are included in `qiverse`:
 | qiverse.qiplotly    | QI charts using the plotly package                   |
 | qiverse.sharepoint  | Accessing Microsoft Sharepoint                       |
 | qiverse.snowflake   | Accessing Snowflake                                  |
+---
+# qimatrix is mentioned here and is still not a dependency in the DESCRIPTION file
+---

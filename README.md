@@ -55,11 +55,6 @@ once. Modify your .Renviron file by entering the following command in R:
 usethis::edit_r_environ()
 ```
 
-For internal users from HQIU, you can use [this sharepoint text
-file](https://wahealthdept.sharepoint.com/:t:/r/sites/SafetyandQualityIndicatorSetSQuIS/internal/SQuIS%20O365%20Confidential%20Documents/R/connectivity/example_renviron.txt)
-as a template. Please replace your he number and local github path with
-your unique information.
-
 Save the .Renviron file, and restart your R session. Your environment
 variables are now set.
 
