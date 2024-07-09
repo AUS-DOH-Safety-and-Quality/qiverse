@@ -33,6 +33,8 @@ fpl_plotly_create(
   y_dp = 1,
   y_format = "Percentage",
   pattern_text_ay = 50,
+  pattern_arrow_width = 2,
+  pattern_font_size = 15,
   target = NA,
   target_annotation = NA,
   target_options = list(legend_name = "Target", line_colour = "#FF0000", line_width =
@@ -132,6 +134,12 @@ Default is "Percentage"}
 
 \item{pattern_text_ay}{Set the y offset for pattern detection text in pixels
 (default = 50)}
+
+\item{pattern_arrow_width}{Set the width of the pattern arrow in pixels
+(default = 2)}
+
+\item{pattern_font_size}{Numeric value for the font size of the annotation.
+Default is 15}
 
 \item{target}{Set a target value for the SPC chart. If NA, no target will be
 displayed. (default = NA)}

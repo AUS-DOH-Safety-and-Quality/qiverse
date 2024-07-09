@@ -43,6 +43,10 @@
 #' the data. The "No" option does not display any patterns. (default = "Yes")
 #' @param pattern_text_ay Set the y offset for pattern detection text in
 #' pixels (default = 50)
+#' @param pattern_arrow_width Set the width of the pattern arrow in pixels
+#' (default = 2)
+#' @param pattern_font_size Numeric value for the font size of the annotation.
+#' Default is 25
 #' @param trend_size Set the number of points required for a trend to be
 #' detected (default = 5)
 #' @param shift_size Set the number of points required for a shift to be
@@ -149,6 +153,8 @@ spc_plotly_create <- function(
     x_format = "%b %Y",
     patterns = "Yes",
     pattern_text_ay = 50,
+    pattern_arrow_width = 2,
+    pattern_font_size = 25,
     trend_size = 5,
     shift_size = 7,
     target = NA,
@@ -858,8 +864,9 @@ spc_plotly_create <- function(
           text = ~Pattern,
           x = ~annotation_value, xref = "x", x_anchor = "auto",
           y = ~y, yref = "y", y_anchor = "auto",
-          font = list(size = 25),
+          font = list(size = pattern_font_size),
           arrowcolor = "black",
+          arrowwidth = pattern_arrow_width,
           standoff = marker_size,
           ax = ~ax,
           ay = ~ifelse(y > hqiu_spc_df$cl[1], -pattern_text_ay, pattern_text_ay)
