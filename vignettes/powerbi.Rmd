@@ -25,7 +25,7 @@ This package defines methods to get Azure Access Tokens and pull in data from th
 
 A PowerBI dataflow is a type of data source that allows users to create, transform and manage data in a centralised location within a PowerBI workspace. Dataflows are part of the Power Query technology in the PowerBI online service.
 
-The `qiverse.powerbi` package stores a function that download PowerBI dataflow tables using the REST API, using the Azure Access Token to authenticate to the PowerBI online service. An example set of code for `download_dataflow_table` is below:
+The `qiverse.powerbi` package stores a function that downloads PowerBI dataflow tables using the REST API and a Azure Access Token to authenticate to the PowerBI online service. An example set of code for `download_dataflow_table` is below:
 
 ``` R
 # Create PowerBI Dataflow azure token
@@ -35,7 +35,7 @@ tk <- get_az_tk('pbi_df')
 # Load table from PowerBI dataflow
 library(qiverse.powerbi)
 data_calendar <- download_dataflow_table(
-  workspace_name = "DOH - Reference Data",
+  workspace_name = "DOH - Reference Data", #can these examples be made generic like in the Azure vignette? 
   dataflow_name = "calendar",
   table_name = "CalendarToToday",
   access_token = tk$credentials$access_token
@@ -68,7 +68,7 @@ tk <- get_az_tk('pbi_ds')
 # Load AD dummy file from PowerBI dataflow
 library(qiverse.powerbi)
 data_lbw <- download_dataset_table_rest(
-  workspace_name = "DOH - Reference Data",
+  workspace_name = "DOH - Reference Data", #these examples should be made generic as well
   dataset_name = "r_datasets",
   table_name = "COUNT_lbw",
   access_token = tk$credentials$access_token

@@ -22,7 +22,7 @@
 #'
 #' # Load AD dummy file from PowerBI dataflow
 #' ad_dummy <- download_dataflow_table(
-#'   workspace_name = "DOH - Reference Data",
+#'   workspace_name = "DOH - Reference Data", #would make these generic as well
 #'   dataflow_name = "calendar",
 #'   table_name = "CalendarToToday",
 #'   access_token = tk$credentials$access_token
