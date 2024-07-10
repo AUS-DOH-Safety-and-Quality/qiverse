@@ -28,6 +28,8 @@ misc_prep_data <- function(funnel_data, indicator_data) {
     Uzscore_betteris <- Uzscore <- data_type <- suffix <- UCL99 <- LCL99 <- #nolint
     `:=`  <- .N <- NULL #nolint
 
+  #  not sure if order of the functions matters, I suspect it doesn't, but the order of the functions is different betwen misc_plotly() and misc_prep_data()
+
   # Load Data
   input_funnel_data <- data.table::copy(funnel_data)
   input_indicator_data <- data.table::copy(indicator_data)

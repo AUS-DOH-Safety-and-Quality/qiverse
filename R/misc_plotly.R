@@ -62,6 +62,31 @@ misc_plotly <- function(data,
   ### Set blank for others
   data[is.na(suffix), suffix := ""]
 
+  #see my comment on the hovertext below
+  data[hovertext := ~paste0(
+  "<br><b>", indicator_theme, ": ", indicator, "</b>",
+  "<br><b>Z-score: </b>", formatC(uzscore_betteris, digits = 3,
+                                  format = "f", big.mark = ","),
+  "<br><b>Numerator: </b>", formatC(numerator, digits = y_dp,
+                                    format = "f", big.mark = ",",
+                                    drop0trailing = TRUE),
+  "<br><b>Denominator: </b>", formatC(denominator, digits = y_dp,
+                                      format = "f", big.mark = ",",
+                                      drop0trailing = TRUE),
+  "<br><b>Actual Value: </b>", formatC(value, digits = y_dp,
+                                       format = "f", big.mark = ",",
+                                       drop0trailing = TRUE), suffix,
+  "<br><b>Upper 99% Limit: </b>", formatC(ucl99, digits = y_dp,
+                                          format = "f", big.mark = ",",
+                                          drop0trailing = TRUE), suffix,
+  "<br><b>Centerline: </b>", formatC(cl, digits = y_dp, format = "f",
+                                     big.mark = ",",
+                                     drop0trailing = TRUE), suffix,
+  "<br><b>Lower 99% Limit: </b>", formatC(lcl99, digits = y_dp,
+                                          format = "f", big.mark = ",",
+                                          drop0trailing = TRUE), suffix
+  )]
+
   # Plotly Function ####
   # Helper Function to Create vertical line
   vline <- function(x = 0, color = "#00667B", dash = "dot") {
@@ -99,29 +124,32 @@ misc_plotly <- function(data,
       textposition = "none",
       hoverinfo = "text",
       ## Implement hovertext tooltip
-      text = ~paste0(
-        "<br><b>", indicator_theme, ": ", indicator, "</b>",
-        "<br><b>Z-score: </b>", formatC(uzscore_betteris, digits = 3,
-                                        format = "f", big.mark = ","),
-        "<br><b>Numerator: </b>", formatC(numerator, digits = y_dp,
-                                          format = "f", big.mark = ",",
-                                          drop0trailing = TRUE),
-        "<br><b>Denominator: </b>", formatC(denominator, digits = y_dp,
-                                            format = "f", big.mark = ",",
-                                            drop0trailing = TRUE),
-        "<br><b>Actual Value: </b>", formatC(value, digits = y_dp,
-                                             format = "f", big.mark = ",",
-                                             drop0trailing = TRUE), suffix,
-        "<br><b>Upper 99% Limit: </b>", formatC(ucl99, digits = y_dp,
-                                                format = "f", big.mark = ",",
-                                                drop0trailing = TRUE), suffix,
-        "<br><b>Centerline: </b>", formatC(cl, digits = y_dp, format = "f",
-                                           big.mark = ",",
-                                           drop0trailing = TRUE), suffix,
-        "<br><b>Lower 99% Limit: </b>", formatC(lcl99, digits = y_dp,
-                                                format = "f", big.mark = ",",
-                                                drop0trailing = TRUE), suffix
-      ),
+      #This is just a styling/readability thing (and given it is inside of the function it is not a huge deal)
+      #but is it possible to generate the tooltip text outside of the plot_ly() function, perhaps saved in an extra column
+      #and then to refer to that column here?
+       text = hovertext #~paste0(
+      #   "<br><b>", indicator_theme, ": ", indicator, "</b>",
+      #   "<br><b>Z-score: </b>", formatC(uzscore_betteris, digits = 3,
+      #                                   format = "f", big.mark = ","),
+      #   "<br><b>Numerator: </b>", formatC(numerator, digits = y_dp,
+      #                                     format = "f", big.mark = ",",
+      #                                     drop0trailing = TRUE),
+      #   "<br><b>Denominator: </b>", formatC(denominator, digits = y_dp,
+      #                                       format = "f", big.mark = ",",
+      #                                       drop0trailing = TRUE),
+      #   "<br><b>Actual Value: </b>", formatC(value, digits = y_dp,
+      #                                        format = "f", big.mark = ",",
+      #                                        drop0trailing = TRUE), suffix,
+      #   "<br><b>Upper 99% Limit: </b>", formatC(ucl99, digits = y_dp,
+      #                                           format = "f", big.mark = ",",
+      #                                           drop0trailing = TRUE), suffix,
+      #   "<br><b>Centerline: </b>", formatC(cl, digits = y_dp, format = "f",
+      #                                      big.mark = ",",
+      #                                      drop0trailing = TRUE), suffix,
+      #   "<br><b>Lower 99% Limit: </b>", formatC(lcl99, digits = y_dp,
+      #                                           format = "f", big.mark = ",",
+      #                                           drop0trailing = TRUE), suffix
+      # ),
       hoverlabel = list(bgcolor = hover_colour),
       showlegend = FALSE
     ) |>
