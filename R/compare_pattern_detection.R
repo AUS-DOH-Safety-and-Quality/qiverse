@@ -1,6 +1,13 @@
 # Parameters ####
 ## Set the parameters for the "old patterns" and "new patterns".
 
+# This could be a really useful function for external users but I recommend against publishing it
+# in its current form. Firstly, it is full of terminology and names that are specific to
+# HQIU internal use. Secondly, it also has a few direct references to HQIU/SQuIS sharepoint sites
+# Change names to be generic were possible, e.g. squis_data_old to previous_data and squis_data to current_data
+# Make the input parameters and options more generic as well, e.g. filepath_patterns_old can be any filepath
+# tk_sp to be an optional argument for documents that aren't hosted on Sharepoint
+# Consider whether the function should be able to ingest a wider range of files than Excel
 
 #' Compare Pattern Detection
 #'
@@ -12,6 +19,9 @@
 #' @export
 #'
 #' @examples -
+
+#not sure why filepath_patterns_old is defined as a parameter but then is added manually
+# below. siteurl could also be added to the parameter list
 compare_pattern_detection <- function(
     pattern_output,
     filepath_patterns_old = paste0("https://wahealthdept.sharepoint.com/:x:/r/",
@@ -33,16 +43,16 @@ compare_pattern_detection <- function(
   # Assign data object
   squis_data <- pattern_output
 
-  ## SQUIS Data Old
-  #download sharepoint file
-  squis_data_old <- qiverse.sharepoint::download_sharepoint_file(
-    site_url = "https://wahealthdept.sharepoint.com/sites/SafetyandQualityIndicatorSetSQuIS/internal/", #nolint
-    file_url = filepath_patterns_old,
-    token = tk_sp
-  ) |>
-    #read the excel output
-    readxl::read_xlsx(sheet = sheet_name) |>
-    data.table::as.data.table()
+  # ## SQUIS Data Old
+  # #download sharepoint file
+  # squis_data_old <- qiverse.sharepoint::download_sharepoint_file(
+  #   site_url = "https://wahealthdept.sharepoint.com/sites/SafetyandQualityIndicatorSetSQuIS/internal/", #nolint
+  #   file_url = filepath_patterns_old,
+  #   token = tk_sp
+  # ) |>
+  #   #read the excel output
+  #   readxl::read_xlsx(sheet = sheet_name) |>
+  #   data.table::as.data.table()
 
   # Format Data ####
 
