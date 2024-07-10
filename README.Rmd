@@ -25,29 +25,30 @@ The goal of qiverse.azure is to provide a useful all-in-one package for Azure ac
 
 ## Installation
 
-Before installing the development version of `qiverse.azure`, add a Github personal access token to R by:
+<!-- Before installing the development version of `qiverse.azure`, add a Github personal access token to R by: -->
 
-``` r
-#Go to github page to generate token
-usethis::create_github_token()
+<!-- ``` r -->
+<!-- #Go to github page to generate token -->
+<!-- usethis::create_github_token() -->
 
-#paste your PAT into pop-up that follows...
-credentials::set_github_pat()
-```
+<!-- #paste your PAT into pop-up that follows... -->
+<!-- credentials::set_github_pat() -->
+<!-- ``` -->
 
-These credentials will now allow you to download private repositories from the AUS-DOH-Safety-and-Quality organisation.
+<!-- These credentials will now allow you to download private repositories from the AUS-DOH-Safety-and-Quality organisation. -->
 
-You can now install the development version of `qiverse.azure` like so:
+<!-- You can now install the development version of `qiverse.azure` like so: -->
 
-``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.azure")
-```
+<!-- ``` r -->
+<!-- devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.azure") -->
+<!-- ``` -->
 
-Branches of the development version of `qiverse.azure` can also be installed through the "ref" option:
+<!-- Branches of the development version of `qiverse.azure` can also be installed through the "ref" option: -->
 
-``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.azure", ref = "branch-a")
-```
+<!-- ``` r -->
+<!-- devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.azure", ref = "branch-a") -->
+<!-- ``` --> 
+<!-- I just realised that this whole section throughout all packages is now superfluous. If the package is released into a public repo, there will be no need for PATs to get the development version. -->
 
 ### Setting up your .Renviron
 
