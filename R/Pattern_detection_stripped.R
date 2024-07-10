@@ -1,3 +1,5 @@
+#necessity of this function needs to be made clearer (doesn't appear to be used in the data pack generation or Pattern-Detection repo)
+
 #Pattern detection stripped
 
 #' @title Generate pattern detection output for
@@ -63,9 +65,15 @@ runPatterns <- function(input_df = NULL, numerator = NULL, denominator = NULL,
                        Trend = NA_character_,
                        TwoInThree = NA_character_) |>
       dplyr::mutate(Indicator = ifelse(is.null(indicator),
+                                #descriptionshort is a variable used in the naming but isn't a
+                                # parameter. That is likely to break for non-HQIU users
                                 input_df$descriptionshort[1],
                                 indicator),
+            # can the entity name be customised? Package is most useful for health but not all
+            #entities are hospitals
              Hospital = ifelse(is.null(establishment),
+            #  shorthospitalname is a variable used in the naming but isn't a
+            # parameter. That is likely to break for non-HQIU users
                                input_df$shorthospitalname[1],
                               establishment),
              .before = .data$Astro)
@@ -81,6 +89,8 @@ runPatterns <- function(input_df = NULL, numerator = NULL, denominator = NULL,
          multiplier = multiplier, betteris = betteris,
          trend_size = trend_size, shift_size = shift_size) |>
   dplyr::mutate(Indicator = ifelse(is.null(indicator),
+                                   #  description is a variable used in the naming but isn't a
+                                   # parameter. That is likely to break for non-HQIU users
                              input_df$descriptionshort[1],
                              indicator),
          Hospital = ifelse(is.null(establishment),
