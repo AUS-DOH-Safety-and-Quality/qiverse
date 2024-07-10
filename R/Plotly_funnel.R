@@ -5,7 +5,8 @@
 #' @param denominator A vector of denominator (predicted/population etc.) Used
 #' as denominator of the Y-axis and the scale of the x-axis
 #' @param group A vector of group names as character or factor. Used to
-#' aggregate and group points on plots
+#' aggregate and group points on plots. Generally used for a hospital or other
+#' healthcare provider establishment.
 #' @param data_type A string identifying the type of data used for in the plot,
 #' the adjustment used and the reference point. One of: "SR" for indirectly
 #' standardised ratios such as HSMR, "PR" for proportions, or "RC" for ratios
@@ -19,13 +20,13 @@
 #' "Higher".
 #' @param title A string for the title of the plot.
 #' @param group_name A vector of the group names that may differ from the
-#' initial group identifiers. I.e. group is establishment code, and group_name
-#' is the short hospital name.
+#' initial group identifiers. I.e. group is an alphanumeric code for an
+#' establishment and group_name is the actual name.
 #' @param short_group_name A vector of shortened group names to be displayed
-#' for highlighted hospitals and outlier points.
+#' for highlighted hospitals/establishments and outlier points.
 #' @param parent_group_name A vector of parent group names which are to be
 #' displayed in the tooltip. These are the major categories for the groups, i.e.
-#' HSP names.
+#' HSP/LHN names.
 #' @param parent_group_name_label A string for the tooltip label on the parent
 #' group name.
 #' @param funnel_period_start A date (or character of format #' "yyyy-mm-dd")
@@ -37,7 +38,7 @@
 #' @param x_axis_label A value denoting the x-axis label. Usually NA or a specified label.
 #' @param y_axis_label A value denoting the y-axis label. Usually NA, a specified label or "Rate",
 #' for items which are proportion based with multipliers.
-#' @param highlight_hosp Optional hospital name(s) to highlight individually
+#' @param highlight_hosp Optional hospital/establishment name(s) to highlight individually
 #' @param highlight_outlier Boolean, if FALSE do not highlight outliers
 #' @param highlight_outlier_options Options to apply if highlight_outlier is TRUE.
 #' Default is list(direction_to_flag = "Deterioration"), where direction_to_flag
@@ -744,10 +745,10 @@ fpl_plotly_create <- function(
     )
   }
 
-  # create a dataframe that holds the establishment and hospital names to serve
+  # create a dataframe that holds the establishment names to serve
   # as a lookup table
-  # We only have the establishment code in the plot output so we need this to
-  # find the hospital name
+  # We only have the group in the plot output so we need this to
+  # find the group_name
   outlier_label <- if (!is.null(short_group_name)) {
     short_group_name
   } else if (!is.null(group_name)) {
@@ -859,7 +860,7 @@ fpl_plotly_create <- function(
 
   y_limit_scaling <- ifelse(data_type == "PR" & multiplier == 1, 100, 1)
 
-  #cut off limits #Couldn't get case_when statement to work for this
+  #cut off limits
   #if a y minimum AND y maximum is supplied use both for y limits
   if (!is.na(y_limit_lower) && !is.na(y_limit_upper)) {
     return(
