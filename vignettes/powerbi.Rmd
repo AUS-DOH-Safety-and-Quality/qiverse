@@ -34,8 +34,8 @@ tk <- get_az_tk('pbi_df')
 
 # Load table from PowerBI dataflow
 library(qiverse.powerbi)
-data_calendar <- download_dataflow_table(
-  workspace_name = "DOH - Reference Data", #can these examples be made generic like in the Azure vignette? 
+data_test <- download_dataflow_table(
+  workspace_name = "My Workspace Name", 
   dataflow_name = "calendar",
   table_name = "CalendarToToday",
   access_token = tk$credentials$access_token
@@ -67,10 +67,10 @@ tk <- get_az_tk('pbi_ds')
 
 # Load AD dummy file from PowerBI dataflow
 library(qiverse.powerbi)
-data_lbw <- download_dataset_table_rest(
-  workspace_name = "DOH - Reference Data", #these examples should be made generic as well
-  dataset_name = "r_datasets",
-  table_name = "COUNT_lbw",
+data_test <- download_dataset_table_rest(
+  workspace_name = "My Workspace Name",
+  dataset_name = "My Dataset Name",
+  table_name = "My Table Name",
   access_token = tk$credentials$access_token
 )
 ```

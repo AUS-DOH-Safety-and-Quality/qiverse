@@ -39,9 +39,9 @@ tk <- get_az_tk('pbi_ds')
 
 # Load AD dummy file from PowerBI dataflow
 data_lbw <- download_dataset_table_rest(
-  workspace_name = "DOH - Reference Data",
-  dataset_name = "r_datasets",
-  table_name = "COUNT_lbw",
+  workspace_name = "My Workspace Name",
+  dataset_name = "My Dataset (Semantic Model) Name",
+  table_name = "My Table Name",
   access_token = tk$credentials$access_token)
 }
 }
