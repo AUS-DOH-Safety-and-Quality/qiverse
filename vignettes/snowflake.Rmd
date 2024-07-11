@@ -25,7 +25,9 @@ This vignette utilises the Snowflake ODBC connector via the `odbc` package, the 
 
 Setting up a connection to your Snowflake data warehouse may require a login using Azure Active Directory (now Entra ID). This can be accomplished using an Azure access token method.
 
-Creating the snowflake token uses the az_app_id_pbi_dataflow environment variable, so no special set up is required for this. However, in order to use the token to connect to Snowflake, you have to install the [Snowflake ODBC Driver](https://developers.snowflake.com/odbc/), with further instructions on how to install and configure this available in the [Snowflake documentation](https://docs.snowflake.com/developer-guide/odbc/odbc-windows).
+Creating the snowflake token uses the az_app_id_pbi_dataflow environment variable, so no special set up is required for this.
+<!-- Doesn't it require the .Renviron file to be correctly configured? -->
+However, in order to use the token to connect to Snowflake, you have to install the [Snowflake ODBC Driver](https://developers.snowflake.com/odbc/), with further instructions on how to install and configure this available in the [Snowflake documentation](https://docs.snowflake.com/developer-guide/odbc/odbc-windows).
 
 Some key settings for your Snowflake configuration dialog is as follows:
 
@@ -63,7 +65,7 @@ tk <- get_az_tk('sf')
 # Establish connection to Snowflake
 library(qiverse.snowflake)
 con <- snowflake_con(
-  server_name = 'hsswa.australia-east', 
+  server_name = 'exampleserver-australiaeast', 
   token = tk
 )
 ```
@@ -102,7 +104,7 @@ temp_data <- data.frame(Alpha = c('a', 'b', 'c'), Number = 1:3)
 ingest_to_snowflake(
   data = temp_data,
   con = con,
-  database_name = 'HQIU_SANDPIT',
+  database_name = 'EXAMPLE_DATABASE',
   schema_name = 'EXAMPLE',
   table_name = 'TEST'
 )

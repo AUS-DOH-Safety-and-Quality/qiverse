@@ -6,10 +6,9 @@
 #' * https://docs.snowflake.com/en/user-guide/odbc-download.html.
 #'
 #' Also ensure that your default role in Snowflake has been set correctly.
-#' If you have not, execute the following command in Snowflake
-#' (replacing your HE number):
+#' If you have not, execute the following command in Snowflake:
 #'
-#' ALTER USER "HExxxxxx@HEALTH.WA.GOV.AU" SET DEFAULT_ROLE = "HQIU_SANDPIT_ALL"
+#' ALTER USER "MY_USER_ID@EXAMPLE.COM" SET DEFAULT_ROLE = "MY_DEFAULT_ROLE"
 #'
 #' @param server_name This is the name of Snowflake server you are connecting
 #' to. This should include the name, and the server. For example, this value
@@ -24,7 +23,7 @@
 #'  \dontrun{
 #' # Create Snowflake azure token
 #' tk <- get_az_tk('sf')
-#' con <- snowflake_con(server_name = 'hsswa.australia-east', token = tk)
+#' con <- snowflake_con(server_name = 'my-example.server-australiaeast', token = tk)
 #'}
 snowflake_con <- function(
   server_name = Sys.getenv("snowflake_server"),
@@ -66,7 +65,7 @@ snowflake_con <- function(
 #' ingest_to_snowflake(
 #'   data = data.frame(Alpha = c('a', 'b', 'c'), Number = 1:3),
 #'   con = con,
-#'   database_name = 'HQIU_SANDPIT',
+#'   database_name = 'EXAMPLE_DATASET',
 #'   schema_name = 'EXAMPLE',
 #'   table_name = 'TEST'
 #' )
@@ -120,9 +119,7 @@ ingest_to_snowflake <- function(
   ## meaning it persists only for the duration of the user session and is not
   ## visible to other users.
 
-  ## The Table is set in the database "HQIU_SANDPIT", schema "SQUIS" and table
-  ## "SQUIS_CORE_WIDE". The database and schema have already been created in
-  # Snowflake.
+#replace with generic example
   DBI::dbGetQuery(con, DBI::SQL(paste0(
     "create or replace table ", database_name, ".", schema_name, ".",
     table_name, " ( ", paste0('"', names(input_data), '" ', sql_data_type,
