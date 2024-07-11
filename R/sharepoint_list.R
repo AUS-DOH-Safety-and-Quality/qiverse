@@ -14,16 +14,16 @@
 #'
 #' # Download a particular view for the SharePoint list
 #' list_data <- download_sharepoint_list(
-#'   paste0("https://wahealthdept.sharepoint.com/sites/",
-#'   "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators/",
-#'   "Currently%20Live.aspx"),
+#' paste0("https://myexample.sharepoint.com/sites/",
+#'        "Indicator%20Metadata/Lists/Indicators/",
+#'        "Latest.aspx"),
 #'   token = tk
 #' )
 #'
 #' # Download the default view for the SharePoint list
 #' list_data <- download_sharepoint_list(
-#'   paste0("https://wahealthdept.sharepoint.com/sites/",
-#'   "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators"),
+#' paste0("https://myexample.sharepoint.com/sites/",
+#'        "Indicator%20Metadata/Lists/Indicators/"),
 #'   token = tk
 #' )
 #'}

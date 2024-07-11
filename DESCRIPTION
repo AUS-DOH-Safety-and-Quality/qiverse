@@ -7,7 +7,7 @@ Authors@R:
     role = c("aut", "cre"),
     email = "safetyandquality@health.wa.gov.au",
     comment = c(ORCID = "0000-0001-7000-8065"))
-Description: Defines functions needed to connect to Sharepoint.
+Description: A series of functions that allow users to connect to Sharepoint within an R session via the Microsoft Graph API.
 License: MIT + file LICENSE
 Config/testthat/edition: 3
 Encoding: UTF-8

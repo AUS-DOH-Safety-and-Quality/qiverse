@@ -69,12 +69,8 @@ tk <- get_az_tk('sp')
 # Download file to working directory from SharePoint site
 library(qiverse.sharepoint)
 download_sharepoint_file(
-  site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-  "DOH-ReferenceData/"),
-  file_url = paste0("https://wahealthdept.sharepoint.com/:x:/r/sites/",
-  "DOH-ReferenceData/Shared%20Documents/",
-  "R_datasets/qicharts2/cabg.csv",
-  "?d=wa2a4067cf69241ce8f4a5d209878328b&csf=1&web=1&e=ybGCQF"),
+  site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
+  file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   token = tk,
   download = TRUE
 )
@@ -90,12 +86,8 @@ tk <- get_az_tk('sp')
 # Download file to C:/ drive from SharePoint
 library(qiverse.sharepoint)
 download_sharepoint_file(
-  site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-  "DOH-ReferenceData/"),
-  file_url = paste0("https://wahealthdept.sharepoint.com/:u:/r/sites/",
-  "DOH-ReferenceData/Shared%20Documents/",
-  "R_datasets/qicharts2/cabg.csv",
-  "?d=wa2a4067cf69241ce8f4a5d209878328b&csf=1&web=1&e=ybGCQF"),
+  site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
+  file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   token = tk,
   download = TRUE,
   download_dest = 'C:/cabg.csv'
@@ -112,12 +104,8 @@ tk <- get_az_tk('sp')
 # Example to download to tempfile, to load straight into R memory
 library(qiverse.sharepoint)
 data <- download_sharepoint_file(
-  site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-  "DOH-ReferenceData/"),
-  file_url = paste0("https://wahealthdept.sharepoint.com/:x:/r/sites/",
-  "DOH-ReferenceData/Shared%20Documents/",
-  "R_datasets/qicharts2/cabg.csv",
-  "?d=wa2a4067cf69241ce8f4a5d209878328b&csf=1&web=1&e=ybGCQF"),
+  site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
+  file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   token = tk,
   download = FALSE
 ) |>
@@ -142,7 +130,7 @@ With descriptions for the arguments as follows:
 
 -   `src` -The file path to the local file that is being uploaded to SharePoint
 
--   `site_url` - This is the url when first accessing the SharePointteam via your web browser (Home page)
+-   `site_url` - This is the url when first accessing the SharePoint team via your web browser (Home page)
 
 -   `file_url` - This is a direct link to the SharePoint folder where the file will be uploaded to. It can be obtained by navigating to the folder you want to upload to, right-clicking and selecting "Copy Link"
 
@@ -159,11 +147,8 @@ tk <- get_az_tk('sp')
 library(qiverse.sharepoint)
 upload_sharepoint_file(
   src = 'TestFiles/test.txt',
-  site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-  "MySharepointSite/"),
-  dest_fldr_url = paste0("https://wahealthdept.sharepoint.com/:f:/r/sites/",
-  "MySharepointSite/",
-  "Analytical%20Code?csf=1&web=1&e=U53w2m"),
+  site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
+  file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   token = tk
 )
 ```
@@ -195,16 +180,16 @@ tk <- get_az_tk('sp')
 # Download a particular view for the SharePoint list
 library(qiverse.sharepoint)
 list_data <- download_sharepoint_list(
-  paste0("https://wahealthdept.sharepoint.com/sites/",
-  "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators/",
-  "Currently%20Live.aspx"),
+  paste0("https://myexample.sharepoint.com/sites/",
+  "Indicator%20Metadata/Lists/Indicators/",
+  "Latest.aspx"),
   token = tk
 )
 
 # Download the default view for the SharePoint list
 list_data <- download_sharepoint_list(
-  paste0("https://wahealthdept.sharepoint.com/sites/",
-  "SafetyandQualityIndicatorSetSQuIS/Lists/Indicators"),
+  paste0("https://myexample.sharepoint.com/sites/",
+  "Indicator%20Metadata/Lists/Indicators"),
   token = tk
 )
 ```

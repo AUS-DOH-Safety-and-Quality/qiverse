@@ -26,23 +26,16 @@
 #'
 #' # Download file to working directory from SharePoint site
 #' download_sharepoint_file(
-#'   site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-#'   "DOH-ReferenceData/"),
-#'   file_url = paste0("https://wahealthdept.sharepoint.com/:x:/r/sites/",
-#'   "DOH-ReferenceData/Shared%20Documents/",
-#'   "R_datasets/qicharts2/cabg.csv",
-#'   "?d=wa2a4067cf69241ce8f4a5d209878328b&csf=1&web=1&e=ybGCQF"),
+#' site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
+#' file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
 #'   token = tk,
 #'   download = TRUE
 #' )
 #'
 #' # Download file to C:/ drive from SharePoint subsite
 #' download_sharepoint_file(
-#'   site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-#'   "DOH-ReferenceData/"),
-#'   file_url = paste0("https://wahealthdept.sharepoint.com/:u:/r/sites/",
-#'   "DOH-ReferenceData/Shared%20Documents/",
-#'   "R_datasets/qicharts2/cabg.csv",
+#' site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
+#' file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
 #'   "?d=wa2a4067cf69241ce8f4a5d209878328b&csf=1&web=1&e=ybGCQF"),
 #'   token = tk,
 #'   download = TRUE,
@@ -53,14 +46,12 @@
 #' data <- download_sharepoint_file(
 #'   site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
 #'   "DOH-ReferenceData/"),
-#'   file_url = paste0("https://wahealthdept.sharepoint.com/:x:/r/sites/",
-#'   "DOH-ReferenceData/Shared%20Documents/",
-#'   "R_datasets/qicharts2/cabg.csv",
-#'   "?d=wa2a4067cf69241ce8f4a5d209878328b&csf=1&web=1&e=ybGCQF"),
+#' site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
+#' file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
 #'   token = tk,
 #'   download = FALSE
 #' ) |>
-#'   # Pipe in the approprate function to read in the data
+#'   # Pipe in the appropriate function to read in the data
 #'   read.csv()
 #'}
 download_sharepoint_file <- function(
@@ -170,11 +161,8 @@ download_sharepoint_file <- function(
 #' # Example to upload local file to SharePoint folder
 #' upload_sharepoint_file(
 #'   src = 'TestFiles/test.txt',
-#'   site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-#'   "MySharepointSite/"),
-#'   dest_fldr_url = paste0("https://wahealthdept.sharepoint.com/:f:/r/sites/",
-#'   "MySharepointSite/",
-#'   "Analytical%20Code?csf=1&web=1&e=U53w2m"),
+#' site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
+#' file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
 #'   token = tk
 #' )
 #' }
