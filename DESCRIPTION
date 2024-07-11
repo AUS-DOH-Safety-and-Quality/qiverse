@@ -1,6 +1,6 @@
 Package: qiverse
 Title: Quality Improvement Package Universe
-Version: 0.0.0.9001
+Version: 0.0.1.0
 Authors@R: 
     person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
     family = "",
