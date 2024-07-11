@@ -17,21 +17,7 @@ useful quality improvement packages in HQIU.
 
 ## Installation
 
-Before installing the development version of `qiverse`, add a Github
-personal access token to R by:
-
-``` r
-#Go to github page to generate token
-usethis::create_github_token()
-
-#paste your PAT into pop-up that follows...
-credentials::set_github_pat()
-```
-
-These credentials will now allow you to download private repositories
-from the AUS-DOH-Safety-and-Quality organisation.
-
-You can now install the development version of `qiverse` like so:
+You can install the development version of `qiverse`:
 
 ``` r
 devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse")
@@ -42,32 +28,6 @@ through the “ref” option:
 
 ``` r
 devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse", ref = "branch-a")
-```
-
-### Setting up your .Renviron
-
-In order to enjoy the full functionality of the SharePoint, PowerBI and
-Snowflake connectivity features, you must have your environment
-variables set up correctly in R. This step only needs to be completed
-once. Modify your .Renviron file by entering the following command in R:
-
-``` r
-usethis::edit_r_environ()
-```
-
-Save the .Renviron file, and restart your R session. Your environment
-variables are now set.
-
-For external users, please read through the vignette on how to set up
-your environment variables.
-
-## Package Vignettes
-
-The rendered package vignettes can be viewed after installation in R
-using the following command:
-
-``` r
-browseVignettes("qiverse")
 ```
 
 ## Included Packages
