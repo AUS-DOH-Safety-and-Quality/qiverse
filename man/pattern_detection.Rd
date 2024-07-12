@@ -68,6 +68,6 @@ Pattern Detection
 \seealso{
 Other Pattern detection functions: 
 \code{\link{pattern_rules}()},
-\code{\link{validSPC}()}
+\code{\link{valid_spc}()}
 }
 \concept{Pattern detection functions}

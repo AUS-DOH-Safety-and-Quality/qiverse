@@ -37,7 +37,7 @@ pattern_detection <- function(indicator, establishment, period_end, numerator,
   # vignette)
   . <- fpl_astro <- unique_key <- spc_astro <- spc_shift <- spc_trend <-
     spc_twointhree <- fpl_astro <- astro <- shift <- trend <- twointhree <-
-      `:=` <- validSPC <- NULL
+      `:=` <- valid_spc <- NULL
 
   #create data table
   input_data <- data.table::data.table(indicator, establishment, period_end,
@@ -89,7 +89,7 @@ pattern_detection <- function(indicator, establishment, period_end, numerator,
   input_data <- rbind(input_data, aggregate)
 
   #Validate that each indicator hospital has enough data points to make an SPC
-  input_data_valid <- input_data[, qiverse.qipatterns::validSPC(numerator,
+  input_data_valid <- input_data[, qiverse.qipatterns::valid_spc(numerator,
                                                             denominator,
                                                             period_end),
                                 by = c("indicator", "establishment")]
@@ -99,7 +99,7 @@ pattern_detection <- function(indicator, establishment, period_end, numerator,
                            by = c("indicator", "establishment", "period_end",
                                   "numerator", "denominator"))
   #filter out invalid data
-  input_data <- input_data[validSPC == TRUE]
+  input_data <- input_data[valid_spc == TRUE]
 
   cat("Start SPC Pattern Detection", "\n")
   #calculate spc values

@@ -51,6 +51,6 @@ Apply pattern rules
 \seealso{
 Other Pattern detection functions: 
 \code{\link{pattern_detection}()},
-\code{\link{validSPC}()}
+\code{\link{valid_spc}()}
 }
 \concept{Pattern detection functions}
