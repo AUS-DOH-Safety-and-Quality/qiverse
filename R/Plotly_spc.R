@@ -8,11 +8,11 @@
 #' when necessary.
 #' @param data_type A string identifying the type of data used for in the plot,
 #' the adjustment used and the reference point. One of: "i" for indirectly
-#' standardised ratios such as HSMR, "p" for proportions, "r" for ratios
+#' standardised ratios, "p" for proportions, "r" for ratios
 #' of counts, "run" for run charts, "g" for geometric charts and "t" for time
 #' charts. Default is "p".
 #' @param multiplier Scale relative risk and funnel by this factor. Default to
-#' 1, but 100 sometime used, e.g. in some hospital mortality ratios.
+#' 1.
 #' @param betteris A string identifying the direction that is favourable for
 #' the indicator. "Higher" for points below the lower control limit to be
 #' unfavourable, "Lower" for points above the upper control limit to be

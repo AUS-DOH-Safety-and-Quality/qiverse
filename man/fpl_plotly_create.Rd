@@ -22,7 +22,7 @@ fpl_plotly_create(
   y_limit_upper = NA,
   x_axis_label = NA,
   y_axis_label = NA,
-  highlight_hosp = NULL,
+  highlight_group = NULL,
   highlight_outlier = TRUE,
   highlight_outlier_options = list(direction_to_flag = "Deterioration"),
   brand_colour = "#00667B",
@@ -56,7 +56,7 @@ Used as the numerator of the Y-axis}
 as denominator of the Y-axis and the scale of the x-axis}
 
 \item{group}{A vector of group names as character or factor. Used to
-aggregate and group points on plots}
+aggregate and group points on plots.}
 
 \item{data_type}{A string identifying the type of data used for in the plot,
 the adjustment used and the reference point. One of: "SR" for indirectly
@@ -75,15 +75,14 @@ unfavourable, and "Neutral" if the direction is not stated. Default is
 \item{title}{A string for the title of the plot.}
 
 \item{group_name}{A vector of the group names that may differ from the
-initial group identifiers. I.e. group is establishment code, and group_name
-is the short hospital name.}
+initial group identifiers. I.e. group is an alphanumeric code and group_name
+is the actual name.}
 
 \item{short_group_name}{A vector of shortened group names to be displayed
-for highlighted hospitals and outlier points.}
+for highlighted hospitals/establishments and outlier points.}
 
 \item{parent_group_name}{A vector of parent group names which are to be
-displayed in the tooltip. These are the major categories for the groups, i.e.
-HSP names.}
+displayed in the tooltip. These are the major categories for the groups.}
 
 \item{parent_group_name_label}{A string for the tooltip label on the parent
 group name.}
@@ -103,7 +102,7 @@ for the end date of the funnel period.}
 \item{y_axis_label}{A value denoting the y-axis label. Usually NA, a specified label or "Rate",
 for items which are proportion based with multipliers.}
 
-\item{highlight_hosp}{Optional hospital name(s) to highlight individually}
+\item{highlight_group}{Optional group(s) to highlight individually}
 
 \item{highlight_outlier}{Boolean, if FALSE do not highlight outliers}
 
@@ -232,7 +231,7 @@ fpl_plotly_create(
   y_limit_upper = 85,
   x_axis_label = "This is X Axis",
   y_axis_label = "This is Y Axis",
-  highlight_hosp = c('Q2', 'Q5'),
+  highlight_group = c('Q2', 'Q5'),
   highlight_outlier = TRUE,
   nhs_colours_enable = TRUE,
   show_legend = FALSE,

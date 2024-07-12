@@ -5,8 +5,7 @@
 #' @param denominator A vector of denominator (predicted/population etc.) Used
 #' as denominator of the Y-axis and the scale of the x-axis
 #' @param group A vector of group names as character or factor. Used to
-#' aggregate and group points on plots. Generally used for a hospital or other
-#' healthcare provider establishment.
+#' aggregate and group points on plots.
 #' @param data_type A string identifying the type of data used for in the plot,
 #' the adjustment used and the reference point. One of: "SR" for indirectly
 #' standardised ratios such as HSMR, "PR" for proportions, or "RC" for ratios
@@ -20,13 +19,12 @@
 #' "Higher".
 #' @param title A string for the title of the plot.
 #' @param group_name A vector of the group names that may differ from the
-#' initial group identifiers. I.e. group is an alphanumeric code for an
-#' establishment and group_name is the actual name.
+#' initial group identifiers. I.e. group is an alphanumeric code and group_name
+#' is the actual name.
 #' @param short_group_name A vector of shortened group names to be displayed
 #' for highlighted hospitals/establishments and outlier points.
 #' @param parent_group_name A vector of parent group names which are to be
-#' displayed in the tooltip. These are the major categories for the groups, i.e.
-#' HSP/LHN names.
+#' displayed in the tooltip. These are the major categories for the groups.
 #' @param parent_group_name_label A string for the tooltip label on the parent
 #' group name.
 #' @param funnel_period_start A date (or character of format #' "yyyy-mm-dd")
@@ -38,7 +36,7 @@
 #' @param x_axis_label A value denoting the x-axis label. Usually NA or a specified label.
 #' @param y_axis_label A value denoting the y-axis label. Usually NA, a specified label or "Rate",
 #' for items which are proportion based with multipliers.
-#' @param highlight_hosp Optional hospital/establishment name(s) to highlight individually
+#' @param highlight_group Optional group(s) to highlight individually
 #' @param highlight_outlier Boolean, if FALSE do not highlight outliers
 #' @param highlight_outlier_options Options to apply if highlight_outlier is TRUE.
 #' Default is list(direction_to_flag = "Deterioration"), where direction_to_flag
@@ -139,7 +137,7 @@
 #'   y_limit_upper = 85,
 #'   x_axis_label = "This is X Axis",
 #'   y_axis_label = "This is Y Axis",
-#'   highlight_hosp = c('Q2', 'Q5'),
+#'   highlight_group = c('Q2', 'Q5'),
 #'   highlight_outlier = TRUE,
 #'   nhs_colours_enable = TRUE,
 #'   show_legend = FALSE,
@@ -166,7 +164,7 @@ fpl_plotly_create <- function(
     y_limit_upper = NA,
     x_axis_label = NA,
     y_axis_label = NA,
-    highlight_hosp = NULL,
+    highlight_group = NULL,
     highlight_outlier = TRUE,
     highlight_outlier_options = list(direction_to_flag = "Deterioration"),
     brand_colour = "#00667B",
@@ -745,8 +743,7 @@ fpl_plotly_create <- function(
     )
   }
 
-  # create a dataframe that holds the establishment names to serve
-  # as a lookup table
+  # create a dataframe that holds the group names to serve as a lookup table
   # We only have the group in the plot output so we need this to
   # find the group_name
   outlier_label <- if (!is.null(short_group_name)) {
@@ -805,14 +802,14 @@ fpl_plotly_create <- function(
   }
   # check if the hospital input is in the data provided
   if (nrow(outlier_lookup) > 0 & highlight_outlier == TRUE) {
-    highlight_hosp <- highlight_hosp[!(highlight_hosp %in% outlier_lookup$group)]
+    highlight_group <- highlight_group[!(highlight_group %in% outlier_lookup$group)]
   }
 
-  if (length(highlight_hosp) > 0) {
+  if (length(highlight_group) > 0) {
     # define highlighted hospitals and set labels
     highlight <- data.frame(
-      group = highlight_hosp,
-      highlight_label = outlier_label[match(highlight_hosp, group)]
+      group = highlight_group,
+      highlight_label = outlier_label[match(highlight_group, group)]
     )
     # join by establishment to find highlighted point's x and y values
     highlight_point <- dplyr::inner_join(highlight, funnel_data,
