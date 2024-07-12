@@ -846,8 +846,9 @@ fpl_plotly_create <- function(
           y = ~rr * multiplier,
           yref = "y",
           y_anchor = "auto",
-          font = list(size = 15),
+          font = list(size = pattern_font_size),
           arrowcolor = "black",
+          arrowwidth = pattern_arrow_width,
           standoff = marker_size + 2,
           ax = 30,
           ay = ~ifelse((rr * multiplier) > centre_line, -30, 30)
