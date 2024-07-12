@@ -25,8 +25,8 @@ This vignette utilises the Snowflake ODBC connector via the `odbc` package, the 
 
 Setting up a connection to your Snowflake data warehouse may require a login using Azure Active Directory (now Entra ID). This can be accomplished using an Azure access token method.
 
-Creating the snowflake token uses the az_app_id_pbi_dataflow environment variable, so no special set up is required for this.
-<!-- Doesn't it require the .Renviron file to be correctly configured? -->
+Creating the snowflake token uses the az_app_id_pbi_dataflow environment variable, please see the qiverse.azure package vignette for more information on how to set this up.
+
 However, in order to use the token to connect to Snowflake, you have to install the [Snowflake ODBC Driver](https://developers.snowflake.com/odbc/), with further instructions on how to install and configure this available in the [Snowflake documentation](https://docs.snowflake.com/developer-guide/odbc/odbc-windows).
 
 Some key settings for your Snowflake configuration dialog is as follows:
@@ -84,6 +84,8 @@ DBI::dbGetQuery(con, DBI::SQL("SELECT 1"))
 A returned result indicates that the connection has been established.
 
 ### R example
+
+An example of how to run a query on Snowflake is as follows. This establishes the warehouse to be used, and ensures that the query is run on that warehouse. Otherwise, the query will be run on the default warehouse set for your account.
 
 ``` r
 library(tidyverse)
