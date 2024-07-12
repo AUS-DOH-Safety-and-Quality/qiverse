@@ -2,7 +2,7 @@
 title: "QI Matrix"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Multiple Indicator Sigma Chart} #is that correct? feels like it shouldn't refer to MISC
+  %\VignetteIndexEntry{Quality Improvement Matrices}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -32,8 +32,8 @@ The data that feeds into the SPC Funnel Matrix visual requires preparation using
 -   `denominator` - A vector of the denominator Used to calculate the value for SPC and Funnel plots
 -   `multiplier` - Scale relative risk and funnel by this factor.
 -   `better_is` - A string identifying the direction that is favourable for the indicator. "Higher" for points below the lower control limit to be unfavourable, "Lower" for points above the upper control limit to be unfavourable, and "Neutral" if the direction is not stated.
--   `parent_group_name` - A vector of parent group names which are to be displayed in the tooltip. These are the major categories for the groups, i.e. HSP names. #make this more generic again? As in: i.e. Local health network or organisation names.
--   `indicator_group` - A vector used for indicator grouping i.e. QSG Theme. #same as above
+-   `parent_group_name` - A vector of parent group names which are to be displayed in the tooltip. These are the major categories for the groups.
+-   `indicator_group` - A vector used for indicator grouping. i.e. grouping together maternity related indicators into a Maternity group.
 -   `spc_chart_type` - A string identifying the type of spc chart.
 -   `funnel_chart_type` - A string identifying the type of funnel plot.
 -   `indicator_name` - A vector of descriptive names for indicator.

@@ -23,9 +23,10 @@
 #' unfavourable, and "Neutral" if the direction is not stated.
 #' Default is "Higher"
 #' @param parent_group_name A vector of parent group names which are to be
-#' displayed in the tooltip. These are the major categories for the groups, i.e.
-#' HSP names. Default is "All" #again change to a generic term
-#' @param indicator_group A vector used for indicator grouping i.e. QSG Theme. #as above
+#' displayed in the tooltip. These are the major categories for the groups.
+#' Default is "All"
+#' @param indicator_group A vector used for indicator parent grouping, i.e.
+#' grouping together maternity related indicators into a Maternity group.
 #' Default is "All"
 #' @param spc_chart_type A string identifying the type of spc chart. Default "p"
 #' @param funnel_chart_type A string identifying the type of funnel plot.
@@ -80,9 +81,7 @@ spc_funnel_matrix_prep_data <- function(
 ) {
 
   # Dealing with undefined global functions or variables
-  # is it possible to rename QSG recommendation & hospital to something generic and allow these to be
-  #passed as parameters to the function?
-  . <- `QSG Recommendation` <- hospital <-  #nolint
+  . <- hospital <-  #nolint
     pattern_period_start <- pattern_period_end <-
     fpl_astro <- astro <- trend <- twointhree <- shift <-
     fpl_astro_unfav <- fpl_astro_fav <-
@@ -125,10 +124,6 @@ spc_funnel_matrix_prep_data <- function(
     worseis, spc_chart_type, funnel_chart_type,
     indicator_group, indicator_name,
     group_name, funnel_data_points)
-
-  ## Remove standing downs
-  #unfav <- unfav[`QSG Recommendation` != "Standing down"]
-  #fav <- fav[`QSG Recommendation` != "Standing down"]
 
   # Rename columns
   unfav <- unfav[, .(indicator, hospital, indicator_group,

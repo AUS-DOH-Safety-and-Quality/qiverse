@@ -51,10 +51,11 @@ unfavourable, and "Neutral" if the direction is not stated.
 Default is "Higher"}
 
 \item{parent_group_name}{A vector of parent group names which are to be
-displayed in the tooltip. These are the major categories for the groups, i.e.
-HSP names. Default is "All"}
+displayed in the tooltip. These are the major categories for the groups.
+Default is "All"}
 
-\item{indicator_group}{A vector used for indicator grouping i.e. QSG Theme.
+\item{indicator_group}{A vector used for indicator parent grouping, i.e.
+grouping together maternity related indicators into a Maternity group.
 Default is "All"}
 
 \item{spc_chart_type}{A string identifying the type of spc chart. Default "p"}
