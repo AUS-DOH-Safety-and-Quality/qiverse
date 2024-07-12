@@ -851,7 +851,7 @@ fpl_plotly_create <- function(
           arrowwidth = pattern_arrow_width,
           standoff = marker_size + 2,
           ax = 30,
-          ay = ~ifelse((rr * multiplier) > centre_line, -30, 30)
+          ay = ~ifelse((rr * multiplier) > centre_line, -pattern_text_ay, pattern_text_ay)
         )
     }
   }
