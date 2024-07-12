@@ -764,24 +764,66 @@ spc_plotly_create <- function(
     ## Run both sides for neutral
     if (betteris == "Neutral") {
       filt_pat <- rbind(
-        qiverse.qipatterns::runPat(numerator, denominator,
-                                   as.character(x),
-                                   data_type, multiplier, "Lower",
-                                   trend_size, shift_size),
-        qiverse.qipatterns::runPat(numerator, denominator,
-                                   as.character(x),
-                                   data_type, multiplier, "Higher",
-                                   trend_size, shift_size)
+        qiverse.qipatterns::pattern_rules(
+          numerator = numerator,
+          denominator = denominator,
+          period_end = as.character(x),
+          unique_key = NA,
+          spccharttype = data_type,
+          multiplier = multiplier,
+          betteris = "Lower",
+          fpl_astro = NA,
+          trend_size = trend_size,
+          shift_size = shift_size
+        ) |>
+          _[, .(
+            Astro = max(spc_astro, na.rm = TRUE) |> suppressWarnings(),
+            Trend = max(spc_trend, na.rm = TRUE) |> suppressWarnings(),
+            TwoInThree = max(spc_twointhree, na.rm = TRUE) |> suppressWarnings(),
+            Shift = max(spc_shift, na.rm = TRUE) |> suppressWarnings()
+          )],
+        qiverse.qipatterns::pattern_rules(
+          numerator = numerator,
+          denominator = denominator,
+          period_end = as.character(x),
+          unique_key = NA,
+          spccharttype = data_type,
+          multiplier = multiplier,
+          betteris = "Higher",
+          fpl_astro = NA,
+          trend_size = trend_size,
+          shift_size = shift_size
+        ) |>
+          _[, .(
+            Astro = max(spc_astro, na.rm = TRUE) |> suppressWarnings(),
+            Trend = max(spc_trend, na.rm = TRUE) |> suppressWarnings(),
+            TwoInThree = max(spc_twointhree, na.rm = TRUE) |> suppressWarnings(),
+            Shift = max(spc_shift, na.rm = TRUE) |> suppressWarnings()
+          )]
       ) |>
         # Squash to the last pattern identified
         apply(2, function(x) suppressWarnings(max(x, na.rm = TRUE))) |>
         t() |>
         as.data.frame()
     } else {
-      filt_pat <- qiverse.qipatterns::runPat(numerator, denominator,
-                                             as.character(x),
-                                             data_type, multiplier, betteris,
-                                             trend_size, shift_size)
+      filt_pat <- qiverse.qipatterns::pattern_rules(
+        numerator = numerator,
+        denominator = denominator,
+        period_end = as.character(x),
+        unique_key = NA,
+        spccharttype = data_type,
+        multiplier = multiplier,
+        betteris = betteris,
+        fpl_astro = NA,
+        trend_size = trend_size,
+        shift_size = shift_size
+      ) |>
+        _[, .(
+          Astro = max(spc_astro, na.rm = TRUE) |> suppressWarnings(),
+          Trend = max(spc_trend, na.rm = TRUE) |> suppressWarnings(),
+          TwoInThree = max(spc_twointhree, na.rm = TRUE) |> suppressWarnings(),
+          Shift = max(spc_shift, na.rm = TRUE) |> suppressWarnings()
+        )]
     }
   } else {
     filt_pat <- data.frame(NULL)
