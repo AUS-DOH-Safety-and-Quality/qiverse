@@ -79,7 +79,7 @@ initial group identifiers. I.e. group is an alphanumeric code and group_name
 is the actual name.}
 
 \item{short_group_name}{A vector of shortened group names to be displayed
-for highlighted hospitals/establishments and outlier points.}
+for highlighted groups and outlier points.}
 
 \item{parent_group_name}{A vector of parent group names which are to be
 displayed in the tooltip. These are the major categories for the groups.}

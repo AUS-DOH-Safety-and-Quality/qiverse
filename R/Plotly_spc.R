@@ -90,7 +90,7 @@
 #' @import data.table
 #'
 #' @return Statistical process control chart in plotly for the specific
-#' indicator and establishment.
+#' indicator and groups.
 #'
 #'  ## Additional requirements for this function
 #'  NA

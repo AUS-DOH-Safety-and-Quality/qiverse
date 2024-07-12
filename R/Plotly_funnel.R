@@ -22,7 +22,7 @@
 #' initial group identifiers. I.e. group is an alphanumeric code and group_name
 #' is the actual name.
 #' @param short_group_name A vector of shortened group names to be displayed
-#' for highlighted hospitals/establishments and outlier points.
+#' for highlighted groups and outlier points.
 #' @param parent_group_name A vector of parent group names which are to be
 #' displayed in the tooltip. These are the major categories for the groups.
 #' @param parent_group_name_label A string for the tooltip label on the parent
@@ -754,7 +754,7 @@ fpl_plotly_create <- function(
     group
   }
   # create a dataframe that holds the points on the graph, so that we can
-  # overlay them with a circle and hospital name
+  # overlay them with a circle and group name
   outlier_lookup <- data.frame(x = denominator,
                                y = highlight_points,
                                outlier_label = outlier_label,
@@ -785,7 +785,7 @@ fpl_plotly_create <- function(
         hoverinfo = "none"
       ) |>
       # Add tag around points, over the top of outliers, that is text relaying
-      # the name of the hospital for that outlier
+      # the name of the group for that outlier
       plotly::add_annotations(
         data = outlier_lookup,
         text = ~outlier_label,
@@ -800,18 +800,18 @@ fpl_plotly_create <- function(
       )
 
   }
-  # check if the hospital input is in the data provided
+  # check if the group input is in the data provided
   if (nrow(outlier_lookup) > 0 & highlight_outlier == TRUE) {
     highlight_group <- highlight_group[!(highlight_group %in% outlier_lookup$group)]
   }
 
   if (length(highlight_group) > 0) {
-    # define highlighted hospitals and set labels
+    # define highlighted groups and set labels
     highlight <- data.frame(
       group = highlight_group,
       highlight_label = outlier_label[match(highlight_group, group)]
     )
-    # join by establishment to find highlighted point's x and y values
+    # join by groups to find highlighted point's x and y values
     highlight_point <- dplyr::inner_join(highlight, funnel_data,
                                          by = "group")
     # if point exists in funnel data
@@ -836,8 +836,8 @@ fpl_plotly_create <- function(
           showlegend = FALSE,
           hoverinfo = "none"
         ) |>
-        # Add tag around points with hospitalshortname, over the top of
-        # outliers, that is text relaying the name of the hospital for that
+        # Add tag around points with group names, over the top of
+        # outliers, that is text relaying the name of the group for that
         # outlier
         plotly::add_annotations(
           data = highlight_point,

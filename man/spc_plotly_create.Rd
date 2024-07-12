@@ -173,7 +173,7 @@ source will be displayed (default = "Healthcare Quality Intelligence Unit")}
 }
 \value{
 Statistical process control chart in plotly for the specific
-indicator and establishment.
+indicator and groups.
 \subsection{Additional requirements for this function}{
 
 NA
