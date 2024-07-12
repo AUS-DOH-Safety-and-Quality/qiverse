@@ -3,6 +3,5 @@
 export(appendFplVal)
 export(pattern_detection)
 export(pattern_rules)
-export(recommendation_rules)
 export(validSPC)
 import(data.table)

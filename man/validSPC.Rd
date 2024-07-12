@@ -26,7 +26,6 @@ Check validity of data for SPC
 \seealso{
 Other Pattern detection functions: 
 \code{\link{pattern_detection}()},
-\code{\link{pattern_rules}()},
-\code{\link{recommendation_rules}()}
+\code{\link{pattern_rules}()}
 }
 \concept{Pattern detection functions}
