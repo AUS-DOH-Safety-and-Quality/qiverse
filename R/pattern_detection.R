@@ -149,15 +149,5 @@ pattern_detection <- function(indicator, establishment, period_end, numerator,
   input_data[is.infinite(twointhree), twointhree := NA]
   input_data[is.infinite(fpl_astro), fpl_astro := NA]
 
-  #Recommendation rules
-  input_data <- input_data[, qiverse.qipatterns::recommendation_rules(
-    descriptionshort,
-    shorthospitalname,
-    numerator, denominator,
-    betteris, astro, shift,
-    trend, twointhree,
-    fpl_astro, indicatorgroup)]
-  #console feedback
-  cat("Recommendation Rules Completed", "\n")
   return(input_data)
 }
