@@ -16,7 +16,7 @@
 #' @return A data table with added qsg recommendation and reason
 #'
 #'  ## Additional requirements for this function
-#'  The input dataframe must have been passed through [rSQuIS::pattern_rules()]
+#'  The input dataframe must have been passed through [qiverse.qipatterns::pattern_rules()]
 #' @export
 #' @family Pattern detection functions
 #' @examples -

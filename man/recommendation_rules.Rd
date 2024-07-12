@@ -47,7 +47,7 @@ Dropped by default}
 A data table with added qsg recommendation and reason
 \subsection{Additional requirements for this function}{
 
-The input dataframe must have been passed through \code{\link[rSQuIS:pattern_rules]{rSQuIS::pattern_rules()}}
+The input dataframe must have been passed through \code{\link[=pattern_rules]{pattern_rules()}}
 }
 }
 \description{
@@ -58,7 +58,6 @@ Recommendation rules
 }
 \seealso{
 Other Pattern detection functions: 
-\code{\link{appendSpcVal}()},
 \code{\link{pattern_detection}()},
 \code{\link{pattern_rules}()},
 \code{\link{validSPC}()}

@@ -61,7 +61,6 @@ Pattern Detection
 }
 \seealso{
 Other Pattern detection functions: 
-\code{\link{appendSpcVal}()},
 \code{\link{pattern_rules}()},
 \code{\link{recommendation_rules}()},
 \code{\link{validSPC}()}
