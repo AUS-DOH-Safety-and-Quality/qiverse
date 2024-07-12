@@ -90,7 +90,7 @@ download_sharepoint_file(
   file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   token = tk,
   download = TRUE,
-  download_dest = 'C:/cabg.csv'
+  download_dest = 'C:/test.csv'
 )
 ```
 
@@ -181,7 +181,7 @@ tk <- get_az_tk('sp')
 library(qiverse.sharepoint)
 list_data <- download_sharepoint_list(
   paste0("https://myexample.sharepoint.com/sites/",
-  "Indicator%20Metadata/Lists/Indicators/",
+  "Field%20Metadata/Lists/Fields/",
   "Latest.aspx"),
   token = tk
 )
@@ -189,7 +189,7 @@ list_data <- download_sharepoint_list(
 # Download the default view for the SharePoint list
 list_data <- download_sharepoint_list(
   paste0("https://myexample.sharepoint.com/sites/",
-  "Indicator%20Metadata/Lists/Indicators"),
+  "Field%20Metadata/Lists/Fields"),
   token = tk
 )
 ```

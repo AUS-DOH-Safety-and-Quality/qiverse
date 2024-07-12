@@ -26,28 +26,25 @@
 #'
 #' # Download file to working directory from SharePoint site
 #' download_sharepoint_file(
-#' site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
-#' file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+#'   site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
+#'   file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
 #'   token = tk,
 #'   download = TRUE
 #' )
 #'
 #' # Download file to C:/ drive from SharePoint subsite
 #' download_sharepoint_file(
-#' site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
-#' file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-#'   "?d=wa2a4067cf69241ce8f4a5d209878328b&csf=1&web=1&e=ybGCQF"),
+#'   site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
+#'   file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
 #'   token = tk,
 #'   download = TRUE,
-#'   download_dest = 'C:/cabg.csv'
+#'   download_dest = 'C:/test.csv'
 #' )
 #'
 #' # Example to download to tempfile, to load straight into R memory
 #' data <- download_sharepoint_file(
-#'   site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-#'   "DOH-ReferenceData/"),
-#' site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
-#' file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+#'   site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
+#'   file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
 #'   token = tk,
 #'   download = FALSE
 #' ) |>
@@ -161,8 +158,8 @@ download_sharepoint_file <- function(
 #' # Example to upload local file to SharePoint folder
 #' upload_sharepoint_file(
 #'   src = 'TestFiles/test.txt',
-#' site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
-#' file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+#'   site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
+#'   file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
 #'   token = tk
 #' )
 #' }

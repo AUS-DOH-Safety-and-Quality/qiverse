@@ -15,7 +15,7 @@
 #' # Download a particular view for the SharePoint list
 #' list_data <- download_sharepoint_list(
 #' paste0("https://myexample.sharepoint.com/sites/",
-#'        "Indicator%20Metadata/Lists/Indicators/",
+#'        "Field%20Metadata/Lists/Fields/",
 #'        "Latest.aspx"),
 #'   token = tk
 #' )
@@ -23,7 +23,7 @@
 #' # Download the default view for the SharePoint list
 #' list_data <- download_sharepoint_list(
 #' paste0("https://myexample.sharepoint.com/sites/",
-#'        "Indicator%20Metadata/Lists/Indicators/"),
+#'        "Field%20Metadata/Lists/Fields/"),
 #'   token = tk
 #' )
 #'}

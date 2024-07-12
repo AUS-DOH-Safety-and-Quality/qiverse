@@ -34,11 +34,8 @@ tk <- get_az_tk('sp')
 # Example to upload local file to SharePoint folder
 upload_sharepoint_file(
   src = 'TestFiles/test.txt',
-  site_url = paste0("https://wahealthdept.sharepoint.com/sites/",
-  "MySharepointSite/"),
-  dest_fldr_url = paste0("https://wahealthdept.sharepoint.com/:f:/r/sites/",
-  "MySharepointSite/",
-  "Analytical\%20Code?csf=1&web=1&e=U53w2m"),
+  site_url = "https://myexample.sharepoint.com/sites/Example-Files/"),
+  file_url = paste0("https://myexample.sharepoint.com/:x:/r/sites/Example-Files/Shared\%20Documents/Example_datasets/example_data_amended.csv?d=XXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
   token = tk
 )
 }
