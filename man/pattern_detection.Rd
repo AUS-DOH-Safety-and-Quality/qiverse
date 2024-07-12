@@ -17,7 +17,9 @@ pattern_detection(
   indicatorgroup = NA,
   descriptionshort = indicator,
   shorthospitalname = establishment,
-  funneldatapoints = "Yes"
+  funneldatapoints = "Yes",
+  trend_size = 5,
+  shift_size = 7
 )
 }
 \arguments{
@@ -48,6 +50,10 @@ Default "PR"}
 
 \item{funneldatapoints}{A vector of which data points are included in
 the funnel plot calculation}
+
+\item{trend_size}{The number of points in a trend pattern}
+
+\item{shift_size}{The number of points in a shift pattern}
 }
 \value{
 A data table of unique indicator establishment rows with any

@@ -15,6 +15,8 @@
 #' @param shorthospitalname A vector of descriptive names for establishments
 #' @param funneldatapoints A vector of which data points are included in
 #' the funnel plot calculation
+#' @param trend_size The number of points in a trend pattern
+#' @param shift_size The number of points in a shift pattern
 #'
 #' @import data.table
 #'
@@ -29,7 +31,8 @@ pattern_detection <- function(indicator, establishment, period_end, numerator,
                               spccharttype = "p", funnelcharttype = "PR",
                               indicatorgroup = NA, descriptionshort = indicator,
                               shorthospitalname = establishment,
-                              funneldatapoints = "Yes") {
+                              funneldatapoints = "Yes", trend_size = 5,
+                              shift_size = 7) {
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
   . <- fpl_astro <- unique_key <- spc_astro <- spc_shift <- spc_trend <-
@@ -104,7 +107,7 @@ pattern_detection <- function(indicator, establishment, period_end, numerator,
     numerator, denominator, period_end,
     unique_key = paste0(indicator, "_", establishment),
     spccharttype, multiplier,
-    betteris, fpl_astro, 5, 7)]
+    betteris, fpl_astro, trend_size, shift_size)]
   #merge pattern data with main data
   input_data <- merge(
     input_data[, .(unique_key = paste0(indicator, "_", establishment),
