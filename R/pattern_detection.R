@@ -73,7 +73,7 @@ pattern_detection <- function(indicator, establishment, period_end, numerator,
 
   #Filter to current funnel, for each indicator calculate the funnel plot values
   input_data_funnel <- input_data[funneldatapoints == "Yes",
-                                  qiverse.qipatterns::appendFplVal(
+                                  qiverse.qipatterns::append_fpl_val(
                                     numerator, denominator,
                                     establishment, funnelcharttype[1],
                                     multiplier[1], betteris[1],

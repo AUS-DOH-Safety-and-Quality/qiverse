@@ -16,7 +16,7 @@
 #' @family pattern detection functions
 #' @export
 #' @examples -
-appendFplVal <- function(numerator, denominator, establishment,
+append_fpl_val <- function(numerator, denominator, establishment,
                          funnelcharttype = "PR", multiplier = 1, betteris,
                          period_end) {
   # Dealing with undefined global functions or variables (see datatable-import
