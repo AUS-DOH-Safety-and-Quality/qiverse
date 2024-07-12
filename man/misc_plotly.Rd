@@ -37,7 +37,7 @@ for an example and more information on the fields required.}
 \item{y_dp}{The number of decimal places displayed on the chart (default = 2)}
 }
 \value{
-A data.table with the required fields for the MISC plotly chart.
+A MISC plotly output.
 }
 \description{
 Chart the Multiple Indicator Sigma Chart in Plotly
