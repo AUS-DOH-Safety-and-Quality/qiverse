@@ -34,14 +34,14 @@ devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse", ref = "branch-a")
 
 The following packages are included in `qiverse`:
 
-| qiverse Package     | Description                                          |
-|---------------------|------------------------------------------------------|
-| qiverse.azure       | Creating Azure Access Tokens                         |
-| qiverse.hqiuhelpers | Helper Functions used across HQIU products           |
-| qiverse.powerbi     | Accessing data from PowerBI                          |
-| qiverse.qimatrix    | Creating QI Matrices including the SPC Funnel Matrix |
-| qiverse.qimisc      | Creating the Multiple Indicator Sigma Chart          |
-| qiverse.qipatterns  | Identify SPC Patterns and Funnel Outliers            |
-| qiverse.qiplotly    | QI charts using the plotly package                   |
-| qiverse.sharepoint  | Accessing Microsoft Sharepoint                       |
-| qiverse.snowflake   | Accessing Snowflake                                  |
+| qiverse Package    | Description                                          |
+|--------------------|------------------------------------------------------|
+| qiverse.azure      | Creating Azure Access Tokens                         |
+| qiverse.data       | Sample data used in the qiverse                      |
+| qiverse.powerbi    | Accessing data from PowerBI                          |
+| qiverse.qimatrix   | Creating QI Matrices including the SPC Funnel Matrix |
+| qiverse.qimisc     | Creating the Multiple Indicator Sigma Chart          |
+| qiverse.qipatterns | Identify SPC Patterns and Funnel Outliers            |
+| qiverse.qiplotly   | QI charts using the plotly package                   |
+| qiverse.sharepoint | Accessing Microsoft Sharepoint                       |
+| qiverse.snowflake  | Accessing Snowflake                                  |

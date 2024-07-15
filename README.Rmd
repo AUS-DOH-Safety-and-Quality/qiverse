@@ -52,7 +52,7 @@ The following packages are included in `qiverse`:
 | qiverse Package     | Description                                          |
 |---------------------|------------------------------------------------------|
 | qiverse.azure       | Creating Azure Access Tokens                         |
-| qiverse.hqiuhelpers | Helper Functions used across HQIU products           |
+| qiverse.data        | Sample data used in the qiverse                      |
 | qiverse.powerbi     | Accessing data from PowerBI                          |
 | qiverse.qimatrix    | Creating QI Matrices including the SPC Funnel Matrix |
 | qiverse.qimisc      | Creating the Multiple Indicator Sigma Chart          |
