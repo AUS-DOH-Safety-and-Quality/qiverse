@@ -10,7 +10,7 @@
 #' @param spc_chart_type A string identifying the type of spc chart. Default "p"
 #' @param funnel_chart_type A string identifying the type of funnel plot.
 #' Default "PR"
-#' @param indicator_group A vector used for indicator grouping i.e. QSG Theme
+#' @param indicator_group A vector used for indicator grouping.
 #' @param description_short A vector of descriptive names for indicators
 #' @param group_name A vector of descriptive names for groups
 #' @param funnel_data_points A vector of which data points are included in
@@ -21,7 +21,7 @@
 #' @import data.table
 #'
 #' @return A data table of unique indicator group rows with any
-#' identified patterns and qsg recommendations
+#' identified patterns
 #' @family Pattern detection functions
 #' @export
 #'
@@ -98,7 +98,7 @@ pattern_detection <- function(
   #append the aggregate values onto the data table
   input_data <- rbind(input_data, aggregate)
 
-  #Validate that each indicator hospital has enough data points to make an SPC
+  #Validate that each indicator and group combination has enough data points to make an SPC
   input_data_valid <- input_data[, qiverse.qipatterns::valid_spc(numerator,
                                                                  denominator,
                                                                  period_end),

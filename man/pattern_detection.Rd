@@ -42,7 +42,7 @@ pattern_detection(
 \item{funnel_chart_type}{A string identifying the type of funnel plot.
 Default "PR"}
 
-\item{indicator_group}{A vector used for indicator grouping i.e. QSG Theme}
+\item{indicator_group}{A vector used for indicator grouping.}
 
 \item{description_short}{A vector of descriptive names for indicators}
 
@@ -57,7 +57,7 @@ the funnel plot calculation}
 }
 \value{
 A data table of unique indicator group rows with any
-identified patterns and qsg recommendations
+identified patterns
 }
 \description{
 Pattern Detection

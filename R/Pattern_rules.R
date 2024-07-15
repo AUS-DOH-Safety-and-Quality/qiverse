@@ -82,7 +82,7 @@ pattern_rules <- function(
     # PAT030 TREND: identifies the most recent date of five consecutively
     # increasing/decreasing unfavourable points of data.
     # The first point is inclusive (four increasing after one point).
-    # Flag the date with "Yes", for any particular indicator and hospital
+    # Flag the date with "Yes", for any particular indicator and group
     # combination.
 
     #Trend
@@ -205,7 +205,7 @@ pattern_rules <- function(
     # PAT070 SHIFT (Current: Identifies the date of the final point in the most
     # recent unfavourable SHIFT (defined as 7 consecutive points which are
     # unfavourable above/below the mean). Flag the date with "Yes",
-    # for any particular indicator and hospital combination.
+    # for any particular indicator and group combination.
 
     # Shift ####
     ## Determine which size the observation sits and flag it
