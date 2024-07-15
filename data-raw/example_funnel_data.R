@@ -77,16 +77,16 @@ gen_fpl_data <- function(
 funnel_1_data <- gen_fpl_data(
   seed = 123,
   input_hosp_sizes = hosp_sizes,
-  indicator_name = indicator_data[1, indicator],
-  data_type = indicator_data[1, data_type],
+  indicator_name = example_indicator_data[1, indicator],
+  data_type = example_indicator_data[1, funnel_data_type],
   base_denominator = 10,
   tau2 = 0.2
 )
 funnel_2_data <- gen_fpl_data(
   seed = 412,
   input_hosp_sizes = hosp_sizes,
-  indicator_name = indicator_data[2, indicator],
-  data_type = indicator_data[2, data_type],
+  indicator_name = example_indicator_data[2, indicator],
+  data_type = example_indicator_data[2, funnel_data_type],
   target = 0.03,
   base_denominator = 10000,
   tau2 = 0.001
@@ -94,8 +94,8 @@ funnel_2_data <- gen_fpl_data(
 funnel_3_data <- gen_fpl_data(
   seed = 823,
   input_hosp_sizes = hosp_sizes,
-  indicator_name = indicator_data[3, indicator],
-  data_type = indicator_data[3, data_type],
+  indicator_name = example_indicator_data[3, indicator],
+  data_type = example_indicator_data[3, funnel_data_type],
   target = 0.32,
   base_denominator = 50,
   tau2 = 0.001
@@ -103,8 +103,8 @@ funnel_3_data <- gen_fpl_data(
 funnel_4_data <- gen_fpl_data(
   seed = 483,
   input_hosp_sizes = hosp_sizes,
-  indicator_name = indicator_data[4, indicator],
-  data_type = indicator_data[4, data_type],
+  indicator_name = example_indicator_data[4, indicator],
+  data_type = example_indicator_data[4, funnel_data_type],
   target = 0.00025,
   base_denominator = 10000,
   tau2 = 0.00001
@@ -112,8 +112,8 @@ funnel_4_data <- gen_fpl_data(
 funnel_5_data <- gen_fpl_data(
   seed = 500,
   input_hosp_sizes = hosp_sizes,
-  indicator_name = indicator_data[5, indicator],
-  data_type = indicator_data[5, data_type],
+  indicator_name = example_indicator_data[5, indicator],
+  data_type = example_indicator_data[5, funnel_data_type],
   target = 0.00015,
   base_denominator = 10000,
   tau2 = 0.00001
@@ -121,8 +121,8 @@ funnel_5_data <- gen_fpl_data(
 funnel_6_data <- gen_fpl_data(
   seed = 673,
   input_hosp_sizes = hosp_sizes,
-  indicator_name = indicator_data[6, indicator],
-  data_type = indicator_data[6, data_type],
+  indicator_name = example_indicator_data[6, indicator],
+  data_type = example_indicator_data[6, funnel_data_type],
   target = 0.5,
   base_denominator = 50,
   tau2 = 0.004
