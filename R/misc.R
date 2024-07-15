@@ -52,8 +52,12 @@ misc <- function(
     y_dp = 2
 ) {
 
+  # Dealing with undefined global functions or variables (see datatable-import
+  # vignette)
+  group <- NULL
+
   # Prepare MISC data
-  misc_data <- misc_prep_data(example_funnel_data, example_indicator_data)
+  misc_data <- misc_prep_data(funnel_data, indicator_data)
 
   # Output MISC plotly
   misc_plotly(

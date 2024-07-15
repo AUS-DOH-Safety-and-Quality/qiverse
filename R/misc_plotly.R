@@ -36,7 +36,8 @@ misc_plotly <- function(data,
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
   suffix <- .N <- group <- `:=` <- value <- numerator <- denominator <- #nolint
-    data_type <-multiplier <- betteris <- uzscore_betteris <- uzscore <- NULL
+    data_type <- multiplier <- betteris <- uzscore_betteris <- uzscore <-
+    hovertext <- indicator_theme <- indicator <- ucl99 <- cl <- lcl99 <- NULL
 
   # Copy data to load standalone dataset in memory ####
   data <- data.table::copy(data) |>
