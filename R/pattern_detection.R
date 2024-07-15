@@ -26,26 +26,36 @@
 #' @export
 #'
 #' @examples -
-pattern_detection <- function(indicator, establishment, period_end, numerator,
-                              denominator, multiplier, betteris,
-                              spccharttype = "p", funnelcharttype = "PR",
-                              indicatorgroup = NA, descriptionshort = indicator,
-                              shorthospitalname = establishment,
-                              funneldatapoints = "Yes", trend_size = 5,
-                              shift_size = 7) {
+pattern_detection <- function(
+    indicator,
+    establishment,
+    period_end,
+    numerator,
+    denominator,
+    multiplier,
+    betteris,
+    spccharttype = "p",
+    funnelcharttype = "PR",
+    indicatorgroup = NA,
+    descriptionshort = indicator,
+    shorthospitalname = establishment,
+    funneldatapoints = "Yes",
+    trend_size = 5,
+    shift_size = 7
+) {
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
   . <- fpl_astro <- unique_key <- spc_astro <- spc_shift <- spc_trend <-
     spc_twointhree <- fpl_astro <- astro <- shift <- trend <- twointhree <-
-      `:=` <- valid_spc <- NULL
+    `:=` <- valid_spc <- NULL
 
   #create data table
   input_data <- data.table::data.table(indicator, establishment, period_end,
                                        numerator,
-                           denominator, multiplier, spccharttype,
-                           funnelcharttype, indicatorgroup, betteris,
-                           descriptionshort, shorthospitalname,
-                           funneldatapoints)
+                                       denominator, multiplier, spccharttype,
+                                       funnelcharttype, indicatorgroup, betteris,
+                                       descriptionshort, shorthospitalname,
+                                       funneldatapoints)
 
   #Create aggregate data for spc"s by indicator
   aggregate <- input_data[, .(numerator = sum(numerator),
@@ -58,9 +68,9 @@ pattern_detection <- function(indicator, establishment, period_end, numerator,
                               fpl_ul99 = NA_integer_,
                               fpl_row_value = NA_integer_,
                               fpl_astro = as.Date(NA)),
-                              by = .(indicator, multiplier, period_end,
-                                     betteris, spccharttype, funnelcharttype,
-                                     indicatorgroup, descriptionshort)]
+                          by = .(indicator, multiplier, period_end,
+                                 betteris, spccharttype, funnelcharttype,
+                                 indicatorgroup, descriptionshort)]
 
   data.table::setcolorder(aggregate,
                           c("indicator", "establishment", "period_end",
@@ -84,20 +94,20 @@ pattern_detection <- function(indicator, establishment, period_end, numerator,
 
   #merge back the funnel data to main
   input_data <- merge(input_data, input_data_funnel, all = TRUE,
-                           by = c("indicator", "establishment"))
+                      by = c("indicator", "establishment"))
   #append the aggregate values onto the data table
   input_data <- rbind(input_data, aggregate)
 
   #Validate that each indicator hospital has enough data points to make an SPC
   input_data_valid <- input_data[, qiverse.qipatterns::valid_spc(numerator,
-                                                            denominator,
-                                                            period_end),
-                                by = c("indicator", "establishment")]
+                                                                 denominator,
+                                                                 period_end),
+                                 by = c("indicator", "establishment")]
   cat("SPC Data Validated", "\n")
   #merge back the validation status to main
   input_data <- merge(input_data, input_data_valid, all = TRUE,
-                           by = c("indicator", "establishment", "period_end",
-                                  "numerator", "denominator"))
+                      by = c("indicator", "establishment", "period_end",
+                             "numerator", "denominator"))
   #filter out invalid data
   input_data <- input_data[valid_spc == TRUE]
 
@@ -129,18 +139,18 @@ pattern_detection <- function(indicator, establishment, period_end, numerator,
   #input_data <- input_data[establishment == "Aggregate", funneldatapoints := "Yes"] #nolint
   #find the latest patterns for each combination
   input_data <- input_data[funneldatapoints == "Yes", by = .(descriptionshort,
-                                      shorthospitalname,
-                                      indicatorgroup,
-                                      betteris),
-                             .(numerator = sum(numerator),
-                               denominator = as.numeric(format(sum(denominator),
-                                                    nsmall = 2)),
-                               astro = max(spc_astro, na.rm = TRUE),
-                               shift = max(spc_shift, na.rm = TRUE),
-                               trend = max(spc_trend, na.rm = TRUE),
-                               twointhree = max(spc_twointhree, na.rm = TRUE),
-                               fpl_astro = max(fpl_astro, na.rm = TRUE)
-                             )] |> suppressWarnings()
+                                                             shorthospitalname,
+                                                             indicatorgroup,
+                                                             betteris),
+                           .(numerator = sum(numerator),
+                             denominator = as.numeric(format(sum(denominator),
+                                                             nsmall = 2)),
+                             astro = max(spc_astro, na.rm = TRUE),
+                             shift = max(spc_shift, na.rm = TRUE),
+                             trend = max(spc_trend, na.rm = TRUE),
+                             twointhree = max(spc_twointhree, na.rm = TRUE),
+                             fpl_astro = max(fpl_astro, na.rm = TRUE)
+                           )] |> suppressWarnings()
 
   #max introduces infinites when no patterns are identified for a combination
   input_data[is.infinite(astro), astro := NA]

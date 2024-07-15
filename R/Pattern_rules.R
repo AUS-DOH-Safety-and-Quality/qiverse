@@ -17,10 +17,18 @@
 #' @export
 #' @family Pattern detection functions
 #' @examples -
-pattern_rules <- function(numerator, denominator, period_end,
-                          unique_key, spccharttype = "p", multiplier = 1,
-                          betteris, fpl_astro, trend_size = 5,
-                          shift_size = 7) {
+pattern_rules <- function(
+    numerator,
+    denominator,
+    period_end,
+    unique_key,
+    spccharttype = "p",
+    multiplier = 1,
+    betteris,
+    fpl_astro,
+    trend_size = 5,
+    shift_size = 7
+) {
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
   . <- index_order <- spc_y <- spc_cl <- spc_stdev <- spc_ll99 <- spc_ll95 <-

@@ -16,9 +16,15 @@
 #' @family pattern detection functions
 #' @export
 #' @examples -
-append_fpl_val <- function(numerator, denominator, establishment,
-                         funnelcharttype = "PR", multiplier = 1, betteris,
-                         period_end) {
+append_fpl_val <- function(
+    numerator,
+    denominator,
+    establishment,
+    funnelcharttype = "PR",
+    multiplier = 1,
+    betteris,
+    period_end
+) {
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
   . <- group <- rr <- LCL95 <- UCL95 <- LCL99 <- UCL99 <- fpl_rr <-
@@ -26,10 +32,10 @@ append_fpl_val <- function(numerator, denominator, establishment,
 
   #Take the input data and generate a data table
   funnel_input <- data.table::data.table(numerator, denominator,
-                            establishment = as.character(establishment),
-                            multiplier = multiplier,
-                            funnelcharttype = funnelcharttype,
-                            betteris = betteris)
+                                         establishment = as.character(establishment),
+                                         multiplier = multiplier,
+                                         funnelcharttype = funnelcharttype,
+                                         betteris = betteris)
 
   #if the data input cannot make a funnel skip and output 0 for all values
   if (sum(denominator) == 0 | length(unique(funnel_input$establishment)) <= 1) { #nolint
@@ -102,8 +108,8 @@ append_fpl_val <- function(numerator, denominator, establishment,
   #Check which points are outliers
   funnel_data[betteris == "Lower" & fpl_row_value >= fpl_ul99,
               fpl_astro := period_end[1]][
-              betteris == "Higher" & fpl_row_value <= fpl_ll99,
-              fpl_astro := period_end[1]]
+                betteris == "Higher" & fpl_row_value <= fpl_ll99,
+                fpl_astro := period_end[1]]
   #remove betteris field
   funnel_data[, betteris := NULL]
 
