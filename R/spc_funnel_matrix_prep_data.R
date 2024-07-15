@@ -127,14 +127,18 @@ spc_funnel_matrix_prep_data <- function(
     group_name, funnel_data_points)
 
   # Rename columns
-  unfav <- unfav[, .(indicator, hospital, indicator_group,
-                     fpl_astro_unfav = fpl_astro,
-                     astro_unfav = astro, shift_unfav = shift,
-                     trend_unfav = trend, twointhree_unfav = twointhree)]
-  fav <- fav[, .(indicator, hospital, indicator_group,
-                 fpl_astro_fav = fpl_astro,
-                 astro_fav = astro, shift_fav = shift,
-                 trend_fav = trend, twointhree_fav = twointhree)]
+  setnames(unfav, old = c("fpl_astro", "astro", "shift",
+                    "trend", "twointhree", "indicatorgroup"),
+           new =c("fpl_astro_unfav", "astro_unfav", "shift_unfav",
+             "trend_unfav", "twointhree_unfav", "indicator_group"))
+
+  setnames(fav, old = c("fpl_astro", "astro", "shift",
+                  "trend", "twointhree", "indicatorgroup"),
+           new = c("fpl_astro_fav", "astro_fav", "shift_fav",
+             "trend_fav", "twointhree_fav", "indicator_group"))
+
+  unfav[, c("numerator", "denominator", "Reason", "QSG Recommendation") := NULL]
+  fav[, c("numerator", "denominator", "Reason", "QSG Recommendation") := NULL]
 
   # Export into a single patterns file ####
   patterns <- rbind(
