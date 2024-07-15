@@ -1,6 +1,6 @@
 Package: qiverse.qimisc
 Title: Multiple Indicator Sigma Chart
-Version: 0.0.1.0
+Version: 0.0.1.1
 Authors@R: 
     person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
     family = "",
