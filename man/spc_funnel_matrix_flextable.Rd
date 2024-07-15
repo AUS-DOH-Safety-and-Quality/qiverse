@@ -38,6 +38,7 @@ Construct a Flextable from the SPC Funnel Matrix Data
 -
 \dontrun{
   library(qiverse.qimatrix)
+  library(qiverse.data)
   spc_funnel_matrix_data <- spc_funnel_matrix_prep_data(
     indicator = example_spc_data$indicator,
     group = example_spc_data$group,

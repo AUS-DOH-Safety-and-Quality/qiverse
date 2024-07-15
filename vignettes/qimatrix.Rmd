@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r setup, include = TRUE}
 library(qiverse.qimatrix)
+library(qiverse.data)
 ```
 
 This package provides functions to prepare data ready for the SPC Funnel Matrix, and display this using flextable.

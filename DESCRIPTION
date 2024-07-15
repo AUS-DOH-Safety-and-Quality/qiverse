@@ -21,10 +21,11 @@ Imports:
   data.table,
   flextable
 Suggests:
+  qiverse.data,
   qiverse.qipatterns,
   knitr,
   rmarkdown,
   testthat (>= 3.0.0)
 Remotes:
+  AUS-DOH-Safety-and-Quality/qiverse.data
 VignetteBuilder: knitr
-LazyData: true
