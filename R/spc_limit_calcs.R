@@ -1,10 +1,3 @@
-################################################################
-## Name: Internal SPC Limit Calculations
-## Purpose: This script calculates the SPC limits based on the spc_chart_type,
-##          multiplier and input data.
-## Lead Developer: Peter Li (Lead QUality Analyst - HQIU)
-################################################################
-
 # SPC p-charts
 .spc_limits_p <- function(input_data) {
     # Dealing with undefined global functions or variables (see datatable-import
