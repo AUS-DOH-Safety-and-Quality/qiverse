@@ -23,9 +23,10 @@ Imports:
   plotly,
   stats
 Suggests:
+  qiverse.data,
   knitr,
   rmarkdown,
   testthat (>= 3.0.0)
 Remotes:
+  AUS-DOH-Safety-and-Quality/qiverse.data
 VignetteBuilder: knitr
-LazyData: true

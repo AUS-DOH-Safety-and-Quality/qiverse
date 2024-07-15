@@ -16,6 +16,7 @@
 #' @examples -
 #' \dontrun{
 #'   library(qiverse.qimisc)
+#'   library(qiverse.data)
 #'   misc_data <- misc_prep_data(example_funnel_data, example_indicator_data)
 #' }
 
