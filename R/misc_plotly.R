@@ -63,7 +63,7 @@ misc_plotly <- function(data,
   data[is.na(suffix), suffix := ""]
 
   #see my comment on the hovertext below
-  data[hovertext := paste0(
+  data[, hovertext := paste0(
     "<br><b>", indicator_theme, ": ", indicator, "</b>",
     "<br><b>Z-score: </b>", formatC(uzscore_betteris, digits = 3,
                                     format = "f", big.mark = ","),
