@@ -7,10 +7,10 @@
 append_fpl_val(
   numerator,
   denominator,
-  establishment,
-  funnelcharttype = "PR",
+  group,
+  funnel_chart_type = "PR",
   multiplier = 1,
-  betteris,
+  better_is,
   period_end
 )
 }
@@ -19,14 +19,14 @@ append_fpl_val(
 
 \item{denominator}{A numeric vector}
 
-\item{establishment}{A vector of establishment ids}
+\item{group}{A vector of group ids}
 
-\item{funnelcharttype}{A string identifying the type of funnel plot.
+\item{funnel_chart_type}{A string identifying the type of funnel plot.
 Default "PR"}
 
 \item{multiplier}{A string identifying the multiplication factor. Default 1}
 
-\item{betteris}{A character string, shows direction of positive change.}
+\item{better_is}{A character string, shows direction of positive change.}
 
 \item{period_end}{A string of the maximum date of the funnel period for use
 as the identifier for funnel astronomical points

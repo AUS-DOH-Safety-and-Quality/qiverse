@@ -1,6 +1,6 @@
 ################################################################
 ## Name: Internal SPC Limit Calculations
-## Purpose: This script calculates the SPC limits based on the spccharttype,
+## Purpose: This script calculates the SPC limits based on the spc_chart_type,
 ##          multiplier and input data.
 ## Lead Developer: Peter Li (Lead QUality Analyst - HQIU)
 ################################################################

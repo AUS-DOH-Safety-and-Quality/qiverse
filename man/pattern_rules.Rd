@@ -9,9 +9,9 @@ pattern_rules(
   denominator,
   period_end,
   unique_key,
-  spccharttype = "p",
+  spc_chart_type = "p",
   multiplier = 1,
-  betteris,
+  better_is,
   fpl_astro,
   trend_size = 5,
   shift_size = 7
@@ -20,17 +20,17 @@ pattern_rules(
 \arguments{
 \item{numerator}{A numeric vector}
 
-\item{denominator}{A numeric vector. Set as NA for g and t spccharttype.}
+\item{denominator}{A numeric vector. Set as NA for g and t spc_chart_type.}
 
 \item{period_end}{A vector of dates of type Date format: \%d/\%m/\%Y:15/12/2022}
 
-\item{unique_key}{A key to identify each indicator establishment combination}
+\item{unique_key}{A key to identify each indicator group combination}
 
-\item{spccharttype}{A string identifying the type of spc chart. Default "p"}
+\item{spc_chart_type}{A string identifying the type of spc chart. Default "p"}
 
 \item{multiplier}{A string identifying the multiplication factor. Default 1}
 
-\item{betteris}{A character string, shows direction of positive change.
+\item{better_is}{A character string, shows direction of positive change.
 "Higher" or "Lower"}
 
 \item{fpl_astro}{Date of Astronomical Point pattern, period end max of funnel}

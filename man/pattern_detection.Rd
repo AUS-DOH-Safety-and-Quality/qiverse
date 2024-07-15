@@ -6,18 +6,18 @@
 \usage{
 pattern_detection(
   indicator,
-  establishment,
+  group,
   period_end,
   numerator,
   denominator,
   multiplier,
-  betteris,
-  spccharttype = "p",
-  funnelcharttype = "PR",
-  indicatorgroup = NA,
-  descriptionshort = indicator,
-  shorthospitalname = establishment,
-  funneldatapoints = "Yes",
+  better_is,
+  spc_chart_type = "p",
+  funnel_chart_type = "PR",
+  indicator_group = NA,
+  description_short = indicator,
+  group_name = group,
+  funnel_data_points = "Yes",
   trend_size = 5,
   shift_size = 7
 )
@@ -25,7 +25,7 @@ pattern_detection(
 \arguments{
 \item{indicator}{A vector of indicator codes}
 
-\item{establishment}{A vector of establishment ids}
+\item{group}{A vector of group ids}
 
 \item{period_end}{A vector of dates of type Date format: \%d/\%m/\%Y:12/11/2021}
 
@@ -35,20 +35,20 @@ pattern_detection(
 
 \item{multiplier}{A string identifying the multiplication factor. Default 1}
 
-\item{betteris}{A character string, shows direction of positive change.}
+\item{better_is}{A character string, shows direction of positive change.}
 
-\item{spccharttype}{A string identifying the type of spc chart. Default "p"}
+\item{spc_chart_type}{A string identifying the type of spc chart. Default "p"}
 
-\item{funnelcharttype}{A string identifying the type of funnel plot.
+\item{funnel_chart_type}{A string identifying the type of funnel plot.
 Default "PR"}
 
-\item{indicatorgroup}{A vector used for indicator grouping i.e. QSG Theme}
+\item{indicator_group}{A vector used for indicator grouping i.e. QSG Theme}
 
-\item{descriptionshort}{A vector of descriptive names for indicators}
+\item{description_short}{A vector of descriptive names for indicators}
 
-\item{shorthospitalname}{A vector of descriptive names for establishments}
+\item{group_name}{A vector of descriptive names for groups}
 
-\item{funneldatapoints}{A vector of which data points are included in
+\item{funnel_data_points}{A vector of which data points are included in
 the funnel plot calculation}
 
 \item{trend_size}{The number of points in a trend pattern}
@@ -56,7 +56,7 @@ the funnel plot calculation}
 \item{shift_size}{The number of points in a shift pattern}
 }
 \value{
-A data table of unique indicator establishment rows with any
+A data table of unique indicator group rows with any
 identified patterns and qsg recommendations
 }
 \description{

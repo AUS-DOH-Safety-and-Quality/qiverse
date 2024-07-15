@@ -1,12 +1,12 @@
 #' Apply pattern rules
 #'
 #' @param numerator A numeric vector
-#' @param denominator A numeric vector. Set as NA for g and t spccharttype.
+#' @param denominator A numeric vector. Set as NA for g and t spc_chart_type.
 #' @param period_end A vector of dates of type Date format: %d/%m/%Y:15/12/2022
-#' @param unique_key A key to identify each indicator establishment combination
-#' @param spccharttype A string identifying the type of spc chart. Default "p"
+#' @param unique_key A key to identify each indicator group combination
+#' @param spc_chart_type A string identifying the type of spc chart. Default "p"
 #' @param multiplier A string identifying the multiplication factor. Default 1
-#' @param betteris A character string, shows direction of positive change.
+#' @param better_is A character string, shows direction of positive change.
 #' "Higher" or "Lower"
 #' @param fpl_astro Date of Astronomical Point pattern, period end max of funnel
 #' @param trend_size The number of points in a trend pattern
@@ -22,9 +22,9 @@ pattern_rules <- function(
     denominator,
     period_end,
     unique_key,
-    spccharttype = "p",
+    spc_chart_type = "p",
     multiplier = 1,
-    betteris,
+    better_is,
     fpl_astro,
     trend_size = 5,
     shift_size = 7
@@ -41,8 +41,8 @@ pattern_rules <- function(
 
   #create data table
   input_dt <- data.table::data.table(unique_key, numerator, denominator,
-                                     period_end, spccharttype, multiplier,
-                                     betteris, fpl_astro)
+                                     period_end, spc_chart_type, multiplier,
+                                     better_is, fpl_astro)
 
   # Copy input data table to preserve original copy for run charts
   init_input_dt <- data.table::copy(input_dt)
@@ -51,10 +51,10 @@ pattern_rules <- function(
   input_dt[, index_order := 1:input_dt[, .N]]
 
   # Set SPC Limits
-  input_dt_p <- qiverse.qipatterns:::.spc_limits_p(input_dt[spccharttype == "p"]) #nolint
-  input_dt_i <- qiverse.qipatterns:::.spc_limits_i(input_dt[spccharttype == "i"]) #nolint
-  input_dt_g <- qiverse.qipatterns:::.spc_limits_g(input_dt[spccharttype == "g"]) #nolint
-  input_dt_t <- qiverse.qipatterns:::.spc_limits_t(input_dt[spccharttype == "t"]) #nolint
+  input_dt_p <- qiverse.qipatterns:::.spc_limits_p(input_dt[spc_chart_type == "p"]) #nolint
+  input_dt_i <- qiverse.qipatterns:::.spc_limits_i(input_dt[spc_chart_type == "i"]) #nolint
+  input_dt_g <- qiverse.qipatterns:::.spc_limits_g(input_dt[spc_chart_type == "g"]) #nolint
+  input_dt_t <- qiverse.qipatterns:::.spc_limits_t(input_dt[spc_chart_type == "t"]) #nolint
 
   # Combine outputs
   input_dt <- rbind(
@@ -75,8 +75,8 @@ pattern_rules <- function(
     # PAT010 Identifies the date of the most recent astronomical point for SPC
     # charts beyond a 3 sigma control limit.
 
-    input_dt[betteris == "Higher" & spc_y < spc_ll99, spc_astro := period_end]
-    input_dt[betteris == "Lower"  & spc_y > spc_ul99, spc_astro := period_end]
+    input_dt[better_is == "Higher" & spc_y < spc_ll99, spc_astro := period_end]
+    input_dt[better_is == "Lower"  & spc_y > spc_ul99, spc_astro := period_end]
 
 
     # PAT030 TREND: identifies the most recent date of five consecutively
@@ -89,8 +89,8 @@ pattern_rules <- function(
     ## Determine direction of change from consecutive observations
 
     #the difference in y values between a point and the point preceeding it
-    input_dt[, spc_y_diff := ifelse(betteris == "Lower", 1,
-                                    ifelse(betteris == "Higher", -1, NA)) *
+    input_dt[, spc_y_diff := ifelse(better_is == "Lower", 1,
+                                    ifelse(better_is == "Higher", -1, NA)) *
                (spc_y - data.table::shift(spc_y, 1, type = "lag")),
              by = unique_key]
     #first value has no preceding point catch
@@ -156,9 +156,9 @@ pattern_rules <- function(
     # (2 sigma deviation from the mean).
 
     ## Flag those that meet two sigma above/below
-    input_dt[betteris == "Higher" & spc_y < spc_ll95,
+    input_dt[better_is == "Higher" & spc_y < spc_ll95,
              spc_twointhree_working := 1]
-    input_dt[betteris == "Lower"  & spc_y > spc_ul95,
+    input_dt[better_is == "Lower"  & spc_y > spc_ul95,
              spc_twointhree_working := 1]
     input_dt[is.na(spc_twointhree_working), spc_twointhree_working := 0]
 
@@ -209,10 +209,10 @@ pattern_rules <- function(
 
     # Shift ####
     ## Determine which size the observation sits and flag it
-    input_dt[betteris == "Higher" & spc_y < spc_cl, spc_shift_working := 1]
-    input_dt[betteris == "Higher" & spc_y > spc_cl, spc_shift_working := -1]
-    input_dt[betteris == "Lower"  & spc_y > spc_cl, spc_shift_working := 1]
-    input_dt[betteris == "Lower"  & spc_y < spc_cl, spc_shift_working := -1]
+    input_dt[better_is == "Higher" & spc_y < spc_cl, spc_shift_working := 1]
+    input_dt[better_is == "Higher" & spc_y > spc_cl, spc_shift_working := -1]
+    input_dt[better_is == "Lower"  & spc_y > spc_cl, spc_shift_working := 1]
+    input_dt[better_is == "Lower"  & spc_y < spc_cl, spc_shift_working := -1]
     input_dt[spc_y == spc_cl, spc_shift_working := 0]
     input_dt[is.na(spc_shift_working), spc_shift_working := 0]
 
@@ -264,18 +264,18 @@ pattern_rules <- function(
       _[, spc_shift_flag := NULL]
 
     input_dt <- input_dt[, .(unique_key, period_end, numerator, denominator,
-                             spccharttype,
-                             multiplier, betteris, fpl_astro, spc_y, spc_cl,
+                             spc_chart_type,
+                             multiplier, better_is, fpl_astro, spc_y, spc_cl,
                              spc_ul99, spc_ul95, spc_ll95, spc_ll99, spc_astro,
                              spc_trend, spc_twointhree, spc_shift)]
   }
 
-  # Add back in spccharttype run
+  # Add back in spc_chart_type run
   input_dt <- rbind(
     input_dt,
-    init_input_dt[spccharttype == "run",
+    init_input_dt[spc_chart_type == "run",
                   .(unique_key, period_end, numerator, denominator,
-                    spccharttype, multiplier, betteris, fpl_astro)],
+                    spc_chart_type, multiplier, better_is, fpl_astro)],
     fill = TRUE
   )
 
