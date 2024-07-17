@@ -1,6 +1,6 @@
 Package: qiverse.qipatterns
 Title: Quality Improvement Chart Patterns
-Version: 0.1.0.4
+Version: 0.1.1.0
 Authors@R: 
     person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
     family = "",
