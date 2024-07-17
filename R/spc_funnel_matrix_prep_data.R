@@ -16,7 +16,7 @@
 #' @param denominator A vector of the denominator Used to calculate
 #' the value for SPC and Funnel plots
 #' @param multiplier Scale relative risk and funnel by this factor. Default to
-#' 1, but 100 sometime used, e.g. in some hospital mortality ratios.
+#' 1, but 100 sometime used, e.g. in some group mortality ratios.
 #' @param better_is A string identifying the direction that is favourable for
 #' the indicator. "Higher" for points below the lower control limit to be
 #' unfavourable, "Lower" for points above the upper control limit to be
@@ -82,7 +82,7 @@ spc_funnel_matrix_prep_data <- function(
 ) {
 
   # Dealing with undefined global functions or variables
-  . <- hospital <-  #nolint
+  . <-  #nolint
     pattern_period_start <- pattern_period_end <-
     fpl_astro <- astro <- trend <- twointhree <- shift <-
     fpl_astro_unfav <- fpl_astro_fav <-
@@ -128,27 +128,31 @@ spc_funnel_matrix_prep_data <- function(
 
   # Rename columns
   setnames(unfav, old = c("fpl_astro", "astro", "shift",
-                    "trend", "twointhree", "indicatorgroup"),
+                          "trend", "twointhree", "indicator_group",
+                          "indicator_name",  "group_name"),
            new =c("fpl_astro_unfav", "astro_unfav", "shift_unfav",
-             "trend_unfav", "twointhree_unfav", "indicator_group"))
+                  "trend_unfav", "twointhree_unfav", "indicator_group",
+                  "indicator", "group"))
 
   setnames(fav, old = c("fpl_astro", "astro", "shift",
-                  "trend", "twointhree", "indicatorgroup"),
+                        "trend", "twointhree", "indicator_group",
+                        "indicator_name",  "group_name"),
            new = c("fpl_astro_fav", "astro_fav", "shift_fav",
-             "trend_fav", "twointhree_fav", "indicator_group"))
+                   "trend_fav", "twointhree_fav", "indicator_group",
+                   "indicator", "group"))
 
-  unfav[, c("numerator", "denominator", "Reason", "QSG Recommendation") := NULL]
-  fav[, c("numerator", "denominator", "Reason", "QSG Recommendation") := NULL]
+  unfav[, c("numerator", "denominator") := NULL]
+  fav[, c("numerator", "denominator") := NULL]
 
   # Export into a single patterns file ####
   patterns <- rbind(
-    unfav[, .(indicator, hospital, indicator_group)],
-    fav[, .(indicator, hospital, indicator_group)]
+    unfav[, .(indicator, group, indicator_group)],
+    fav[, .(indicator, group, indicator_group)]
   ) |>
     unique() |>
-    merge(unfav, by = c("indicator", "hospital", "indicator_group"),
+    merge(unfav, by = c("indicator", "group", "indicator_group"),
                       all.x = TRUE) |>
-    merge(fav, by = c("indicator", "hospital", "indicator_group"),
+    merge(fav, by = c("indicator", "group", "indicator_group"),
                       all.x = TRUE)
 
   ## get last 12 months for each indicator
@@ -243,34 +247,34 @@ spc_funnel_matrix_prep_data <- function(
   spc_patterns_long <- rbind(
     # Convert favourable SPC patterns to long
     patterns[spc_flag != "Neutral" & spc_fav_flag == "Y",
-             .(indicator, hospital,
+             .(indicator, group,
                astro = ifelse(astro_fav_flag == "Y", "8786", NA_character_),
                trend = ifelse(trend_fav_flag == "Y", "9443", NA_character_),
                twointhree = ifelse(twointhree_fav_flag == "Y", "8532", NA_character_),
                shift = ifelse(shift_fav_flag == "Y", "9442", NA_character_)
              )] |>
       melt(
-        id.vars = c("indicator", "hospital"),
+        id.vars = c("indicator", "group"),
         measure.vars = c("astro", "trend", "twointhree", "shift"),
         value.name = "spc_pattern"
       ) |>
-      _[!is.na(spc_pattern), .(indicator, hospital, spc_pattern)],
+      _[!is.na(spc_pattern), .(indicator, group, spc_pattern)],
     # Convert unfavourable SPC patterns to long
     patterns[spc_flag != "Neutral" & spc_unfav_flag == "Y",
-             .(indicator, hospital,
+             .(indicator, group,
                astro = ifelse(astro_unfav_flag == "Y", "8786", NA_character_),
                trend = ifelse(trend_unfav_flag == "Y", "9443", NA_character_),
                twointhree = ifelse(twointhree_unfav_flag == "Y", "8532", NA_character_),
                shift = ifelse(shift_unfav_flag == "Y", "9442", NA_character_)
              )] |>
       melt(
-        id.vars = c("indicator", "hospital"),
+        id.vars = c("indicator", "group"),
         measure.vars = c("astro", "trend", "twointhree", "shift"),
         value.name = "spc_pattern"
       ) |>
-      _[!is.na(spc_pattern), .(indicator, hospital, spc_pattern)]
+      _[!is.na(spc_pattern), .(indicator, group, spc_pattern)]
   )
-  spc_patterns_long[, unique_id := paste0(indicator, "_", hospital)]
+  spc_patterns_long[, unique_id := paste0(indicator, "_", group)]
 
   ## output ####
   # Merge with full data
@@ -287,11 +291,11 @@ spc_funnel_matrix_prep_data <- function(
     _[period_start >= pattern_period_start & period_end <= pattern_period_end] |> #nolint
     _[, .(unique_id = paste0(indicator_name, "_", group_name),
           indicator_group = indicator_group, indicator = indicator_name,
-          hospital = group_name, parent_group = parent_group_name)] |>
+          group = group_name, parent_group = parent_group_name)] |>
     unique() |>
     ## Merge patterns back on it
     merge(
-      patterns[, .(unique_id = paste0(indicator, "_", hospital),
+      patterns[, .(unique_id = paste0(indicator, "_", group),
                    spc_flag, fpl_flag)],
       by = "unique_id", all.x = TRUE, sort = FALSE
     ) |>
@@ -299,7 +303,7 @@ spc_funnel_matrix_prep_data <- function(
     _[is.na(spc_flag), spc_flag := "Neutral"] |>
     _[is.na(fpl_flag), fpl_flag := "Neutral"]
   data.table::setorder(output_patterns, indicator_group, indicator,
-                       parent_group, hospital)
+                       parent_group, group)
 
   # Return Output
   return(
