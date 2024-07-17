@@ -15,7 +15,7 @@ pattern_detection(
   spc_chart_type = "p",
   funnel_chart_type = "PR",
   indicator_group = NA,
-  description_short = indicator,
+  indicator_name = indicator,
   group_name = group,
   funnel_data_points = "Yes",
   trend_size = 5,
@@ -44,7 +44,7 @@ Default "PR"}
 
 \item{indicator_group}{A vector used for indicator grouping.}
 
-\item{description_short}{A vector of descriptive names for indicators}
+\item{indicator_name}{A vector of descriptive names for indicators}
 
 \item{group_name}{A vector of descriptive names for groups}
 

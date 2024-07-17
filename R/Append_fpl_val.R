@@ -27,7 +27,7 @@ append_fpl_val <- function(
 ) {
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
-  . <- group <- rr <- LCL95 <- UCL95 <- LCL99 <- UCL99 <- fpl_rr <-
+  . <- rr <- LCL95 <- UCL95 <- LCL99 <- UCL99 <- fpl_rr <-
     fpl_row_value <- fpl_ul99 <- fpl_astro <- fpl_ll99 <- `:=` <- NULL
 
   #Take the input data and generate a data table
@@ -42,9 +42,10 @@ append_fpl_val <- function(
     funnel_input <- data.table::data.table(
       group = unique(funnel_input$group)
     )
-    return(funnel_input[, c("fpl_rr", "fpl_ll95", "fpl_ll99",
-                            "fpl_ul95", "fpl_ul99", "fpl_row_value",
-                            "fpl_astro") := 0])
+    funnel_input[, c("fpl_rr", "fpl_ll95", "fpl_ll99",
+                     "fpl_ul95", "fpl_ul99", "fpl_row_value") := 0]
+    funnel_input[, fpl_astro := as.Date(NA)]
+    return(funnel_input)
   }
 
   # Create Funnel

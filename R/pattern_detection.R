@@ -11,7 +11,7 @@
 #' @param funnel_chart_type A string identifying the type of funnel plot.
 #' Default "PR"
 #' @param indicator_group A vector used for indicator grouping.
-#' @param description_short A vector of descriptive names for indicators
+#' @param indicator_name A vector of descriptive names for indicators
 #' @param group_name A vector of descriptive names for groups
 #' @param funnel_data_points A vector of which data points are included in
 #' the funnel plot calculation
@@ -37,7 +37,7 @@ pattern_detection <- function(
     spc_chart_type = "p",
     funnel_chart_type = "PR",
     indicator_group = NA,
-    description_short = indicator,
+    indicator_name = indicator,
     group_name = group,
     funnel_data_points = "Yes",
     trend_size = 5,
@@ -46,7 +46,7 @@ pattern_detection <- function(
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
   . <- fpl_astro <- unique_key <- spc_astro <- spc_shift <- spc_trend <-
-    spc_twointhree <- fpl_astro <- astro <- shift <- trend <- twointhree <-
+    spc_twointhree <- astro <- shift <- trend <- twointhree <-
     `:=` <- valid_spc <- NULL
 
   #create data table
@@ -54,7 +54,7 @@ pattern_detection <- function(
                                        numerator,
                                        denominator, multiplier, spc_chart_type,
                                        funnel_chart_type, indicator_group, better_is,
-                                       description_short, group_name,
+                                       indicator_name, group_name,
                                        funnel_data_points)
 
   #Create aggregate data for spc"s by indicator
@@ -70,13 +70,13 @@ pattern_detection <- function(
                               fpl_astro = as.Date(NA)),
                           by = .(indicator, multiplier, period_end,
                                  better_is, spc_chart_type, funnel_chart_type,
-                                 indicator_group, description_short)]
+                                 indicator_group, indicator_name)]
 
   data.table::setcolorder(aggregate,
                           c("indicator", "group", "period_end",
                             "numerator", "denominator", "multiplier",
                             "spc_chart_type", "funnel_chart_type", "indicator_group",
-                            "better_is", "description_short", "group_name",
+                            "better_is", "indicator_name", "group_name",
                             "funnel_data_points", "fpl_rr", "fpl_ll95",
                             "fpl_ul95", "fpl_ll99", "fpl_ul99", "fpl_row_value",
                             "fpl_astro"))
@@ -85,9 +85,9 @@ pattern_detection <- function(
   input_data_funnel <- input_data[funnel_data_points == "Yes",
                                   qiverse.qipatterns::append_fpl_val(
                                     numerator, denominator,
-                                    group, funnel_chart_type[1],
-                                    multiplier[1], better_is[1],
-                                    max(period_end)),
+                                    group, funnel_chart_type = funnel_chart_type[1],
+                                    multiplier = multiplier[1], better_is = better_is[1],
+                                    period_end = max(period_end)),
                                   by = .(indicator)]
   #console feedback
   cat("Funnel Patterns Completed", "\n")
@@ -95,8 +95,10 @@ pattern_detection <- function(
   #merge back the funnel data to main
   input_data <- merge(input_data, input_data_funnel, all = TRUE,
                       by = c("indicator", "group"))
-  #append the aggregate values onto the data table
-  input_data <- rbind(input_data, aggregate)
+  #append the aggregate values onto the data table where there is more than one group
+  if(length(unique(group)) > 1) {
+    input_data <- rbind(input_data, aggregate)
+  }
 
   #Validate that each indicator and group combination has enough data points to make an SPC
   input_data_valid <- input_data[, qiverse.qipatterns::valid_spc(numerator,
@@ -117,13 +119,13 @@ pattern_detection <- function(
     numerator, denominator, period_end,
     unique_key = paste0(indicator, "_", group),
     spc_chart_type, multiplier,
-    better_is, fpl_astro, trend_size, shift_size)]
+    better_is, trend_size, shift_size)]
   #merge pattern data with main data
   input_data <- merge(
     input_data[, .(unique_key = paste0(indicator, "_", group),
                    indicator, group, indicator_group,
-                   group_name, description_short, period_end,
-                   funnel_data_points)],
+                   group_name, indicator_name, period_end,
+                   funnel_data_points, fpl_astro)],
     input_data_spc,
     by = c("unique_key", "period_end"),
     all.x = TRUE,
@@ -138,7 +140,7 @@ pattern_detection <- function(
   #summarise data by indicator group
   #input_data <- input_data[group == "Aggregate", funnel_data_points := "Yes"] #nolint
   #find the latest patterns for each combination
-  input_data <- input_data[funnel_data_points == "Yes", by = .(description_short,
+  input_data <- input_data[funnel_data_points == "Yes", by = .(indicator_name,
                                                              group_name,
                                                              indicator_group,
                                                              better_is),

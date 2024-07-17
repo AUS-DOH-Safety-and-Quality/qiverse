@@ -8,7 +8,6 @@
 #' @param multiplier A string identifying the multiplication factor. Default 1
 #' @param better_is A character string, shows direction of positive change.
 #' "Higher" or "Lower"
-#' @param fpl_astro Date of Astronomical Point pattern, period end max of funnel
 #' @param trend_size The number of points in a trend pattern
 #' @param shift_size The number of points in a shift pattern
 #'
@@ -24,8 +23,7 @@ pattern_rules <- function(
     unique_key,
     spc_chart_type = "p",
     multiplier = 1,
-    better_is,
-    fpl_astro,
+    better_is = "Lower",
     trend_size = 5,
     shift_size = 7
 ) {
@@ -42,7 +40,7 @@ pattern_rules <- function(
   #create data table
   input_dt <- data.table::data.table(unique_key, numerator, denominator,
                                      period_end, spc_chart_type, multiplier,
-                                     better_is, fpl_astro)
+                                     better_is)
 
   # Copy input data table to preserve original copy for run charts
   init_input_dt <- data.table::copy(input_dt)
@@ -265,7 +263,7 @@ pattern_rules <- function(
 
     input_dt <- input_dt[, .(unique_key, period_end, numerator, denominator,
                              spc_chart_type,
-                             multiplier, better_is, fpl_astro, spc_y, spc_cl,
+                             multiplier, better_is, spc_y, spc_cl,
                              spc_ul99, spc_ul95, spc_ll95, spc_ll99, spc_astro,
                              spc_trend, spc_twointhree, spc_shift)]
   }
@@ -275,7 +273,7 @@ pattern_rules <- function(
     input_dt,
     init_input_dt[spc_chart_type == "run",
                   .(unique_key, period_end, numerator, denominator,
-                    spc_chart_type, multiplier, better_is, fpl_astro)],
+                    spc_chart_type, multiplier, better_is)],
     fill = TRUE
   )
 

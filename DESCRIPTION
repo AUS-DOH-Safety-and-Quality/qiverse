@@ -16,14 +16,10 @@ RoxygenNote: 7.3.1
 URL: https://github.com/AUS-DOH-Safety-and-Quality/qiverse.qipatterns
 BugReports: https://github.com/AUS-DOH-Safety-and-Quality/qiverse.qipatterns/issues
 Imports:
-  magrittr,
   data.table,
-  FunnelPlotR,
-  qicharts2,
-  dplyr,
-  readxl
+  FunnelPlotR
 Suggests:
-  qiverse.sharepoint,
+  qiverse.data,
   knitr,
   rmarkdown,
   testthat (>= 3.0.0)
