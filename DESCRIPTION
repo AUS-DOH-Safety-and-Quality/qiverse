@@ -8,7 +8,7 @@ Authors@R:
     email = "safetyandquality@health.wa.gov.au",
     comment = c(ORCID = "0000-0001-7000-8065"))
 Description: Defines functions needed to generate the Multiple Indicator Sigma Chart in Plotly.
-License: MIT + file LICENSE
+License: GPL (>= 3)
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
