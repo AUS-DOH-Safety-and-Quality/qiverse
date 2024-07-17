@@ -10,7 +10,7 @@ spc_plotly_create(
   denominator = NULL,
   data_type = "p",
   multiplier = 1,
-  betteris = "Lower",
+  better_is = "Lower",
   title = "",
   spc_period_start = NA,
   spc_period_end = NA,
@@ -35,7 +35,7 @@ spc_plotly_create(
   target_options = list(legend_name = "Target", line_colour = "#FF0000", line_width = 2,
     line_dash = "solid"),
   nhs_colours_enable = TRUE,
-  nhs_colours_options = list(improvement_direction = betteris, direction_to_flag =
+  nhs_colours_options = list(improvement_direction = better_is, direction_to_flag =
     "Both", colours = list(neutral = "#490092", improvement = "#00B0F0", deterioration =
     "#E46C0A", common_cause = "#A6A6A6")),
   nhs_icons_enable = FALSE,
@@ -64,7 +64,7 @@ charts. Default is "p".}
 \item{multiplier}{Scale relative risk and funnel by this factor. Default to
 1.}
 
-\item{betteris}{A string identifying the direction that is favourable for
+\item{better_is}{A string identifying the direction that is favourable for
 the indicator. "Higher" for points below the lower control limit to be
 unfavourable, "Lower" for points above the upper control limit to be
 unfavourable, and "Neutral" if the direction is not stated. Default is
@@ -144,7 +144,7 @@ line_width = 2, line_dash = "solid"))}
 (default = TRUE)}
 
 \item{nhs_colours_options}{A list of parameters to enable NHS colours for the SPC
-chart. (default = list(improvement_direction = betteris,
+chart. (default = list(improvement_direction = better_is,
 direction_to_flag = "Both", colours = list(neutral = "#490092",
 improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))}
 
@@ -197,7 +197,7 @@ spc_plotly_create(
                   101,96,96,98,105,117,94,77,97,90,106,107),
   data_type = 'p',
   multiplier = 1,
-  betteris = "Lower",
+  better_is = "Lower",
   title = paste0("Example Indicator", " - ", "Hospital"),
   spc_period_start = "2019-01-01",
   spc_period_end = "2021-12-31",

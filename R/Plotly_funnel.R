@@ -12,7 +12,7 @@
 #' of counts. Default is "PR".
 #' @param multiplier Scale relative risk and funnel by this factor. Default to
 #' 1, but 100 sometime used, e.g. in some hospital mortality ratios.
-#' @param betteris A string identifying the direction that is favourable for
+#' @param better_is A string identifying the direction that is favourable for
 #' the indicator. "Higher" for points below the lower control limit to be
 #' unfavourable, "Lower" for points above the upper control limit to be
 #' unfavourable, and "Neutral" if the direction is not stated. Default is
@@ -77,7 +77,7 @@
 #' @param nhs_colours_enable A boolean to enable NHS colours for the SPC chart.
 #' (default = TRUE)
 #' @param nhs_colours_options A list of parameters to enable NHS colours for the SPC
-#' chart. (default = list(improvement_direction = betteris,
+#' chart. (default = list(improvement_direction = better_is,
 #' direction_to_flag = "Both", colours = list(neutral = "#490092",
 #' improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))
 #' @param show_legend A boolean to enable legend for the Funnel Plot
@@ -106,7 +106,7 @@
 #'   group = paste0('Q', 1:25),
 #'   data_type = 'PR',
 #'   multiplier = 1,
-#'   betteris = "Higher",
+#'   better_is = "Higher",
 #'   title = "Test Indicator",
 #'   y_format = "Percentage",
 #'   x_axis_label = "This is X Axis",
@@ -122,7 +122,7 @@
 #'   group = paste0('Q', 1:25),
 #'   data_type = 'PR',
 #'   multiplier = 1,
-#'   betteris = "Higher",
+#'   better_is = "Higher",
 #'   title = "Test Indicator",
 #'   group_name = c("Alfa", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot",
 #'                  "Golf","Hotel", "India", "Juliett", "Kilo", "Lima", "Mike",
@@ -152,7 +152,7 @@ fpl_plotly_create <- function(
     group,
     data_type = "PR",
     multiplier = 1,
-    betteris = "Higher",
+    better_is = "Higher",
     title = "",
     group_name = NULL,
     short_group_name = NULL,
@@ -187,7 +187,7 @@ fpl_plotly_create <- function(
     ),
     nhs_colours_enable = TRUE,
     nhs_colours_options = list(
-      improvement_direction = betteris,
+      improvement_direction = better_is,
       direction_to_flag = "Both",
       colours = list(
         neutral = "#490092", # TODO Currently not used
@@ -350,9 +350,9 @@ fpl_plotly_create <- function(
       }
     }
 
-    # Update Colours if betteris was set to Neutral
+    # Update Colours if better_is was set to Neutral
     actual_colour_original <- actual_colour
-    if (betteris == "Neutral") {
+    if (better_is == "Neutral") {
       funnel_data <- funnel_data |>
         dplyr::mutate(actual_colour = dplyr::if_else(
           actual_colour != actual_colour_original,
@@ -502,7 +502,7 @@ fpl_plotly_create <- function(
     fpl_plotly <- fpl_plotly |>
       plotly::add_trace(
         name = ifelse(
-          betteris == "Lower",
+          better_is == "Lower",
           "Unfavourable",
           "Favourable"
         ),
@@ -512,7 +512,7 @@ fpl_plotly_create <- function(
         mode = "markers",
         marker = list(
           color = ifelse(
-            betteris == "Lower",
+            better_is == "Lower",
             nhs_colours_options$colours$deterioration,
             nhs_colours_options$colours$improvement
           ),
@@ -624,7 +624,7 @@ fpl_plotly_create <- function(
     fpl_plotly <- fpl_plotly |>
       plotly::add_trace(
         name = ifelse(
-          betteris == "Higher",
+          better_is == "Higher",
           "Unfavourable",
           "Favourable"
         ),
@@ -634,7 +634,7 @@ fpl_plotly_create <- function(
         mode = "markers",
         marker = list(
           color = ifelse(
-            betteris == "Higher",
+            better_is == "Higher",
             nhs_colours_options$colours$deterioration,
             nhs_colours_options$colours$improvement
           ),
@@ -721,19 +721,19 @@ fpl_plotly_create <- function(
       if (highlight_outlier_options == "Both") {
         funnel_data$outlier_3sigma == 1
       } else if (highlight_outlier_options$direction_to_flag == "Improvement") {
-        if (betteris == "Lower") {
+        if (better_is == "Lower") {
           funnel_data$outlier_3sigma == 1 &
             funnel_data$rr * multiplier < funnel_data$LCL99
-        } else if (betteris == "Higher") {
+        } else if (better_is == "Higher") {
           funnel_data$outlier_3sigma == 1 &
             funnel_data$rr * multiplier > funnel_data$UCL99
         }
       } else if (highlight_outlier_options$direction_to_flag ==
                  "Deterioration") {
-        if (betteris == "Lower") {
+        if (better_is == "Lower") {
           funnel_data$outlier_3sigma == 1 &
             funnel_data$rr * multiplier > funnel_data$UCL99
-        } else if (betteris == "Higher") {
+        } else if (better_is == "Higher") {
           funnel_data$outlier_3sigma == 1 &
             funnel_data$rr * multiplier < funnel_data$LCL99
         }

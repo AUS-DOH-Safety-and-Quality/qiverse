@@ -13,7 +13,7 @@
 #' charts. Default is "p".
 #' @param multiplier Scale relative risk and funnel by this factor. Default to
 #' 1.
-#' @param betteris A string identifying the direction that is favourable for
+#' @param better_is A string identifying the direction that is favourable for
 #' the indicator. "Higher" for points below the lower control limit to be
 #' unfavourable, "Lower" for points above the upper control limit to be
 #' unfavourable, and "Neutral" if the direction is not stated. Default is
@@ -67,7 +67,7 @@
 #' @param nhs_colours_enable A boolean to enable NHS colours for the SPC chart.
 #' (default = TRUE)
 #' @param nhs_colours_options A list of parameters to enable NHS colours for the SPC
-#' chart. (default = list(improvement_direction = betteris,
+#' chart. (default = list(improvement_direction = better_is,
 #' direction_to_flag = "Both", colours = list(neutral = "#490092",
 #' improvement = "#00B0F0", deterioration = "#E46C0A", common_cause = "#A6A6A6"))
 #' @param nhs_icons_enable A boolean to enable NHS icons for the SPC chart. This
@@ -109,7 +109,7 @@
 #'                   101,96,96,98,105,117,94,77,97,90,106,107),
 #'   data_type = 'p',
 #'   multiplier = 1,
-#'   betteris = "Lower",
+#'   better_is = "Lower",
 #'   title = paste0("Example Indicator", " - ", "Hospital"),
 #'   spc_period_start = "2019-01-01",
 #'   spc_period_end = "2021-12-31",
@@ -137,7 +137,7 @@ spc_plotly_create <- function(
     denominator = NULL,
     data_type = "p",
     multiplier = 1,
-    betteris = "Lower",
+    better_is = "Lower",
     title = "",
     spc_period_start = NA,
     spc_period_end = NA,
@@ -167,7 +167,7 @@ spc_plotly_create <- function(
     ),
     nhs_colours_enable = TRUE,
     nhs_colours_options = list(
-      improvement_direction = betteris,
+      improvement_direction = better_is,
       direction_to_flag = "Both",
       colours = list(
         neutral = "#490092",
@@ -299,10 +299,9 @@ spc_plotly_create <- function(
       denominator = denominator,
       period_end = as.character(x),
       unique_key = NA,
-      spccharttype = data_type,
+      spc_chart_type = data_type,
       multiplier = multiplier,
-      betteris = ifelse(nhs_colours_options$improvement_direction == "Lower", "Higher", "Lower"),
-      fpl_astro = NA,
+      better_is = ifelse(nhs_colours_options$improvement_direction == "Lower", "Higher", "Lower"),
       trend_size = trend_size,
       shift_size = shift_size
     )
@@ -311,10 +310,9 @@ spc_plotly_create <- function(
       denominator = denominator,
       period_end = as.character(x),
       unique_key = NA,
-      spccharttype = data_type,
+      spc_chart_type = data_type,
       multiplier = multiplier,
-      betteris = ifelse(nhs_colours_options$improvement_direction == "Lower", "Lower", "Higher"),
-      fpl_astro = NA,
+      better_is = ifelse(nhs_colours_options$improvement_direction == "Lower", "Lower", "Higher"),
       trend_size = trend_size,
       shift_size = shift_size
     )
@@ -418,8 +416,8 @@ spc_plotly_create <- function(
     nhs_pat[is.na(actual_marker_border),
             actual_marker_border := actual_marker_fill]
 
-    # Update Colours if betteris was set to Neutral
-    if (betteris == "Neutral") {
+    # Update Colours if better_is was set to Neutral
+    if (better_is == "Neutral") {
       nhs_pat[actual_marker_fill != nhs_colours_options$colours$common_cause,
               actual_marker_fill := nhs_colours_options$colours$neutral]
       nhs_pat[actual_marker_border != nhs_colours_options$colours$common_cause,
@@ -498,7 +496,7 @@ spc_plotly_create <- function(
     spc_plotly <- spc_plotly |>
       plotly::add_trace(
         name = ifelse(
-          betteris == "Lower",
+          better_is == "Lower",
           "Deterioration",
           "Improvement"
         ),
@@ -508,7 +506,7 @@ spc_plotly_create <- function(
         mode = "markers",
         marker = list(
           color = ifelse(
-            betteris == "Lower",
+            better_is == "Lower",
             nhs_colours_options$colours$deterioration,
             nhs_colours_options$colours$improvement
           ),
@@ -609,12 +607,12 @@ spc_plotly_create <- function(
           paste0(
             ifelse(!is.na(spc_imp_text),
                    paste0("<br><b>Pattern(s) (",
-                          ifelse(betteris == "Neutral", "Higher", "Improvement"),
+                          ifelse(better_is == "Neutral", "Higher", "Improvement"),
                           "): </b>", spc_imp_text),
                    ""),
             ifelse(!is.na(spc_det_text),
                    paste0("<br><b>Pattern(s) (",
-                          ifelse(betteris == "Neutral", "Lower", "Deterioration"),
+                          ifelse(better_is == "Neutral", "Lower", "Deterioration"),
                           "): </b>", spc_det_text),
                    "")
           )
@@ -673,7 +671,7 @@ spc_plotly_create <- function(
     spc_plotly <- spc_plotly |>
       plotly::add_trace(
         name = ifelse(
-          betteris == "Higher",
+          better_is == "Higher",
           "Deterioration",
           "Improvement"
         ),
@@ -683,7 +681,7 @@ spc_plotly_create <- function(
         mode = "markers",
         marker = list(
           color = ifelse(
-            betteris == "Higher",
+            better_is == "Higher",
             nhs_colours_options$colours$deterioration,
             nhs_colours_options$colours$improvement
           ),
@@ -762,17 +760,16 @@ spc_plotly_create <- function(
     }
     # Uses the runPat function from Pattern_detection_stripped
     ## Run both sides for neutral
-    if (betteris == "Neutral") {
+    if (better_is == "Neutral") {
       filt_pat <- rbind(
         qiverse.qipatterns::pattern_rules(
           numerator = numerator,
           denominator = denominator,
           period_end = as.character(x),
           unique_key = NA,
-          spccharttype = data_type,
+          spc_chart_type = data_type,
           multiplier = multiplier,
-          betteris = "Lower",
-          fpl_astro = NA,
+          better_is = "Lower",
           trend_size = trend_size,
           shift_size = shift_size
         ) |>
@@ -787,10 +784,9 @@ spc_plotly_create <- function(
           denominator = denominator,
           period_end = as.character(x),
           unique_key = NA,
-          spccharttype = data_type,
+          spc_chart_type = data_type,
           multiplier = multiplier,
-          betteris = "Higher",
-          fpl_astro = NA,
+          better_is = "Higher",
           trend_size = trend_size,
           shift_size = shift_size
         ) |>
@@ -811,10 +807,9 @@ spc_plotly_create <- function(
         denominator = denominator,
         period_end = as.character(x),
         unique_key = NA,
-        spccharttype = data_type,
+        spc_chart_type = data_type,
         multiplier = multiplier,
-        betteris = betteris,
-        fpl_astro = NA,
+        better_is = better_is,
         trend_size = trend_size,
         shift_size = shift_size
       ) |>
@@ -949,7 +944,7 @@ spc_plotly_create <- function(
       }
     }
 
-    # If betteris direction is neutral, set the icon pattern to neutral
+    # If better_is direction is neutral, set the icon pattern to neutral
     if (nhs_colours_options$improvement_direction == "Neutral" &
         nhs_icon_pattern != "common_cause") {
       if (nhs_icon_pattern == "concern") {
