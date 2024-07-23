@@ -10,7 +10,7 @@
 #' @param spc_chart_type A string identifying the type of spc chart. Default "p"
 #' @param funnel_chart_type A string identifying the type of funnel plot.
 #' Default "PR"
-#' @param indicator_group A vector used for indicator grouping.
+#' @param parent_indicator A vector used for indicator grouping.
 #' @param indicator_name A vector of descriptive names for indicators
 #' @param group_name A vector of descriptive names for groups
 #' @param funnel_data_points A vector of which data points are included in
@@ -36,7 +36,7 @@ pattern_detection <- function(
     better_is,
     spc_chart_type = "p",
     funnel_chart_type = "PR",
-    indicator_group = NA,
+    parent_indicator = NA,
     indicator_name = indicator,
     group_name = group,
     funnel_data_points = "Yes",
@@ -53,7 +53,7 @@ pattern_detection <- function(
   input_data <- data.table::data.table(indicator, group, period_end,
                                        numerator,
                                        denominator, multiplier, spc_chart_type,
-                                       funnel_chart_type, indicator_group, better_is,
+                                       funnel_chart_type, parent_indicator, better_is,
                                        indicator_name, group_name,
                                        funnel_data_points)
 
@@ -70,12 +70,12 @@ pattern_detection <- function(
                               fpl_astro = as.Date(NA)),
                           by = .(indicator, multiplier, period_end,
                                  better_is, spc_chart_type, funnel_chart_type,
-                                 indicator_group, indicator_name)]
+                                 parent_indicator, indicator_name)]
 
   data.table::setcolorder(aggregate,
                           c("indicator", "group", "period_end",
                             "numerator", "denominator", "multiplier",
-                            "spc_chart_type", "funnel_chart_type", "indicator_group",
+                            "spc_chart_type", "funnel_chart_type", "parent_indicator",
                             "better_is", "indicator_name", "group_name",
                             "funnel_data_points", "fpl_rr", "fpl_ll95",
                             "fpl_ul95", "fpl_ll99", "fpl_ul99", "fpl_row_value",
@@ -123,7 +123,7 @@ pattern_detection <- function(
   #merge pattern data with main data
   input_data <- merge(
     input_data[, .(unique_key = paste0(indicator, "_", group),
-                   indicator, group, indicator_group,
+                   indicator, group, parent_indicator,
                    group_name, indicator_name, period_end,
                    funnel_data_points, fpl_astro)],
     input_data_spc,
@@ -142,7 +142,7 @@ pattern_detection <- function(
   #find the latest patterns for each combination
   input_data <- input_data[funnel_data_points == "Yes", by = .(indicator_name,
                                                              group_name,
-                                                             indicator_group,
+                                                             parent_indicator,
                                                              better_is),
                            .(numerator = sum(numerator),
                              denominator = as.numeric(format(sum(denominator),

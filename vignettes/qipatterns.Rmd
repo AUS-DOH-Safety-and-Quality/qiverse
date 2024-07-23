@@ -55,9 +55,9 @@ long format and contain the following columns:
     groups.
 -   `spc_chart_type` - A string identifying the type of SPC chart.
 -   `funnel_chart_type` - A string identifying the type of funnel plot.
--   `indicator_group` - A vector used for indicator grouping. i.e.
-    grouping together maternity related indicators into a Maternity
-    group.
+-   `parent_indicator` - A vector used for parent indicator categorisation. i.e.
+    categorising together maternity related indicators into a Maternity
+    parent.
 -   `indicator_name` - A vector of descriptive names for indicator.
 -   `group_name` - A vector of descriptive names for groups Default
     group variable
@@ -86,7 +86,7 @@ pattern_detection_data <- pattern_detection(
   better_is = example_spc_data$better_is,
   spc_chart_type = example_spc_data$spc_chart_type,
   funnel_chart_type = example_spc_data$funnel_chart_type,
-  indicator_group = "All", # Allocates indicators into one parent group named All
+  parent_indicator = "All", # Allocates indicators into one parent group named All
   indicator_name = example_spc_data$indicator,
   group_name = example_spc_data$group,
   funnel_data_points = "Yes", # Includes all data points in the funnel plot
@@ -110,7 +110,7 @@ pattern_detection_data_groupA <- pattern_detection(
   better_is = example_spc_data[group == "A"]$better_is,
   spc_chart_type = example_spc_data[group == "A"]$spc_chart_type,
   funnel_chart_type = example_spc_data[group == "A"]$funnel_chart_type,
-  indicator_group = "All", # Allocates indicators into one parent group named All
+  parent_indicator = "All", # Allocates indicators into one parent group named All
   indicator_name = example_spc_data[group == "A"]$indicator,
   group_name = example_spc_data[group == "A"]$group,
   funnel_data_points = "Yes", # Includes all data points in the funnel plot

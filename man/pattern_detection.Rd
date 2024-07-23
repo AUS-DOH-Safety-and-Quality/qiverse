@@ -14,7 +14,7 @@ pattern_detection(
   better_is,
   spc_chart_type = "p",
   funnel_chart_type = "PR",
-  indicator_group = NA,
+  parent_indicator = NA,
   indicator_name = indicator,
   group_name = group,
   funnel_data_points = "Yes",
@@ -42,7 +42,7 @@ pattern_detection(
 \item{funnel_chart_type}{A string identifying the type of funnel plot.
 Default "PR"}
 
-\item{indicator_group}{A vector used for indicator grouping.}
+\item{parent_indicator}{A vector used for indicator grouping.}
 
 \item{indicator_name}{A vector of descriptive names for indicators}
 
