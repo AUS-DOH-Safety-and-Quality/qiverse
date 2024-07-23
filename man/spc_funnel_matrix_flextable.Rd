@@ -6,17 +6,17 @@
 \usage{
 spc_funnel_matrix_flextable(
   data,
-  filter_indicator_group = NULL,
+  filter_parent_indicator = NULL,
   filter_indicator = NULL,
   filter_parent_group = NULL,
-  filter_hospital = NULL
+  filter_group = NULL
 )
 }
 \arguments{
 \item{data}{A data.table output from the spc_funnel_matrix_prep_data
 function}
 
-\item{filter_indicator_group}{A vector of indicator_group to filter the data by. Data
+\item{filter_parent_indicator}{A vector of parent indicators to filter the data by. Data
 will not be filtered by default (NA)}
 
 \item{filter_indicator}{A vector of indicator to filter the data by. Data
@@ -25,7 +25,7 @@ will not be filtered by default (NA)}
 \item{filter_parent_group}{A vector of parent_group to filter the data by. Data
 will not be filtered by default (NA)}
 
-\item{filter_hospital}{A vector of hospital to filter the data by. Data
+\item{filter_group}{A vector of group to filter the data by. Data
 will not be filtered by default (NA)}
 }
 \value{

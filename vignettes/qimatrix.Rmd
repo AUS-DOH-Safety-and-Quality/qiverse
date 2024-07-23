@@ -34,7 +34,7 @@ The data that feeds into the SPC Funnel Matrix visual requires preparation using
 -   `multiplier` - Scale relative risk and funnel by this factor.
 -   `better_is` - A string identifying the direction that is favourable for the indicator. "Higher" for points below the lower control limit to be unfavourable, "Lower" for points above the upper control limit to be unfavourable, and "Neutral" if the direction is not stated.
 -   `parent_group_name` - A vector of parent group names which are to be displayed in the tooltip. These are the major categories for the groups.
--   `indicator_group` - A vector used for indicator grouping. i.e. grouping together maternity related indicators into a Maternity group.
+-   `parent_indicator` - A vector used for indicator grouping. i.e. grouping together maternity related indicators into a Maternity group.
 -   `spc_chart_type` - A string identifying the type of spc chart.
 -   `funnel_chart_type` - A string identifying the type of funnel plot.
 -   `indicator_name` - A vector of descriptive names for indicator.
@@ -60,7 +60,7 @@ spc_funnel_matrix_data <- spc_funnel_matrix_prep_data(
   multiplier = example_spc_data$multiplier,
   better_is = example_spc_data$better_is,
   parent_group_name = "All",
-  indicator_group = "All",
+  parent_indicator = "All",
   spc_chart_type = example_spc_data$spc_chart_type,
   funnel_chart_type = example_spc_data$funnel_chart_type,
   funnel_data_points = "Yes"

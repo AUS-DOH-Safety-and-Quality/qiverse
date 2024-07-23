@@ -25,7 +25,7 @@
 #' @param parent_group_name A vector of parent group names which are to be
 #' displayed in the tooltip. These are the major categories for the groups.
 #' Default is "All"
-#' @param indicator_group A vector used for indicator parent grouping, i.e.
+#' @param parent_indicator A vector used for indicator parent grouping, i.e.
 #' grouping together maternity related indicators into a Maternity group.
 #' Default is "All"
 #' @param spc_chart_type A string identifying the type of spc chart. Default "p"
@@ -57,7 +57,7 @@
 #'     multiplier = example_spc_data$multiplier,
 #'     better_is = example_spc_data$better_is,
 #'     parent_group_name = "All",
-#'     indicator_group = "All",
+#'     parent_indicator = "All",
 #'     spc_chart_type = example_spc_data$spc_chart_type,
 #'     funnel_chart_type = example_spc_data$funnel_chart_type,
 #'     funnel_data_points = "Yes"
@@ -73,7 +73,7 @@ spc_funnel_matrix_prep_data <- function(
   multiplier = 1,
   better_is = "Higher",
   parent_group_name = "All",
-  indicator_group = "All",
+  parent_indicator = "All",
   spc_chart_type = "p",
   funnel_chart_type = "PR",
   indicator_name = indicator,
@@ -104,7 +104,7 @@ spc_funnel_matrix_prep_data <- function(
     indicator, group, period_end,
     period_start, numerator,
     denominator, multiplier, parent_group_name, spc_chart_type,
-    funnel_chart_type, indicator_group, better_is,
+    funnel_chart_type, parent_indicator, better_is,
     indicator_name, group_name,
     funnel_data_points
   )
@@ -117,28 +117,28 @@ spc_funnel_matrix_prep_data <- function(
     indicator, group,
     period_end, numerator, denominator, multiplier,
     better_is, spc_chart_type, funnel_chart_type,
-    indicator_group, indicator_name,
+    parent_indicator, indicator_name,
     group_name, funnel_data_points)
   fav <- qiverse.qipatterns::pattern_detection(
     indicator, group,
     period_end, numerator, denominator, multiplier,
     worseis, spc_chart_type, funnel_chart_type,
-    indicator_group, indicator_name,
+    parent_indicator, indicator_name,
     group_name, funnel_data_points)
 
   # Rename columns
   setnames(unfav, old = c("fpl_astro", "astro", "shift",
-                          "trend", "twointhree", "indicator_group",
+                          "trend", "twointhree", "parent_indicator",
                           "indicator_name",  "group_name"),
            new =c("fpl_astro_unfav", "astro_unfav", "shift_unfav",
-                  "trend_unfav", "twointhree_unfav", "indicator_group",
+                  "trend_unfav", "twointhree_unfav", "parent_indicator",
                   "indicator", "group"))
 
   setnames(fav, old = c("fpl_astro", "astro", "shift",
-                        "trend", "twointhree", "indicator_group",
+                        "trend", "twointhree", "parent_indicator",
                         "indicator_name",  "group_name"),
            new = c("fpl_astro_fav", "astro_fav", "shift_fav",
-                   "trend_fav", "twointhree_fav", "indicator_group",
+                   "trend_fav", "twointhree_fav", "parent_indicator",
                    "indicator", "group"))
 
   unfav[, c("numerator", "denominator") := NULL]
@@ -146,13 +146,13 @@ spc_funnel_matrix_prep_data <- function(
 
   # Export into a single patterns file ####
   patterns <- rbind(
-    unfav[, .(indicator, group, indicator_group)],
-    fav[, .(indicator, group, indicator_group)]
+    unfav[, .(indicator, group, parent_indicator)],
+    fav[, .(indicator, group, parent_indicator)]
   ) |>
     unique() |>
-    merge(unfav, by = c("indicator", "group", "indicator_group"),
+    merge(unfav, by = c("indicator", "group", "parent_indicator"),
                       all.x = TRUE) |>
-    merge(fav, by = c("indicator", "group", "indicator_group"),
+    merge(fav, by = c("indicator", "group", "parent_indicator"),
                       all.x = TRUE)
 
   ## get last 12 months for each indicator
@@ -290,7 +290,7 @@ spc_funnel_matrix_prep_data <- function(
       sort = FALSE) |>
     _[period_start >= pattern_period_start & period_end <= pattern_period_end] |> #nolint
     _[, .(unique_id = paste0(indicator_name, "_", group_name),
-          indicator_group = indicator_group, indicator = indicator_name,
+          parent_indicator = parent_indicator, indicator = indicator_name,
           group = group_name, parent_group = parent_group_name)] |>
     unique() |>
     ## Merge patterns back on it
@@ -302,7 +302,7 @@ spc_funnel_matrix_prep_data <- function(
     ## Those without patterns are deemed neutral
     _[is.na(spc_flag), spc_flag := "Neutral"] |>
     _[is.na(fpl_flag), fpl_flag := "Neutral"]
-  data.table::setorder(output_patterns, indicator_group, indicator,
+  data.table::setorder(output_patterns, parent_indicator, indicator,
                        parent_group, group)
 
   # Return Output

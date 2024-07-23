@@ -14,7 +14,7 @@ spc_funnel_matrix_prep_data(
   multiplier = 1,
   better_is = "Higher",
   parent_group_name = "All",
-  indicator_group = "All",
+  parent_indicator = "All",
   spc_chart_type = "p",
   funnel_chart_type = "PR",
   indicator_name = indicator,
@@ -42,7 +42,7 @@ the value for SPC and Funnel plots}
 the value for SPC and Funnel plots}
 
 \item{multiplier}{Scale relative risk and funnel by this factor. Default to
-1, but 100 sometime used, e.g. in some hospital mortality ratios.}
+1, but 100 sometime used, e.g. in some group mortality ratios.}
 
 \item{better_is}{A string identifying the direction that is favourable for
 the indicator. "Higher" for points below the lower control limit to be
@@ -54,7 +54,7 @@ Default is "Higher"}
 displayed in the tooltip. These are the major categories for the groups.
 Default is "All"}
 
-\item{indicator_group}{A vector used for indicator parent grouping, i.e.
+\item{parent_indicator}{A vector used for indicator parent grouping, i.e.
 grouping together maternity related indicators into a Maternity group.
 Default is "All"}
 
@@ -94,7 +94,7 @@ patterns, and export into the SPC Funnel Matrix format.
     multiplier = example_spc_data$multiplier,
     better_is = example_spc_data$better_is,
     parent_group_name = "All",
-    indicator_group = "All",
+    parent_indicator = "All",
     spc_chart_type = example_spc_data$spc_chart_type,
     funnel_chart_type = example_spc_data$funnel_chart_type,
     funnel_data_points = "Yes"

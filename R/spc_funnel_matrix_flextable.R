@@ -4,13 +4,13 @@
 #'
 #' @param data A data.table output from the spc_funnel_matrix_prep_data
 #' function
-#' @param filter_indicator_group A vector of indicator_group to filter the data by. Data
+#' @param filter_parent_indicator A vector of parent indicators to filter the data by. Data
 #' will not be filtered by default (NA)
 #' @param filter_indicator A vector of indicator to filter the data by. Data
 #' will not be filtered by default (NA)
 #' @param filter_parent_group A vector of parent_group to filter the data by. Data
 #' will not be filtered by default (NA)
-#' @param filter_hospital A vector of hospital to filter the data by. Data
+#' @param filter_group A vector of group to filter the data by. Data
 #' will not be filtered by default (NA)
 #'
 #' @return A flextable visualisation for the SPC Funnel Matrix.
@@ -42,15 +42,15 @@
 
 spc_funnel_matrix_flextable <- function(
     data,
-    filter_indicator_group = NULL,
+    filter_parent_indicator = NULL,
     filter_indicator = NULL,
     filter_parent_group = NULL,
-    filter_hospital = NULL
+    filter_group = NULL
 ) {
 
   # Dealing with undefined global functions or variables
   . <- position <- spc_flag <- fpl_flag <- spc_pattern <- unique_id <-
-    patterns <- indicator <- hospital <- num <- indicator_group <-
+    patterns <- indicator <- group <- num <- indicator_group <-
     parent_group <- spc_pattern_utf8 <- NULL
 
   # Load the data
@@ -59,8 +59,8 @@ spc_funnel_matrix_flextable <- function(
 
   # Apply optional pre-filtering
   ## Filter by indicator_group
-  if (length(filter_indicator_group) > 0) {
-    spc_funnel_matrix <- spc_funnel_matrix[indicator_group %in% filter_indicator_group]
+  if (length(filter_parent_indicator) > 0) {
+    spc_funnel_matrix <- spc_funnel_matrix[indicator_group %in% filter_parent_indicator]
     spc_patterns_long <-
       spc_patterns_long[indicator %in% spc_funnel_matrix[, unique(indicator)]]
   }
@@ -76,14 +76,14 @@ spc_funnel_matrix_flextable <- function(
   if (length(filter_parent_group) > 0) {
     spc_funnel_matrix <- spc_funnel_matrix[parent_group %in% filter_parent_group]
     spc_patterns_long <-
-      spc_patterns_long[hospital %in% spc_funnel_matrix[, unique(hospital)]]
+      spc_patterns_long[group %in% spc_funnel_matrix[, unique(group)]]
   }
 
-  ## Filter by hospital
-  if (length(filter_hospital) > 0) {
-    spc_funnel_matrix <- spc_funnel_matrix[hospital %in% filter_hospital]
+  ## Filter by group
+  if (length(filter_group) > 0) {
+    spc_funnel_matrix <- spc_funnel_matrix[group %in% filter_group]
     spc_patterns_long <-
-      spc_patterns_long[hospital %in% spc_funnel_matrix[, unique(hospital)]]
+      spc_patterns_long[group %in% spc_funnel_matrix[, unique(group)]]
   }
 
   # Case statement to identify where on the 3x3 grid each indicator lies
@@ -117,7 +117,7 @@ spc_funnel_matrix_flextable <- function(
     merge(spc_patterns_long_collapsed, by = "unique_id",
           all.x = TRUE, sort = FALSE) |>
     # Collapse by position
-    _[, paste(indicator, "-", hospital,
+    _[, paste(indicator, "-", group,
                fifelse(!is.na(patterns), patterns, ""),
                collapse = "\n"), by = position]
 
@@ -128,7 +128,7 @@ spc_funnel_matrix_flextable <- function(
   matrix$V1[5] <- paste(
     "There are",
     spc_funnel_matrix[spc_flag == "Neutral" & fpl_flag == "Neutral", .N],
-    "indicator hospital combinations that have not displayed any SPC patterns",
+    "indicator and group combinations that have not displayed any SPC patterns",
     "or funnel plot outliers in the last twelve months")
   # Create a vector of row names
   colZero <- data.table::data.table(
