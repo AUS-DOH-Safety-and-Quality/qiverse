@@ -288,6 +288,8 @@ fpl_plotly_create <- function(
     centre_line <- sum(numerator) / sum(denominator)
   } else if (data_type == "SR") {
     centre_line <- 1
+  } else {
+    centre_line <- sum(numerator) / sum(denominator)
   }
   centre_line <- centre_line * multiplier
 
