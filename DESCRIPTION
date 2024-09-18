@@ -1,6 +1,6 @@
 Package: qiverse
 Title: Quality Improvement Package Universe
-Version: 0.0.1.0
+Version: 0.0.1.1
 Authors@R: 
     person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
     family = "",
@@ -16,15 +16,15 @@ RoxygenNote: 7.3.1
 URL: https://github.com/AUS-DOH-Safety-and-Quality/qiverse
 BugReports: https://github.com/AUS-DOH-Safety-and-Quality/qiverse/issues
 Depends:
-  qiverse.azure,
-  qiverse.data,
-  qiverse.powerbi,
-  qiverse.qimatrix,
-  qiverse.qimisc,
-  qiverse.qipatterns,
-  qiverse.qiplotly,
-  qiverse.sharepoint,
-  qiverse.snowflake
+  qiverse.azure (>= 0.0.0.900),
+  qiverse.data (>= 0.0.1.0),
+  qiverse.powerbi (>= 0.0.0.900),
+  qiverse.qimatrix (>= 0.0.2.0),
+  qiverse.qimisc (>= 0.0.1.0),
+  qiverse.qipatterns (>= 0.1.1.0),
+  qiverse.qiplotly (>= 0.1.2.0),
+  qiverse.sharepoint (>= 0.0.0.900),
+  qiverse.snowflake (>= 0.0.0.900)
 Suggests:
   knitr,
   rmarkdown,
