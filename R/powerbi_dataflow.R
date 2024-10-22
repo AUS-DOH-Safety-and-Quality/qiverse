@@ -1,3 +1,77 @@
+get_dataflow_metadata <- function(workspace_name, dataflow_name, access_token,
+                                  verbose) {
+  if (interactive() && isTRUE(verbose)) {
+    message("Fetching dataflow metadata...")
+  }
+
+  # Using the cluster URL instead of the generic API redirect (api.powerbi.com)
+  # allows for additional API endpoints
+  cluster_url <- get_cluster_url(access_token)
+
+  # We need the unique identifier for the dataflow of interest, but we only
+  # have its name. As such, we request the metadata of all dataflows that we
+  # have access to and filter the results
+  target_dataflow <- httr::GET(url = paste0(cluster_url, "/metadata/v201901/gallery/dataflows"),
+                               config = get_auth_header(access_token),
+                               httr::content_type_json()) |>
+    httr::content() |>
+    purrr::keep(\(x) {
+      if (is.null(x$cdsaModel$displayName)) {
+        FALSE
+      } else {
+        x$workspaceName == workspace_name && x$cdsaModel$displayName == dataflow_name
+      }
+    })
+
+  # Keep last edited target dataflow
+  if (length(target_dataflow) > 1) {
+    # Find max last edited date
+    max_last_edit_date <- purrr::map(target_dataflow, \(x) {
+      x$cdsaModel$lastEditedTimeUTC})|>
+      # extract max of list
+      purrr::reduce(max)
+    # Choose last edited date dataflow
+    target_dataflow <- target_dataflow |>
+      purrr::keep(\(x) {x$cdsaModel$lastEditedTimeUTC == max_last_edit_date})
+  }
+  target_dataflow[[1]]
+}
+
+get_table_metadata <- function(dataflow_id, table_name, access_token) {
+  # Now we can request detailed metadata for the dataflow, including column names
+  # and types, as well the storage location of the actual CSV file
+  all_tables <- httr::GET(url = paste0(get_cluster_url(access_token), "/metadata/v201606/cdsa/dataflows/", dataflow_id, "/contentandcache"),
+                          config = get_auth_header(access_token),
+                          httr::content_type_json()) |>
+    httr::content()
+
+  purrr::keep(all_tables$content$entities, \(x) {
+    x$name == table_name
+  })[[1]]
+}
+
+get_sas_key <- function(dataflow_id, table_name, access_token) {
+  # While we have the URL for the table, we don't have 'permission' to
+  # download it using our current access token. Instead, we need to use the
+  # access token to request a Shared Access Signature (SAS). This SAS summarises
+  # the extent of data that we are allowed to access, and the length of time
+  # that it is valid for use.
+  sas_query <- httr::POST(
+    url = paste0(get_cluster_url(access_token), "/metadata/v201606/cdsa/dataflows/", dataflow_id, "/storageAccess"),
+    body = jsonlite::toJSON(
+      list("TokenLifetimeInMinutes" = 360,
+           "Permissions" = "Read",
+           "EntityName" = table_name),
+      auto_unbox = TRUE
+    ),
+    config = get_auth_header(access_token),
+    httr::content_type_json()
+  ) |>
+    httr::content()
+
+  sas_query$accessDetails[[1]]$blobContainerSas
+}
+
 #' Download PowerBI Dataflow Table
 #'
 #' This function provides the ability to download tables from within PowerBI
@@ -31,61 +105,16 @@
 download_dataflow_table <- function(workspace_name, dataflow_name,
                                     table_name, access_token,
                                     verbose = TRUE) {
-  # Create the authorisation header that will be needed for all queries
-  auth_header <- get_auth_header(access_token)
 
-  if (interactive() && isTRUE(verbose)) {
-    message("Fetching dataflow metadata...")
-  }
-
-  # Using the cluster URL instead of the generic API redirect (api.powerbi.com)
-  # allows for additional API endpoints
-  cluster_url <- get_cluster_url(access_token)
-
-  # We need the unique identifier for the dataflow of interest, but we only
-  # have its name. As such, we request the metadata of all dataflows that we
-  # have access to and filter the results
-  target_dataflow <- httr::GET(url = paste0(cluster_url, "/metadata/v201901/gallery/dataflows"),
-                              config = auth_header,
-                              httr::content_type_json()) |>
-    httr::content() |>
-    purrr::keep(\(x) {
-      if (is.null(x$cdsaModel$displayName)) {
-        FALSE
-      } else {
-        x$workspaceName == workspace_name && x$cdsaModel$displayName == dataflow_name
-      }
-    })
-
-  # Keep last edited target dataflow
-  if (length(target_dataflow) > 1) {
-    # Find max last edited date
-    max_last_edit_date <- purrr::map(target_dataflow, \(x) {
-      x$cdsaModel$lastEditedTimeUTC})|>
-      # extract max of list
-      purrr::reduce(max)
-    # Choose last edited date dataflow
-    target_dataflow <- target_dataflow |>
-      purrr::keep(\(x) {x$cdsaModel$lastEditedTimeUTC == max_last_edit_date})
-  }
-
+  target_dataflow <- get_dataflow_metadata(workspace_name, dataflow_name,
+                                           access_token, verbose)
   # Extract
-  dataflow_id <- target_dataflow[[1]]$cdsaModel$objectId
+  dataflow_id <- target_dataflow$cdsaModel$objectId
 
-  # Now we can request detailed metadata for the dataflow, including column names
-  # and types, as well the storage location of the actual CSV file
-  all_tables <- httr::GET(url = paste0(cluster_url, "/metadata/v201606/cdsa/dataflows/", dataflow_id, "/contentandcache"),
-                          config = auth_header,
-                          httr::content_type_json()) |>
-    httr::content()
-
-  target_table <- purrr::keep(all_tables$content$entities, \(x) {
-    x$name == table_name
-  })
-
+  target_table <- get_table_metadata(dataflow_id, table_name, access_token)
 
   # Extract the column names and types
-  table_colnames <- purrr::map_chr(target_table[[1]]$attributes, "name")
+  table_colnames <- purrr::map_chr(target_table$attributes, "name")
 
   pbi_to_readr_type_map <- list(
     "string" = readr::col_character(),
@@ -96,29 +125,12 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
     "dateTime" = readr::col_datetime(format = "%d/%m/%Y %H:%M:%S %p"),
     "time" = readr::col_time(format = "%H:%M:%S")
   )
-  table_coltypes <- purrr::map(target_table[[1]]$attributes, \(x) {
+  table_coltypes <- purrr::map(target_table$attributes, \(x) {
     pbi_to_readr_type_map[[x$dataType]]
   })
 
-  # While we have the URL for the table, we don't have 'permission' to
-  # download it using our current access token. Instead, we need to use the
-  # access token to request a Shared Access Signature (SAS). This SAS summarises
-  # the extent of data that we are allowed to access, and the length of time
-  # that it is valid for use.
-  sas_query <- httr::POST(
-      url = paste0(cluster_url, "/metadata/v201606/cdsa/dataflows/", dataflow_id, "/storageAccess"),
-      body = jsonlite::toJSON(
-        list("TokenLifetimeInMinutes" = 10,
-             "Permissions" = "Read",
-             "EntityName" = table_name),
-        auto_unbox = TRUE
-      ),
-      config = auth_header,
-      httr::content_type_json()
-    ) |>
-    httr::content()
+  sas_key <- get_sas_key(dataflow_id, table_name, access_token)
 
-  sas_key <- sas_query$accessDetails[[1]]$blobContainerSas
 
   if (interactive() && isTRUE(verbose)) {
     message("Downloading dataflow table...")
@@ -127,7 +139,105 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
   # Now we can simply append the generated SAS to the blob storage download URL
   # and pass the result to the read_csv function. This will handle downloading
   # the table to R and adding the extracted column names
-  readr::read_csv(paste0(target_table[[1]]$partitions[[1]]$location, "&", sas_key),
+  readr::read_csv(paste0(target_table$partitions[[1]]$location, "&", sas_key),
                   col_names = table_colnames,
                   col_types = table_coltypes)
+}
+
+#' Mount a PowerBI Dataflow Table as a Databricks External Table
+#'
+#' Treat a PBI dataflow table as an external SQL table for use in standard SQL
+#' queries
+#'
+#' @param workspace_name The PowerBI workspace name.
+#' @param dataflow_name The name of the PowerBI Dataflow within the workspace.
+#' @param table_name The name of the table within the PowerBI Dataflow to be
+#' accessed.
+#' @param access_token The token generated with the correct PowerBI Dataflow
+#' permissions. Use get_az_tk('pbi_df') to create this token.
+#' @param db_schema The name of the schema to declare the external table in. Will be created if it does not exist.
+#' @param db_table The desired name for the new external table
+#'
+#' @return No return value, called for its side-effects (mounting the external table)
+#' @export
+#' @examples
+#'  \dontrun{
+#' # Create PowerBI Dataflow azure token
+#' tk <- get_az_tk('pbi_df')
+#'
+#' # Create new external table
+#' mount_dataflow_table(
+#'   workspace_name = "My Workspace Name",
+#'   dataflow_name = "My Dataflow Name",
+#'   table_name = "My Table Name",
+#'   access_token = tk$credentials$access_token,
+#'   db_schema = "PBI",
+#'   db_table = "NEW_TABLE"
+#' )
+#'}
+mount_dataflow_table <- function(workspace_name, dataflow_name,
+                                 table_name, access_token,
+                                 db_schema, db_table) {
+
+  # Extract all needed metadata for both the table of interest and enclosing dataflow
+  target_dataflow <- get_dataflow_metadata(workspace_name, dataflow_name,
+                                           access_token)
+  dataflow_id <- target_dataflow$cdsaModel$objectId
+  target_table <- get_table_metadata(dataflow_id, table_name, access_token)
+
+  # Databricks Blob Storage connector requires the url to the file in a different
+  # format than that returned by PBI's metadata, so we need to extract the
+  # necessary components from the url returned in the table metadata
+  location <- target_table$partitions[[1]]$location
+  pattern <- "(https://)(.*).blob.core.windows.net:443/(.*)/"
+  account <- stringr::str_extract(location, pattern, group = 2)
+  container <- stringr::str_extract(location, pattern, group = 3)
+
+  # As with downloading the dataflow table, we also need to provide a SAS key
+  # authorising our access to the dataflow CSV file
+  credential <- list(get_sas_key(dataflow_id, table_name, access_token))
+  names(credential) <- glue_chars("fs.azure.sas.{container}.{account}.blob.core.windows.net")
+
+  mount_point <- glue_chars("/mnt/{db_schema}/{db_table}")
+
+  #Unmount existing table mount-point if it already exists
+  if (mount_point %in% purrr::map_chr(dbutils.fs.mounts(), "mountPoint")) {
+    dbutils.fs.unmount(mount_point)
+  }
+
+  # Initialise the connection to the remote file. This does not download the CSV.
+  dbutils.fs.mount(
+    source = glue_chars("wasbs://{container}@{account}.blob.core.windows.net/{table_name}.csv"),
+    mountPoint = mount_point,
+    extraConfigs = credential
+  )
+
+  # The declaration of external tables requires names and types for each column
+  pbi_to_sql_type_map <- list(
+    "string" = "STRING",
+    "date" = "DATE",
+    "double" = "DOUBLE",
+    "int64" = "INT",
+    "boolean" = "BOOLEAN",
+    "dateTime" = "TIMESTAMP",
+    "time" = "TIMESTAMP"
+  )
+  table_coltypes <- purrr::map_chr(target_table$attributes, function(x) {
+    paste(x$name, pbi_to_sql_type_map[[x$dataType]])
+  })
+
+  # Finally, create the external table using the mounted CSV file
+  SparkR::sql(glue_chars(
+    "CREATE SCHEMA IF NOT EXISTS {db_schema}"
+  ))
+  SparkR::sql(glue_chars(
+    "DROP TABLE IF EXISTS {db_schema}.{db_table}"
+  ))
+  SparkR::sql(glue_chars(
+    "CREATE TABLE {db_schema}.{db_table} ({paste(table_coltypes, collapse = \",\")})",
+    "USING CSV",
+    "LOCATION '{mount_point}'"
+  ))
+
+  invisible(NULL)
 }

@@ -1,3 +1,7 @@
+glue_chars <- function(...) {
+  as.character(glue::glue(..., .envir = parent.frame(), .sep = "\n"))
+}
+
 get_auth_header <- function(access_token) {
   httr::add_headers(Authorization = paste("Bearer", access_token))
 }
@@ -8,7 +12,7 @@ get_cluster_url <- function(access_token) {
             config = get_auth_header(access_token),
             httr::content_type_json()) |>
     httr::content()
-  
+
   cluster_details$clusterUrl
 }
 
@@ -21,7 +25,7 @@ rowset_to_df <- function(xmla_rowset) {
   })
 
   names(metadata) <- purrr::map_chr(xml2::xml_children(schema), \(child) {xml2::xml_attr(child, "name")})
-  
+
   xmla_extract_fun <- list(
     "long" = xml2::xml_integer,
     "double" = xml2::xml_double,
