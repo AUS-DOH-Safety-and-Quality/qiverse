@@ -157,11 +157,11 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
 #' permissions. Use get_az_tk('pbi_df') to create this token.
 #' @param db_schema The name of the schema to declare the external table in. Will be created if it does not exist.
 #' @param db_table The desired name for the new external table
-#' @param dry_run If TRUE, the function will not actually mount the table, but
+#' @param print_sql If TRUE, the function will not actually mount the table, but
 #' will instead print the SQL command that would be executed. Default is FALSE.
 #'
-#' @return If `dry_run` = FALSE, then no return value, called for its side-effects (mounting the external table).
-#' If `dry_run` = TRUE, then a character vector of the SQL commands that would be executed
+#' @return If `print_sql` = FALSE, then no return value, called for its side-effects (mounting the external table).
+#' If `print_sql` = TRUE, then a character vector of the SQL commands that would be executed
 #' @export
 #' @examples
 #'  \dontrun{
@@ -180,7 +180,7 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
 #'}
 mount_dataflow_table <- function(workspace_name, dataflow_name,
                                  table_name, access_token,
-                                 db_schema, db_table, dry_run = FALSE) {
+                                 db_schema, db_table, print_sql = FALSE) {
 
   # Extract all needed metadata for both the table of interest and enclosing dataflow
   target_dataflow <- get_dataflow_metadata(workspace_name, dataflow_name,
@@ -237,8 +237,8 @@ mount_dataflow_table <- function(workspace_name, dataflow_name,
                 "LOCATION '{mount_point}'")
   )
 
-  if (dry_run) {
-    sql_commands
+  if (print_sql) {
+    purrr::walk(sql_commands, cat, sep = "\n")
   } else {
     purrr::walk(sql_commands, SparkR::sql)
     invisible(NULL)

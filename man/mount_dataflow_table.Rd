@@ -11,7 +11,7 @@ mount_dataflow_table(
   access_token,
   db_schema,
   db_table,
-  dry_run = FALSE
+  print_sql = FALSE
 )
 }
 \arguments{
@@ -29,12 +29,12 @@ permissions. Use get_az_tk('pbi_df') to create this token.}
 
 \item{db_table}{The desired name for the new external table}
 
-\item{dry_run}{If TRUE, the function will not actually mount the table, but
+\item{print_sql}{If TRUE, the function will not actually mount the table, but
 will instead print the SQL command that would be executed. Default is FALSE.}
 }
 \value{
-If \code{dry_run} = FALSE, then no return value, called for its side-effects (mounting the external table).
-If \code{dry_run} = TRUE, then a character vector of the SQL commands that would be executed
+If \code{print_sql} = FALSE, then no return value, called for its side-effects (mounting the external table).
+If \code{print_sql} = TRUE, then a character vector of the SQL commands that would be executed
 }
 \description{
 Treat a PBI dataflow table as an external SQL table for use in standard SQL
