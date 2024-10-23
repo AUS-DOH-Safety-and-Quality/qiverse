@@ -157,8 +157,11 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
 #' permissions. Use get_az_tk('pbi_df') to create this token.
 #' @param db_schema The name of the schema to declare the external table in. Will be created if it does not exist.
 #' @param db_table The desired name for the new external table
+#' @param dry_run If TRUE, the function will not actually mount the table, but
+#' will instead print the SQL command that would be executed. Default is FALSE.
 #'
-#' @return No return value, called for its side-effects (mounting the external table)
+#' @return If `dry_run` = FALSE, then no return value, called for its side-effects (mounting the external table).
+#' If `dry_run` = TRUE, then a character vector of the SQL commands that would be executed
 #' @export
 #' @examples
 #'  \dontrun{
@@ -177,7 +180,7 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
 #'}
 mount_dataflow_table <- function(workspace_name, dataflow_name,
                                  table_name, access_token,
-                                 db_schema, db_table) {
+                                 db_schema, db_table, dry_run = FALSE) {
 
   # Extract all needed metadata for both the table of interest and enclosing dataflow
   target_dataflow <- get_dataflow_metadata(workspace_name, dataflow_name,
@@ -226,18 +229,18 @@ mount_dataflow_table <- function(workspace_name, dataflow_name,
     paste(x$name, pbi_to_sql_type_map[[x$dataType]])
   })
 
-  # Finally, create the external table using the mounted CSV file
-  SparkR::sql(glue_chars(
-    "CREATE SCHEMA IF NOT EXISTS {db_schema}"
-  ))
-  SparkR::sql(glue_chars(
-    "DROP TABLE IF EXISTS {db_schema}.{db_table}"
-  ))
-  SparkR::sql(glue_chars(
-    "CREATE TABLE {db_schema}.{db_table} ({paste(table_coltypes, collapse = \",\")})",
-    "USING CSV",
-    "LOCATION '{mount_point}'"
-  ))
+  sql_commands <- c(
+    glue_chars("CREATE SCHEMA IF NOT EXISTS {db_schema}"),
+    glue_chars("DROP TABLE IF EXISTS {db_schema}.{db_table}"),
+    glue_chars("CREATE TABLE {db_schema}.{db_table} ({paste(table_coltypes, collapse = ',')})",
+                "USING CSV",
+                "LOCATION '{mount_point}'")
+  )
 
-  invisible(NULL)
+  if (dry_run) {
+    sql_commands
+  } else {
+    purrr::walk(sql_commands, SparkR::sql)
+    invisible(NULL)
+  }
 }
