@@ -1,5 +1,5 @@
 get_dataflow_metadata <- function(workspace_name, dataflow_name, access_token,
-                                  verbose) {
+                                  verbose = TRUE) {
   if (interactive() && isTRUE(verbose)) {
     message("Fetching dataflow metadata...")
   }
@@ -218,12 +218,12 @@ mount_dataflow_table <- function(workspace_name, dataflow_name,
   # The declaration of external tables requires names and types for each column
   pbi_to_sql_type_map <- list(
     "string" = "STRING",
-    "date" = "DATE",
+    "date" = "STRING",
     "double" = "DOUBLE",
     "int64" = "INT",
     "boolean" = "BOOLEAN",
-    "dateTime" = "TIMESTAMP",
-    "time" = "TIMESTAMP"
+    "dateTime" = "STRING",
+    "time" = "STRING"
   )
   table_coltypes <- purrr::map_chr(target_table$attributes, function(x) {
     paste(x$name, pbi_to_sql_type_map[[x$dataType]])
