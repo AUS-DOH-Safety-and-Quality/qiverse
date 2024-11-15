@@ -30,6 +30,7 @@ fpl_plotly_create(
   annotation_marker_colour = "grey",
   line_width = 3,
   marker_size = 8,
+  marker_symbol = "circle",
   y_dp = 1,
   y_format = "Percentage",
   pattern_text_ay = 50,
@@ -124,6 +125,9 @@ Default is "grey"}
 
 \item{marker_size}{A value denoting the size of the markers in pixels
 (default = 8)}
+
+\item{marker_symbol}{A value denoting the symbol type. See plotly documentation for
+further options (default = 'circle')}
 
 \item{y_dp}{Number of decimal points for the y-axis ticks and hoverinfo.
 Default is 1}

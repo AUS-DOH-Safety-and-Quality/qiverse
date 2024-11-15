@@ -51,6 +51,8 @@
 #' (default = 3)
 #' @param marker_size A value denoting the size of the markers in pixels
 #' (default = 8)
+#' @param marker_symbol A value denoting the symbol type. See plotly documentation for
+#' further options (default = 'circle')
 #' @param y_dp Number of decimal points for the y-axis ticks and hoverinfo.
 #' Default is 1
 #' @param y_format Set to either "Numeric" or "Percentage" to format the y-axis.
@@ -172,6 +174,7 @@ fpl_plotly_create <- function(
     annotation_marker_colour = "grey",
     line_width = 3,
     marker_size = 8,
+    marker_symbol = "circle",
     y_dp = 1,
     y_format = "Percentage",
     pattern_text_ay = 50,
@@ -567,7 +570,7 @@ fpl_plotly_create <- function(
       y = ~(rr * multiplier),
       type = "scatter",
       mode = "markers",
-      marker = ~list(color = actual_colour, size = marker_size),
+      marker = ~list(color = actual_colour, size = marker_size, symbol = marker_symbol),
       showlegend = show_legend,
       # Create hoverinfo (tooltip) text for this trace
       hoverinfo = "text",
