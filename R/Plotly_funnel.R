@@ -309,7 +309,7 @@ fpl_plotly_create <- function(
     if (nhs_colours_options$direction_to_flag == "Both") {
       if (nhs_colours_options$improvement_direction %in% c("Higher", "Neutral")) {
         funnel_data <- funnel_data |>
-          dplyr::mutate(actual_colour = dplyr::if_else(
+          dplyr::mutate(marker_colour = dplyr::if_else(
             outlier_3sigma == 1 & rr * multiplier > UCL99,
             nhs_colours_options$colours$improvement,
             dplyr::if_else(outlier_3sigma == 1 & rr * multiplier < LCL99,
@@ -318,7 +318,7 @@ fpl_plotly_create <- function(
       } else if (nhs_colours_options$improvement_direction %in%
                  c("Lower", "Neutral")) {
         funnel_data <- funnel_data |>
-          dplyr::mutate(actual_colour = dplyr::if_else(
+          dplyr::mutate(marker_colour = dplyr::if_else(
             outlier_3sigma == 1 & rr * multiplier < LCL99,
             nhs_colours_options$colours$improvement,
             dplyr::if_else(outlier_3sigma == 1 & rr * multiplier > UCL99,
@@ -328,13 +328,13 @@ fpl_plotly_create <- function(
     } else if (nhs_colours_options$direction_to_flag == "Improvement") {
       if (nhs_colours_options$improvement_direction == "Higher") {
         funnel_data <- funnel_data |>
-          dplyr::mutate(actual_colour = dplyr::if_else(
+          dplyr::mutate(marker_colour = dplyr::if_else(
             outlier_3sigma == 1 & rr * multiplier > UCL99,
             nhs_colours_options$colours$improvement,
             actual_colour))
       } else if (nhs_colours_options$improvement_direction == "Lower") {
         funnel_data <- funnel_data |>
-          dplyr::mutate(actual_colour = dplyr::if_else(
+          dplyr::mutate(marker_colour = dplyr::if_else(
             outlier_3sigma == 1 & rr * multiplier < LCL99,
             nhs_colours_options$colours$improvement,
             actual_colour))
@@ -342,13 +342,13 @@ fpl_plotly_create <- function(
     } else if (nhs_colours_options$direction_to_flag == "Deterioration") {
       if (nhs_colours_options$improvement_direction == "Higher") {
         funnel_data <- funnel_data |>
-          dplyr::mutate(actual_colour = dplyr::if_else(
+          dplyr::mutate(marker_colour = dplyr::if_else(
             outlier_3sigma == 1 & rr * multiplier < LCL99,
             nhs_colours_options$colours$deterioration,
             actual_colour))
       } else if (nhs_colours_options$improvement_direction == "Lower") {
         funnel_data <- funnel_data |>
-          dplyr::mutate(actual_colour = dplyr::if_else(
+          dplyr::mutate(marker_colour = dplyr::if_else(
             outlier_3sigma == 1 & rr * multiplier > UCL99,
             nhs_colours_options$colours$deterioration,
             actual_colour))
@@ -359,17 +359,21 @@ fpl_plotly_create <- function(
     actual_colour_original <- actual_colour
     if (better_is == "Neutral") {
       funnel_data <- funnel_data |>
-        dplyr::mutate(actual_colour = dplyr::if_else(
-          actual_colour != actual_colour_original,
+        dplyr::mutate(marker_colour = dplyr::if_else(
+          marker_colour != actual_colour_original,
           nhs_colours_options$colours$neutral,
-          actual_colour))
+          marker_colour))
     }
 
   } else {
     # Set to default actual colour is NHS colours is not enabled
     funnel_data <- funnel_data |>
-      dplyr::mutate(actual_colour = actual_colour)
+      dplyr::mutate(marker_colour = actual_colour)
   }
+
+  # Marker size and symbols
+  funnel_data$marker_sizes <- marker_size
+  funnel_data$marker_symbols <- marker_symbol
 
   #change x axis label if not NA
   if (is.na(x_axis_label)) {
@@ -570,7 +574,8 @@ fpl_plotly_create <- function(
       y = ~(rr * multiplier),
       type = "scatter",
       mode = "markers",
-      marker = ~list(color = actual_colour, size = marker_size, symbol = marker_symbol),
+      opacity = 1,
+      marker = ~list(color = marker_colour, line = list(color = marker_colour, width = 0), size = marker_sizes, symbol = marker_symbols, opacity = 1),
       showlegend = show_legend,
       # Create hoverinfo (tooltip) text for this trace
       hoverinfo = "text",
@@ -710,12 +715,12 @@ fpl_plotly_create <- function(
   if (nhs_colours_enable) {
     highlight_points <- ifelse(
       if (highlight_outlier_options$direction_to_flag == "Both") {
-        funnel_data$actual_colour != actual_colour
+        funnel_data$marker_colour != actual_colour
       } else if (highlight_outlier_options$direction_to_flag == "Improvement") {
-        funnel_data$actual_colour == nhs_colours_options$colours$improvement
+        funnel_data$marker_colour == nhs_colours_options$colours$improvement
       } else if (highlight_outlier_options$direction_to_flag ==
                  "Deterioration") {
-        funnel_data$actual_colour == nhs_colours_options$colours$deterioration
+        funnel_data$marker_colour == nhs_colours_options$colours$deterioration
       },
       funnel_data$rr*multiplier,
       NA
@@ -832,7 +837,7 @@ fpl_plotly_create <- function(
           opacity = 0.7,
           marker = list(
             color = "rgba(0,0,0,0)",
-            size = marker_size * 2.5,
+            size = ~marker_sizes * 2.5,
             line = list(
               color = annotation_marker_colour,
               width = line_width
@@ -854,7 +859,7 @@ fpl_plotly_create <- function(
           font = list(size = pattern_font_size),
           arrowcolor = "black",
           arrowwidth = pattern_arrow_width,
-          standoff = marker_size + 2,
+          standoff = ~marker_sizes + 2,
           ax = 30,
           ay = ~ifelse((rr * multiplier) > centre_line, -pattern_text_ay, pattern_text_ay)
         )
