@@ -768,6 +768,7 @@ fpl_plotly_create <- function(
   outlier_lookup <- data.frame(x = denominator,
                                y = highlight_points,
                                outlier_label = outlier_label,
+                               marker_size = marker_size,
                                group = group) |>
     #drop values that aren't outliers
     tidyr::drop_na(.data$y)
@@ -785,7 +786,7 @@ fpl_plotly_create <- function(
         opacity = 0.7,
         marker = list(
           color = "rgba(0,0,0,0)",
-          size = marker_size * 2.5,
+          size = ~marker_size * 2.5,
           line = list(
             color = "grey",
             width = line_width
@@ -804,7 +805,7 @@ fpl_plotly_create <- function(
         font = list(size = pattern_font_size),
         arrowcolor = "black",
         arrowwidth = pattern_arrow_width,
-        standoff = marker_size + 2,
+        standoff = ~marker_size + 2,
         ax = 30,
         ay = ~ifelse(y > centre_line, -pattern_text_ay, pattern_text_ay)
       )
