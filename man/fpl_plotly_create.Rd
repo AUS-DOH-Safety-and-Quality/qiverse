@@ -9,6 +9,7 @@ fpl_plotly_create(
   denominator,
   group,
   data_type = "PR",
+  allow_overdispersion = FALSE,
   multiplier = 1,
   better_is = "Higher",
   title = "",
@@ -63,6 +64,9 @@ aggregate and group points on plots.}
 the adjustment used and the reference point. One of: "SR" for indirectly
 standardised ratios such as HSMR, "PR" for proportions, or "RC" for ratios
 of counts. Default is "PR".}
+
+\item{allow_overdispersion}{A boolean value to allow the use of overdispersion
+control limits. Default is FALSE.}
 
 \item{multiplier}{Scale relative risk and funnel by this factor. Default to
 1, but 100 sometime used, e.g. in some hospital mortality ratios.}

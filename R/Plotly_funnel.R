@@ -10,6 +10,8 @@
 #' the adjustment used and the reference point. One of: "SR" for indirectly
 #' standardised ratios such as HSMR, "PR" for proportions, or "RC" for ratios
 #' of counts. Default is "PR".
+#' @param allow_overdispersion A boolean value to allow the use of overdispersion
+#' control limits. Default is FALSE.
 #' @param multiplier Scale relative risk and funnel by this factor. Default to
 #' 1, but 100 sometime used, e.g. in some hospital mortality ratios.
 #' @param better_is A string identifying the direction that is favourable for
@@ -153,6 +155,7 @@ fpl_plotly_create <- function(
     denominator,
     group,
     data_type = "PR",
+    allow_overdispersion = FALSE,
     multiplier = 1,
     better_is = "Higher",
     title = "",
@@ -204,7 +207,9 @@ fpl_plotly_create <- function(
     source_text = "Healthcare Quality Intelligence Unit"
 ) {
   # Dealing with undefined global functions or variables
-  .data <- LCL99 <- UCL99 <- outlier_3sigma <- rr <- NULL
+  .data <- LCL99 <- UCL99 <- outlier_3sigma <- rr <- marker_colour <-
+    OD95LCL <- OD95UCL <- OD99LCL <- OD99UCL <-
+    odll95 <- odul95 <- odll998 <- odul998 <- NULL
 
   # Check Inputs
   len_denominator <- length(denominator)
@@ -275,6 +280,25 @@ fpl_plotly_create <- function(
   funnel_data <- funnel_data[match(group, funnel_data$group), ]
   # Pulls out the data for the limits of the plot
   lim_data <- funnel$limits_lookup
+
+    # Check if need to use overdispersion control limits
+  if (allow_overdispersion) {
+    funnel_data <- funnel_data |>
+      dplyr::mutate(
+        LCL95 = OD95LCL,
+        UCL95 = OD95UCL,
+        LCL99 = OD99LCL,
+        UCL99 = OD99UCL
+      )
+    lim_data <- lim_data |>
+      dplyr::mutate(
+        ll95 = odll95,
+        ul95 = odul95,
+        ll998 = odll998,
+        ul998 = odul998
+      )
+  }
+
   # Create the labels for our funnel plot
   if (!is.na(funnel_period_start) && !is.na(funnel_period_end)) {
     date_range <- paste(format(funnel_period_start |> as.Date(),
