@@ -24,12 +24,25 @@ list_datasets <- function(workspace, access_token) {
   }
 
   metadata_content <- httr::content(workspace_request)$value
+  
+  if (length(metadata_content) == 0) {
+    return(NULL)
+  }
 
   content_to_dataframe <- purrr::map_dfr(metadata_content, \(metadata){
     do.call(data.frame, purrr::keep(metadata, \(x){length(x) > 0}))
   })
   content_to_dataframe$Workspace <- workspace
   content_to_dataframe$WorkspaceId <- workspace_id
+  if (!("configuredBy" %in% colnames(content_to_dataframe))) {
+    content_to_dataframe$configuredBy <- ""
+  }
+  if (!("name" %in% colnames(content_to_dataframe))) {
+    content_to_dataframe$name <- ""
+  }
+  if (!("id" %in% colnames(content_to_dataframe))) {
+    content_to_dataframe$name <- ""
+  }
 
   content_to_dataframe <- content_to_dataframe[,c("Workspace", "WorkspaceId", "name", "id", "configuredBy")]
   names(content_to_dataframe) <- c("Workspace", "WorkspaceId", "Dataset", "DatasetId", "DatasetOwner")
@@ -85,20 +98,24 @@ execute_rest_query <- function(workspace, dataset, query, access_token) {
   target_dataset <- dataset_metadata[dataset_metadata$Dataset == dataset, ]
   dataset_id <- target_dataset$DatasetId
 
+  execute_rest_query_impl(dataset_id, query, access_token)
+}
+
+execute_rest_query_impl <- function(dataset_id, query, access_token) {
   query_url <- paste0("https://api.powerbi.com/v1.0/myorg/datasets/", dataset_id, "/executeQueries")
-
+  
   rest_query <- httr::POST(url = query_url,
-                          body = construct_rest_query(query),
-                          config = get_auth_header(access_token),
-                          httr::content_type_json())
-
+                           body = construct_rest_query(query),
+                           config = get_auth_header(access_token),
+                           httr::content_type_json())
+  
   query_content <- httr::content(rest_query)
-
+  
   if ("error" %in% names(query_content)) {
     stop("Query returned error: ", query_content$error$pbi.error$details[[1]]$detail$value,
          call. = FALSE)
   }
-
+  
   if (("error" %in% names(query_content$results[[1]]))) {
     error_code <- query_content$results[[1]]$error$code
     if (error_code == "DaxByteCountNotSupported") {
@@ -107,12 +124,12 @@ execute_rest_query <- function(workspace, dataset, query, access_token) {
            call. = FALSE)
     }
   }
-
+  
   output <- query_content$results[[1]]$tables[[1]]$rows |>
     dplyr::bind_rows()
-
+  
   names(output) <- gsub("\\[|\\]", "", names(output))
-
+  
   return(output)
 }
 
