@@ -20,15 +20,22 @@
 #'   misc_data <- misc_prep_data(example_funnel_data, example_indicator_data)
 #' }
 
+
+# Overdispersion adjustment for UCL99, LCL99, and UZscore added on 2025-01-02
+# Please add overdispersion_r (logical data type) as an overdispersion flag.
+# If the value does not exist in the dataset, it will automatically process it as overdispersion_r = FALSE.
+
+
 # Format Data ####
 misc_prep_data <- function(funnel_data, indicator_data) {
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
   indicator <- data_type <- multiplier <- group <- cl <-
-    numerator <- denominator <- value <- multiplier <- betteris <-
-    Uzscore_betteris <- Uzscore <- data_type <- suffix <- UCL99 <- LCL99 <- #nolint
+    numerator <- denominator <- value <- multiplier <- betteris <-  
+    Uzscore_betteris <- Uzscore <- data_type <- suffix <- UCL99 <- LCL99 <- 
+    OD99LCL <- OD99UCL <- s <- ODUzscore <- #nolint
     `:=`  <- .N <- NULL #nolint
-
+  
   #  not sure if order of the functions matters, I suspect it doesn't, but the order of the functions is different betwen misc_plotly() and misc_prep_data()
 
   # Load Data
@@ -40,6 +47,15 @@ misc_prep_data <- function(funnel_data, indicator_data) {
   input_data <- merge(input_funnel_data, input_indicator_data, by = "indicator",
                       all.x = TRUE) |>
     data.table::as.data.table()
+
+  # Error handler for cases when data does not have overdispersion_r
+  # *NOTE* Please perform this check after merging the data.
+  if (!"overdispersion_r" %in% colnames(input_data)) {
+    input_data[, overdispersion_r := FALSE]
+  }else {
+    input_data[is.na(overdispersion_r), overdispersion_r := FALSE]
+  }
+  
   ## Loop through each unique indicator to generate funnel limits and Z-scores
   data_funnel <- lapply(indicator_data$indicator, function(ind) {
     # Create subset of data based on chosen indicator
@@ -89,10 +105,14 @@ misc_prep_data <- function(funnel_data, indicator_data) {
 
       # Extract out values , Uzscore, control limits
       funnel_data <- funnel$aggregated_data[, c("group", "Uzscore",
-                                                "LCL99", "UCL99")] |>
+                                                "LCL99", "UCL99",
+                                                "OD99LCL", "OD99UCL",  "s")] |>
         data.table::as.data.table()
       funnel_data[, group := as.character(group)]
 
+      # Add tau2 as a new column
+      funnel_data$tau2 <- funnel$tau2
+ 
       # Merge back in funnel data
       data_ind <- merge(data_ind, funnel_data, by = "group", all.x = TRUE,
                         sort = FALSE)
@@ -112,12 +132,27 @@ misc_prep_data <- function(funnel_data, indicator_data) {
   data_funnel[data_type == "PR" & multiplier == 1,
               ":=" (UCL99 = UCL99 * 100,
                     cl = cl * 100,
-                    LCL99 = LCL99 * 100)]
+                    LCL99 = LCL99 * 100,
+                    OD99LCL = OD99LCL * 100,
+                    OD99UCL = OD99UCL * 100)]
 
+  # Apply overdispersion  
+  # calculating Z score for over dispersion
+  data_funnel$ODUzscore <- (data_funnel$Uzscore * data_funnel$s) / sqrt(data_funnel$s^2 + data_funnel$tau2)
+  
+  #overwrite the values when over dispersion flag is true
+  data_funnel[overdispersion_r == TRUE,
+              `:=` (UCL99 = OD99UCL,
+                    LCL99 = OD99LCL,
+                    Uzscore = ODUzscore)]
+  
   # Change names of columns to lowercase
   data.table::setnames(data_funnel, names(data_funnel),
                       tolower(names(data_funnel)))
 
   # Return output ####
-  return(data_funnel)
+  # Subset the data and Return output ####
+  return(subset(data_funnel, select = c("group", "indicator", "numerator", "denominator", "multiplier", "data_type", 
+                                        "betteris", "indicator_theme", "uzscore", "lcl99", "ucl99", "cl")))
+
 }
