@@ -22,8 +22,8 @@
 
 
 # Overdispersion adjustment for UCL99, LCL99, and UZscore added on 2025-01-02
-# Please add overdispersion_r (logical data type) as an overdispersion flag.
-# If the value does not exist in the dataset, it will automatically process it as overdispersion_r = FALSE.
+# Please add overdispersion (logical data type) as an overdispersion flag.
+# If the value does not exist in the dataset, it will automatically process it as overdispersion = FALSE.
 
 
 # Format Data ####
