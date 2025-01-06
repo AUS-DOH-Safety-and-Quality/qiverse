@@ -37,37 +37,38 @@ misc_prep_data <- function(funnel_data, indicator_data) {
     `:=`  <- .N <- NULL #nolint
   
   #  not sure if order of the functions matters, I suspect it doesn't, but the order of the functions is different betwen misc_plotly() and misc_prep_data()
-
+  #browser()
   # Load Data
   input_funnel_data <- data.table::copy(funnel_data)
   input_indicator_data <- data.table::copy(indicator_data)
-
+  
   # Extract funnel data for all unique indicators ####
   ## Merge the data into a data.table
   input_data <- merge(input_funnel_data, input_indicator_data, by = "indicator",
                       all.x = TRUE) |>
     data.table::as.data.table()
-
-  # Error handler for cases when data does not have overdispersion_r
+  
+  # Error handler for cases when data does not have overdispersion
   # *NOTE* Please perform this check after merging the data.
-  if (!"overdispersion_r" %in% colnames(input_data)) {
-    input_data[, overdispersion_r := FALSE]
-  }else {
-    input_data[is.na(overdispersion_r), overdispersion_r := FALSE]
+  if (!"overdispersion" %in% colnames(input_data)) {
+    input_data[, overdispersion := FALSE]
+  }
+  else {
+    input_data[is.na(overdispersion), overdispersion := FALSE]
   }
   
   ## Loop through each unique indicator to generate funnel limits and Z-scores
   data_funnel <- lapply(indicator_data$indicator, function(ind) {
     # Create subset of data based on chosen indicator
     data_ind <- input_data[indicator == ind]
-
+    
     # Do not generate funnel data for indicator with only one group
     if (data_ind[, .N] > 1) {
-
+      
       # Create Funnel plot
       FunnelPlotR_version <-
         asNamespace("FunnelPlotR")$`.__NAMESPACE__.`$spec[["version"]]
-
+      
       # For FunnelPlotR versions below 0.5.0
       if (FunnelPlotR_version < "0.5.0") {
         funnel <- FunnelPlotR::funnel_plot(
@@ -84,7 +85,7 @@ misc_prep_data <- function(funnel_data, indicator_data) {
           highlight  = NA
         )
       }
-
+      
       # For FunnelPlotR version 0.5.0 and above
       if (FunnelPlotR_version >= "0.5.0") {
         funnel <- FunnelPlotR::funnel_plot(
@@ -102,31 +103,31 @@ misc_prep_data <- function(funnel_data, indicator_data) {
           highlight  = NA
         )
       }
-
+      
       # Extract out values , Uzscore, control limits
       funnel_data <- funnel$aggregated_data[, c("group", "Uzscore",
                                                 "LCL99", "UCL99",
                                                 "OD99LCL", "OD99UCL",  "s")] |>
         data.table::as.data.table()
       funnel_data[, group := as.character(group)]
-
+      
       # Add tau2 as a new column
       funnel_data$tau2 <- funnel$tau2
- 
+      
       # Merge back in funnel data
       data_ind <- merge(data_ind, funnel_data, by = "group", all.x = TRUE,
                         sort = FALSE)
-
+      
       # Find centreline
       data_ind[, cl := sum(numerator) / sum(denominator) * multiplier]
-
+      
       # Output
       data_ind
     }
   }) |>
     # Stack list of data.tables into single table
     data.table::rbindlist()
-
+  
   # Apply Multiplier Fix
   ## Multiply by 100 for those that are proportions and multiplier 1
   data_funnel[data_type == "PR" & multiplier == 1,
@@ -135,24 +136,31 @@ misc_prep_data <- function(funnel_data, indicator_data) {
                     LCL99 = LCL99 * 100,
                     OD99LCL = OD99LCL * 100,
                     OD99UCL = OD99UCL * 100)]
-
+  
   # Apply overdispersion  
   # calculating Z score for over dispersion
+  # brought it from Power BI visual for funnel chart since it need to be align to it (by Andrew Johnson)
+  # Rescale z-score to be equal to y - CL
+  # scaled_z <- funnel_plot$aggregated_data$Uzscore * funnel_plot$aggregated_data$s
+  # Combine standard error and overdispersion variance
+  # combined_se <- sqrt(funnel_plot$aggregated_data$s^2 + funnel_plot$tau2)
+  # Calculate ZScore additionally scaled for overdispersion
+  # funnel_plot$aggregated_data$Uzscore <- scaled_z / combined_se
   data_funnel$ODUzscore <- (data_funnel$Uzscore * data_funnel$s) / sqrt(data_funnel$s^2 + data_funnel$tau2)
   
   #overwrite the values when over dispersion flag is true
-  data_funnel[overdispersion_r == TRUE,
+  data_funnel[overdispersion == TRUE,
               `:=` (UCL99 = OD99UCL,
                     LCL99 = OD99LCL,
                     Uzscore = ODUzscore)]
   
   # Change names of columns to lowercase
   data.table::setnames(data_funnel, names(data_funnel),
-                      tolower(names(data_funnel)))
-
+                       tolower(names(data_funnel)))
+  
   # Return output ####
   # Subset the data and Return output ####
   return(subset(data_funnel, select = c("group", "indicator", "numerator", "denominator", "multiplier", "data_type", 
                                         "betteris", "indicator_theme", "uzscore", "lcl99", "ucl99", "cl")))
-
+  
 }
