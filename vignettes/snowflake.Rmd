@@ -66,6 +66,7 @@ tk <- get_az_tk('sf')
 library(qiverse.snowflake)
 con <- snowflake_con(
   server_name = 'exampleserver-australiaeast', 
+=======
   token = tk
 )
 ```
@@ -95,11 +96,11 @@ snowflake_query <- function(query_string) {
   tk <- qiverse.azure::get_az_tk('sf')
   # Establish connection to Snowflake
   con <- snowflake_con(
-    server_name = 'hsswa.australia-east', 
+    server_name = 'mysnowflakeserver.australia-east', 
     token = tk
   )
   # Set the Snowflake warehouse here
-  DBI::dbGetQuery(con, DBI::SQL("USE WAREHOUSE DOH_WH"))
+  DBI::dbGetQuery(con, DBI::SQL("USE WAREHOUSE SNOWFLAKE_WAREHOUSE_NAME"))
   # Run the query
   table <- DBI::dbGetQuery(con, DBI::SQL(query_string))
   # Return the results of the query
@@ -108,7 +109,7 @@ snowflake_query <- function(query_string) {
 
 my_query <- "
   SELECT *
-  FROM HQIU_SANDPIT.ICD.CARDIOVASCULAR
+  FROM MY_TABLE
 " 
 
 snowflake_query(my_query)

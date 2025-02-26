@@ -118,8 +118,6 @@ ingest_to_snowflake <- function(
   # The table is temporary,
   ## meaning it persists only for the duration of the user session and is not
   ## visible to other users.
-
-#replace with generic example
   DBI::dbGetQuery(con, DBI::SQL(paste0(
     "create or replace table ", database_name, ".", schema_name, ".",
     table_name, " ( ", paste0('"', names(input_data), '" ', sql_data_type,
