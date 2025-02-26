@@ -1,26 +1,24 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# qiverse.azure
+# qiverse.powerbi
 
 <!-- badges: start -->
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
-status](https://www.r-pkg.org/badges/version/qiverse.azure)](https://CRAN.R-project.org/package=qiverse.azure)
-[![R-CMD-check](https://github.com/AUS-DOH-Safety-and-Quality/qiverse.azure/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AUS-DOH-Safety-and-Quality/qiverse.azure/actions/workflows/R-CMD-check.yaml)
+status](https://www.r-pkg.org/badges/version/qiverse.powerbi)](https://CRAN.R-project.org/package=qiverse.powerbi)
+[![R-CMD-check](https://github.com/AUS-DOH-Safety-and-Quality/qiverse.powerbi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AUS-DOH-Safety-and-Quality/qiverse.powerbi/actions/workflows/R-CMD-check.yaml)
 
 <!-- badges: end -->
 
-The goal of qiverse.azure is to provide a useful all-in-one package for
-Azure access methods and other tools in the Microsoft ecosystem. This
-includes the ability to create Azure Access Tokens, and apply this to
-PowerBI, SharePoint and Snowflake.
+The goal of qiverse.powerbi is to provide a package to access PowerBI
+dataflows and datasets.
 
 ## Installation
 
-Before installing the development version of `qiverse.azure`, add a
+Before installing the development version of `qiverse.powerbi`, add a
 Github personal access token to R by:
 
 ``` r
@@ -34,17 +32,18 @@ credentials::set_github_pat()
 These credentials will now allow you to download private repositories
 from the AUS-DOH-Safety-and-Quality organisation.
 
-You can now install the development version of `qiverse.azure` like so:
+You can now install the development version of `qiverse.powerbi` like
+so:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.azure")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.powerbi")
 ```
 
-Branches of the development version of `qiverse.azure` can also be
+Branches of the development version of `qiverse.powerbi` can also be
 installed through the “ref” option:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.azure", ref = "branch-a")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.powerbi", ref = "branch-a")
 ```
 
 ### Setting up your .Renviron
@@ -72,5 +71,5 @@ The rendered package vignettes can be viewed after installation in R
 using the following command:
 
 ``` r
-browseVignettes("qiverse.azure")
+browseVignettes("qiverse.powerbi")
 ```

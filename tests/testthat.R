@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(qiverse.azure)
+library(qiverse.powerbi)
 
-test_check("qiverse.azure")
+test_check("qiverse.powerbi")
