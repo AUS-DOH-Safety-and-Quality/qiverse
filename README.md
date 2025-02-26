@@ -20,21 +20,7 @@ PowerBI, SharePoint and Snowflake.
 
 ## Installation
 
-Before installing the development version of `qiverse.azure`, add a
-Github personal access token to R by:
-
-``` r
-#Go to github page to generate token
-usethis::create_github_token()
-
-#paste your PAT into pop-up that follows...
-credentials::set_github_pat()
-```
-
-These credentials will now allow you to download private repositories
-from the AUS-DOH-Safety-and-Quality organisation.
-
-You can now install the development version of `qiverse.azure` like so:
+You can install the development version of `qiverse.azure`:
 
 ``` r
 devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.azure")
@@ -49,6 +35,7 @@ devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.azure", ref = "bran
 
 ### Setting up your .Renviron
 
+<<<<<<< HEAD
 In order to enjoy the full functionality of the SharePoint, PowerBI and
 Snowflake connectivity features, you must have your environment
 variables set up correctly in R. This step only needs to be completed
@@ -67,6 +54,10 @@ usethis::edit_r_environ()
 
 Save the .Renviron file, and restart your R session. Your envrionment
 variables are now set.
+=======
+See the package vignette for further details on how to set up your
+.Renviron file.
+>>>>>>> 120b477 (Update readme)
 
 ## Package Vignettes
 
