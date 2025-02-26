@@ -1,0 +1,31 @@
+Package: qiverse.qiplotly
+Title: Quality Improvement Plotly Charts
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
+    family = "",
+    role = c("aut", "cre"),
+    email = "safetyandquality@health.wa.gov.au",
+    comment = c(ORCID = "0000-0001-7000-8065"))
+Description: Defines functions needed to generate SPC and Funnel Plots in Plotly.
+License: MIT + file LICENSE
+Config/testthat/edition: 3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+URL: https://github.com/AUS-DOH-Safety-and-Quality/qiverse.qiplotly
+BugReports: https://github.com/AUS-DOH-Safety-and-Quality/qiverse.qiplotly/issues
+Imports:
+  FunnelPlotR,
+  dplyr,
+  plotly,
+  qicharts2,
+  rlang,
+  tidyr
+Suggests:
+  qiverse.qipatterns,
+  knitr,
+  rmarkdown,
+  testthat (>= 3.0.0)
+Remotes:
+VignetteBuilder: knitr
