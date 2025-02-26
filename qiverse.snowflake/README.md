@@ -20,14 +20,14 @@ accessing Snowflake hosted on Microsoft Azure.
 You can install the development version of `qiverse.snowflake`:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.snowflake")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.snowflake")
 ```
 
 Branches of the development version of `qiverse.snowflake` can also be
 installed through the “ref” option:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.snowflake", ref = "branch-a")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.snowflake", ref = "branch-a")
 ```
 
 ## Package Vignettes

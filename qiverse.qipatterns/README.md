@@ -21,12 +21,12 @@ Control charts and Funnel Plots.
 You can install the development version of `qiverse.qipatterns`:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.qipatterns")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.qipatterns")
 ```
 
 Branches of the development version of `qiverse.qipatterns` can also be
 installed through the “ref” option:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.qipatterns", ref = "branch-a")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.qipatterns", ref = "branch-a")
 ```

@@ -90,8 +90,8 @@ An example of how to run a query on Snowflake is as follows. This establishes th
 ``` r
 library(tidyverse)
 
-library(qiverse.azure) # https://github.com/AUS-DOH-Safety-and-Quality/qiverse.azure
-library(qiverse.snowflake) # https://github.com/AUS-DOH-Safety-and-Quality/qiverse.snowflake
+library(qiverse.azure) # https://github.com/AUS-DOH-Safety-and-Quality/qiverse/qiverse.azure
+library(qiverse.snowflake) # https://github.com/AUS-DOH-Safety-and-Quality/qiverse/qiverse.snowflake
 
 snowflake_query <- function(query_string) {
   # Create Snowflake azure token

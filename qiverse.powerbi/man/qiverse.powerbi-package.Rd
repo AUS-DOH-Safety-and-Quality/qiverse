@@ -11,8 +11,8 @@ A collection of R functions for working with PowerBI Dataflows and Datasets
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/AUS-DOH-Safety-and-Quality/qiverse.powerbi}
-  \item Report bugs at \url{https://github.com/AUS-DOH-Safety-and-Quality/qiverse.powerbi/issues}
+  \item \url{https://github.com/AUS-DOH-Safety-and-Quality/qiverse/qiverse.powerbi}
+  \item Report bugs at \url{https://github.com/AUS-DOH-Safety-and-Quality/qiverse/qiverse.powerbi/issues}
 }
 
 }

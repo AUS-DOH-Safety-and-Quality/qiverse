@@ -20,14 +20,14 @@ sharepoint.
 You can install the development version of `qiverse.sharepoint`:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.sharepoint")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.sharepoint")
 ```
 
 Branches of the development version of `qiverse.sharepoint` can also be
 installed through the “ref” option:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.sharepoint", ref = "branch-a")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.sharepoint", ref = "branch-a")
 ```
 
 ## Package Vignettes

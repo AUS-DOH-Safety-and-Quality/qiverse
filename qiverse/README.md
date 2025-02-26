@@ -20,14 +20,14 @@ useful quality improvement packages in HQIU.
 You can install the development version of `qiverse`:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse")
 ```
 
 Branches of the development version of `qiverse` can also be installed
 through the “ref” option:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse", ref = "branch-a")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse", ref = "branch-a")
 ```
 
 ## Included Packages

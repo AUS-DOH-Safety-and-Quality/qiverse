@@ -20,12 +20,12 @@ Funnel Plots in Plotly.
 You can install the development version of `qiverse.qiplotly`:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.qiplotly")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.qiplotly")
 ```
 
 Branches of the development version of `qiverse.qiplotly` can also be
 installed through the “ref” option:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.qiplotly", ref = "branch-a")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.qiplotly", ref = "branch-a")
 ```

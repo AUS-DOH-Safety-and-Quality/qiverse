@@ -20,14 +20,14 @@ dataflows and datasets.
 You can install the development version of `qiverse.powerbi`:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.powerbi")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.powerbi")
 ```
 
 Branches of the development version of `qiverse.powerbi` can also be
 installed through the “ref” option:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.powerbi", ref = "branch-a")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.powerbi", ref = "branch-a")
 ```
 
 ## Package Vignettes

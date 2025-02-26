@@ -35,13 +35,13 @@ useful quality improvement packages in HQIU.
 You can install the development version of `qiverse.data`:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.data")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.data")
 ```
 
 Branches of the development version of `qiverse.data` can also be installed
 through the "ref" option:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.data", ref = "branch-a")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.data", ref = "branch-a")
 ```
 

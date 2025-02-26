@@ -20,14 +20,14 @@ Indicator Sigma Chart in Plotly.
 You now install the development version of `qiverse.qimisc`:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.qimisc")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.qimisc")
 ```
 
 Branches of the development version of `qiverse.qimisc` can also be
 installed through the “ref” option:
 
 ``` r
-devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse.qimisc", ref = "branch-a")
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.qimisc", ref = "branch-a")
 ```
 
 ## Package Vignettes
