@@ -1,0 +1,88 @@
+---
+title: "PowerBI Dataflows and Datasets"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{PowerBI Dataflows and Datasets}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = FALSE}
+library(qiverse.azure)
+library(qiverse.powerbi)
+```
+
+This package defines methods to get Azure Access Tokens and pull in data from the PowerBI, Sharepoint and Snowflake. This vignette covers the steps required to download PowerBI dataflows and PowerBI datasets.
+
+## Download PowerBI Dataflow Table
+
+A PowerBI dataflow is a type of data source that allows users to create, transform and manage data in a centralised location within a PowerBI workspace. Dataflows are part of the Power Query technology in the PowerBI online service.
+
+The `qiverse.powerbi` package stores a function that downloads PowerBI dataflow tables using the REST API and a Azure Access Token to authenticate to the PowerBI online service. An example set of code for `download_dataflow_table` is below:
+
+``` R
+# Create PowerBI Dataflow azure token
+library(qiverse.azure)
+tk <- get_az_tk('pbi_df')
+
+# Load table from PowerBI dataflow
+library(qiverse.powerbi)
+data_test <- download_dataflow_table(
+  workspace_name = "My Workspace Name", 
+  dataflow_name = "calendar",
+  table_name = "CalendarToToday",
+  access_token = tk$credentials$access_token
+)
+```
+
+As in the example code above, there are four arguments that get passed through to the `download_dataflow_table` function:
+
+-   `workspace_name` - The PowerBI workspace name where the dataflow resides
+
+-   `dataflow_name` - The PowerBI dataflow name where the table resides
+
+-   `table_name` - The name of the table within the dataflow, that is to be accessed
+
+-   `access_token` - the access token from the generated Azure token
+
+The output of `download_dataflow_table` is a tibble.
+
+## Download PowerBI Dataset Table
+
+A PowerBI dataset is a structured collection of data that serves as the foundation for creating reports and visualisations. These typically consist of tables with related information and can include data imported directly or linked from various sources.
+
+The `qiverse.powerbi` package stores a function that downloads PowerBI Dataset tables using the REST API, using the Azure Access Token to authenticate to the PowerBI online service. An example set of code for `download_dataset_table_rest` is below:
+
+``` R
+# Create PowerBI Dataset azure token
+library(qiverse.azure)
+tk <- get_az_tk('pbi_ds')
+
+# Load AD dummy file from PowerBI dataflow
+library(qiverse.powerbi)
+data_test <- download_dataset_table_rest(
+  workspace_name = "My Workspace Name",
+  dataset_name = "My Dataset Name",
+  table_name = "My Table Name",
+  access_token = tk$credentials$access_token
+)
+```
+
+As in the example code above, there are four arguments that get passed through to the `download_dataflow_table` function:
+
+-   `workspace_name` - The PowerBI workspace name where the dataflow resides
+
+-   `dataset_name` - The PowerBI dataset name where the table resides
+
+-   `table_name` - The name of the table within the datset, that is to be accessed
+
+-   `access_token` - the access token from the generated Azure token
+
+The output of `download_dataset_table_rest` is a data.table.

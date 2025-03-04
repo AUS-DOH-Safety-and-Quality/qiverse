@@ -1,0 +1,176 @@
+---
+title: "Creating Azure Access Token"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Creating Azure Access Token}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = FALSE}
+library(qiverse.azure)
+```
+
+This package defines methods to get Azure Access Tokens and pull in data from the PowerBI, Sharepoint and Snowflake. This vignette covers the set-up requirements for the following services:
+
+-   PowerBI Dataflows
+
+-   PowerBI Datasets
+
+-   Sharepoint Files
+
+-   Sharepoint Lists
+
+-   Snowflake
+
+The package includes methods to create and get tokens from your local R environment which may be run on your local machine or virtual machine. There are also methods to store these Azure Access Tokens in Databricks.
+
+## User Environment Setup for Local Token Usage
+
+Local token creation is calls upon the [AzureAuth](https://github.com/Azure/AzureAuth) package, utilising the `get_azure_token` function. In `qiverse.azure`, this function gets wrapped up into the `get_az_tk` function which allows for simpler handling to the tokens that are regularly used.
+
+In order to utilise the full functionality of `get_az_tk`, the R environment config file should be edited. The config file can be manually edited using the following function:
+
+``` r
+usethis::edit_r_environ()
+```
+
+The following environment variables should be added for the qiverse.azure package:
+
+```         
+az_tenant_id="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+az_app_id_pbi_dataflow="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+az_app_id_pbi_dataset="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+az_cli_secret_pbi_dataset="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+az_app_id_sharepoint="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+az_cli_secret_id_sharepoint="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+az_graph_api_sharepoint="api://xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+snowflake_server="xxxxx.australia-east"
+```
+
+The dummy values should be replaced with the actual values. each of these variables is explained in more detail below:
+
+**PowerBI Service**
+
+-   `az_tenant_id` - This is the unique tenant identification key for your PowerBI service. This can be found by navigating to <https://app.powerbi.com> and logging in. The tenant id will be attached to the url in the address bar like so:
+
+    -   <https://app.powerbi.com/home?tenant=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&experience=power-bi>
+
+**PowerBI Dataflows**
+
+-   `az_app_id_pbi_dataflow` - Set this to the First-Party App ID for Microsoft Azure PowerShell <https://learn.microsoft.com/en-us/troubleshoot/azure/entra/entra-id/governance/verify-first-party-apps-sign-in>
+
+    -   1950a258-227b-4e31-a9cf-717495945fc2
+
+**PowerBI Datasets**
+
+-   `az_app_id_pbi_dataset` and `az_cli_secret_pbi_dataset` - Create a new App Registration in the Azure Portal and set the permissions to read/write to PowerBI datasets (Semantic Models) <https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app>
+
+**Sharepoint**
+
+A new app needs to be registered on the Microsoft Azure App registration platform. This app enables us to expose the Microsoft Graph API for select users, allowing them full access to your Sharepoint tenancy. This will require administrator approval from your organisation.
+
+The permissions required under the Microsoft Graph API include Files.ReadWrite.All, offline_access, Sites.Manage.All and User.Read.
+
+The three environment variables below can be found in the registered App:
+
+-   `az_app_id_sharepoint` - the Application (client) ID on the Overview page
+
+-   `az_cli_secret_id_sharepoint` - the value of the client secret created on the Certificates & secrets page
+
+-   `az_graph_api_sharepoint` - the Application ID URI on the Overview page
+
+**Snowflake**
+
+Setting up a connection to your Snowflake data warehouse may require a login using Azure Active Directory (now Entra ID). This can be accomplished using an Azure access token method.
+
+Creating the snowflake token uses the az_app_id_pbi_dataflow environment variable, so no special set up is required for this. However, in order to use the token to connect to Snowflake, you have to install the [Snowflake ODBC Driver](https://developers.snowflake.com/odbc/), with further instructions on how to install and configure this available in the [Snowflake documentation](https://docs.snowflake.com/developer-guide/odbc/odbc-windows).
+
+Some key settings for your Snowflake configuration dialog is as follows:
+
+-   User: [your Active Directory user name]
+
+-   Server: [xxxxx.australia-east.azure.snowflakecomputing.com]
+
+-   Database: [your main Database]
+
+-   Warehouse: [your Snowflake warehouse name]
+
+-   Role: [your main role here]
+
+-   Tracing(0-6): 4
+
+-   Authenticator: oauth
+
+The other fields may be left blank, but test your connection to see if the above settings are correct. Consult the Snowflake documentation if you run into any issues.
+
+For the `qiverse.azure` package, the function `snowflake_con` references one environmental variable:
+
+-   snowflake_server - "xxxxx.australia-east"
+
+This is to be set to the first part of the server URL.
+
+## Using get_az_tk() locally
+
+The `get_az_tk` function is easiest to use on your local machine or virtual machine. After setting up your environment variables as above, you can use each of the five options below in `token_type` to generate a token for your needs:
+
+-   `get_az_tk("pbi_df")` - Get an Azure Access Token for PowerBI Dataflows
+
+-   `get_az_tk("pbi_ds")` - Get an Azure Access Token for PowerBI Datasets
+
+-   `get_az_tk("sp")` - Get an Azure Access Token for SharePoint Online
+
+-   `get_az_tk("sf")` - Get an Azure Access Token for Snowflake
+
+-   `get_az_tk("key_vault")` - Get an Azure Access Token for Microsoft Key Vault
+
+If your environment variables are set up correctly, the above will either open a browser to authenticate you or load a cached token. This token can then be passed through the corresponding function to use in each environment.
+
+## Using get_az_tk() in databricks
+
+Using `get_az_tk` in databricks requires a slightly different method, as browser authentication is not possible in a databricks notebook. Therefore, the authentication type must be set to "device_code". This prompts the user navigate to a URL in another browser window, enter a device code and log in as usual. Upon the completion of these steps, a token will be created.
+
+The token will need to be stored somewhere that is easily accessible but secure. One such method is as a databricks secret, which can be done via the `store_databricks_access_token` function. This stores the token under the scope of your choice. The following code shows an example that uses the `SparkR` package to pull in information from databricks:
+
+``` r
+# Set with your tenant_id and app_id. Ensure that this has it's own command
+# chunk, so the command will complete after authentication
+token <- qiverse.azure::get_az_tk(
+  "pbi_df",
+  tenant_id = tenant_id,
+  app_id_pbi_df = app_id,
+  auth_type = "device_code"
+)
+
+# Store token as databricks secret
+update_secret <- qiverse.azure::store_databricks_access_token(
+  token = token,
+  url = paste0("https://", SparkR::sparkR.conf("spark.databricks.workspaceUrl")),
+  user_name = SparkR::first(SparkR::sql("SELECT current_user() AS username"))$username
+)
+
+# Check whether the HTTP request returned a success code
+if(update_secret$status_code == 200) {
+  "Token successfully updated"
+} else {
+  "Error occurred"
+}
+```
+
+Now that the token has been initialised and stored as a databricks secret, this can be extracted and passed back through to `get_az_tk` using the `system_type` option:
+
+``` r
+tk <- get_az_tk(
+  token_type = "pbi_df", 
+  tenant_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  app_id_pbi_df = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  system_type = "databricks"
+)
+```

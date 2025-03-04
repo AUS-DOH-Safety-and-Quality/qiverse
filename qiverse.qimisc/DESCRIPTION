@@ -1,0 +1,32 @@
+Package: qiverse.qimisc
+Title: Multiple Indicator Sigma Chart
+Version: 0.0.1.1
+Authors@R: 
+    person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
+    family = "",
+    role = c("aut", "cre"),
+    email = "safetyandquality@health.wa.gov.au",
+    comment = c(ORCID = "0000-0001-7000-8065"))
+Description: Defines functions needed to generate the Multiple Indicator Sigma Chart in Plotly.
+License: GPL (>= 3)
+Config/testthat/edition: 3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+URL: https://github.com/AUS-DOH-Safety-and-Quality/qiverse/qiverse.qimisc
+BugReports: https://github.com/AUS-DOH-Safety-and-Quality/qiverse/issues
+Depends:
+  data.table,
+  R (>= 2.10)
+Imports:
+  FunnelPlotR,
+  plotly,
+  stats
+Suggests:
+  qiverse.data,
+  knitr,
+  rmarkdown,
+  testthat (>= 3.0.0)
+Remotes:
+  AUS-DOH-Safety-and-Quality/qiverse/qiverse.data
+VignetteBuilder: knitr

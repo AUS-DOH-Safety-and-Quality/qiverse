@@ -1,0 +1,186 @@
+---
+title: "Quality Improvement Pattern Detection"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quality Improvement Pattern Detection}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = TRUE}
+library(qiverse.qipatterns)
+library(qiverse.data)
+```
+
+This package provides functions to detect Funnel plot and Statistical
+Process Control patterns.
+
+# Most Recent Pattern Detection for SPC and Funnels
+
+The `pattern_detection` function extracts the most recent detected SPC
+and Funnel pattern for each indicator and group combination.
+
+## Prepare Data
+
+The data that feeds into the `pattern_detection` function should be in a
+long format and contain the following columns:
+
+-   `indicator` - A vector to denote the indicator group. Used to
+    calculate aggregate SPC and Funnel Plots
+-   `group` - A vector of group names. Used to aggregate and group
+    points on plots
+-   `period_end` - A date (or character of format "yyyy-mm-dd") for the
+    end date of the period.
+-   `numerator` - A vector of the numerator. Used to calculate the value
+    for SPC and Funnel plots
+-   `denominator` - A vector of the denominator Used to calculate the
+    value for SPC and Funnel plots
+-   `multiplier` - Scale relative risk and funnel by this factor.
+-   `better_is` - A string identifying the direction that is favourable
+    for the indicator. "Higher" for points below the lower control limit
+    to be unfavourable, "Lower" for points above the upper control limit
+    to be unfavourable, and "Neutral" if the direction is not stated.
+-   `parent_group_name` - A vector of parent group names which are to be
+    displayed in the tooltip. These are the major categories for the
+    groups.
+-   `spc_chart_type` - A string identifying the type of SPC chart.
+-   `funnel_chart_type` - A string identifying the type of funnel plot.
+-   `parent_indicator` - A vector used for parent indicator categorisation. i.e.
+    categorising together maternity related indicators into a Maternity
+    parent.
+-   `indicator_name` - A vector of descriptive names for indicator.
+-   `group_name` - A vector of descriptive names for groups Default
+    group variable
+-   `funnel_data_points` - A vector of "Yes" or NA, marks which data
+    points are included in the funnel plot calculation.
+
+An example of this is shown below using the `example_spc_data` dataset:
+
+```{r}
+head(example_spc_data)
+```
+
+## Pattern Detection Function
+
+The dataset is then passed to the `pattern_detection` function to detect
+SPC and Funnel patterns:
+
+```{r pattern-detection, include = TRUE}
+pattern_detection_data <- pattern_detection(
+  indicator = example_spc_data$indicator,
+  group = example_spc_data$group,
+  period_end = example_spc_data$period_end,
+  numerator = example_spc_data$numerator,
+  denominator = example_spc_data$denominator,
+  multiplier = example_spc_data$multiplier,
+  better_is = example_spc_data$better_is,
+  spc_chart_type = example_spc_data$spc_chart_type,
+  funnel_chart_type = example_spc_data$funnel_chart_type,
+  parent_indicator = "All", # Allocates indicators into one parent group named All
+  indicator_name = example_spc_data$indicator,
+  group_name = example_spc_data$group,
+  funnel_data_points = "Yes", # Includes all data points in the funnel plot
+  trend_size = 5,
+  shift_size = 7
+)
+head(pattern_detection_data, 20)
+```
+
+The above code will also work if you are not interested in generating
+funnel data points, and only have data for one group.
+
+```{r pattern-detection-groupA, include = TRUE}
+pattern_detection_data_groupA <- pattern_detection(
+  indicator = example_spc_data[group == "A"]$indicator,
+  group = example_spc_data[group == "A"]$group,
+  period_end = example_spc_data[group == "A"]$period_end,
+  numerator = example_spc_data[group == "A"]$numerator,
+  denominator = example_spc_data[group == "A"]$denominator,
+  multiplier = example_spc_data[group == "A"]$multiplier,
+  better_is = example_spc_data[group == "A"]$better_is,
+  spc_chart_type = example_spc_data[group == "A"]$spc_chart_type,
+  funnel_chart_type = example_spc_data[group == "A"]$funnel_chart_type,
+  parent_indicator = "All", # Allocates indicators into one parent group named All
+  indicator_name = example_spc_data[group == "A"]$indicator,
+  group_name = example_spc_data[group == "A"]$group,
+  funnel_data_points = "Yes", # Includes all data points in the funnel plot
+  trend_size = 5,
+  shift_size = 7
+)
+head(pattern_detection_data_groupA, 20)
+```
+
+As displayed above, the output is one record for each indicator and
+group combination. The columns show:
+
+-   The sum of the numerator
+
+-   The sum of the denominator
+
+-   The most recent astronomical point period end date
+
+-   The most recent shift period end date
+
+-   The most recent trend period end date
+
+-   The most recent two-in-three period end date
+
+-   The most recent funnel plot outlier period end date
+
+# All SPC Pattern Detection
+
+The `pattern_rules` function extracts all patterns relating to
+Statistical Process Control patterns for Astronomical Points, Trends,
+Shifts and Two-in-three.
+
+## Pattern Rules Function
+
+The `pattern_rules` function uses data.table to parallelise the SPC
+limit calculations and pattern detections. This requires a unique.key to
+be created to identify which records are related to each other, and
+should be considered in the same SPC calculations. An example is as
+follows:
+
+```{r pattern_rules, include = TRUE}
+pattern_rules_data <- qiverse.qipatterns::pattern_rules(
+  numerator = example_spc_data$numerator,
+  denominator = example_spc_data$denominator,
+  period_end = as.character(example_spc_data$period_end),
+  unique_key = example_spc_data[, paste0(indicator, "_", group)],
+  spc_chart_type = example_spc_data$spc_chart_type,
+  multiplier = example_spc_data$multiplier,
+  better_is = example_spc_data$better_is,
+  trend_size = 5,
+  shift_size = 7
+)
+head(pattern_rules_data, 72)
+```
+
+Similarly, we can generate SPC patterns and limit calculations for a
+single indicator and group combination.
+
+```{r pattern_rules_SMR_A, include = TRUE}
+example_spc_data_SMR_A <- example_spc_data[indicator == "Standardised Mortality Ratio" & group == "A"]
+pattern_rules_data_SMR_A <- qiverse.qipatterns::pattern_rules(
+  numerator = example_spc_data_SMR_A$numerator,
+  denominator = example_spc_data_SMR_A$denominator,
+  period_end = as.character(example_spc_data_SMR_A$period_end),
+  unique_key = NA,
+  spc_chart_type = "i",
+  multiplier = 100,
+  better_is = "Lower",
+  trend_size = 5,
+  shift_size = 7
+)
+head(pattern_rules_data_SMR_A, 36)
+```
