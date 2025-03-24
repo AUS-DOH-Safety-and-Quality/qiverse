@@ -1,12 +1,11 @@
 Package: qiverse.qiplotly
 Title: Quality Improvement Plotly Charts
 Version: 0.1.2.3
-Authors@R: 
+Authors@R:
     person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
     family = "",
     role = c("aut", "cre"),
-    email = "safetyandquality@health.wa.gov.au",
-    comment = c(ORCID = "0000-0001-7000-8065"))
+    email = "safetyandquality@health.wa.gov.au")
 Description: Defines functions needed to generate SPC and Funnel Plots in Plotly.
 License: GPL (>= 3) + file LICENSE
 Config/testthat/edition: 3

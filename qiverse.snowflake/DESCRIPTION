@@ -1,12 +1,11 @@
 Package: qiverse.snowflake
 Title: Snowflake Connectivity
 Version: 0.0.1.0
-Authors@R: 
+Authors@R:
     person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
     family = "",
     role = c("aut", "cre"),
-    email = "safetyandquality@health.wa.gov.au",
-    comment = c(ORCID = "0000-0001-7000-8065"))
+    email = "safetyandquality@health.wa.gov.au")
 Description: Defines functions needed to connect to Snowflake within an active R session.
 License: GPL (>= 3)
 Config/testthat/edition: 3
