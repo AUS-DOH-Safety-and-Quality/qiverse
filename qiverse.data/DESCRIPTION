@@ -1,0 +1,25 @@
+Package: qiverse.data
+Title: Quality Improvement Package Data
+Version: 0.0.1.0
+Authors@R:
+    person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
+    family = "",
+    role = c("aut", "cre"),
+    email = "safetyandquality@health.wa.gov.au")
+Description: Sample data used in the qiverse packages.
+License: GPL (>= 3)
+Config/testthat/edition: 3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+URL: https://github.com/AUS-DOH-Safety-and-Quality/qiverse/qiverse.data
+BugReports: https://github.com/AUS-DOH-Safety-and-Quality/qiverse/issues
+Depends:
+    data.table,
+    R (>= 2.10)
+Suggests:
+  knitr,
+  rmarkdown,
+  testthat (>= 3.0.0)
+VignetteBuilder: knitr
+LazyData: true

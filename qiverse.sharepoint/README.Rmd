@@ -1,0 +1,46 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# qiverse.sharepoint
+
+<!-- badges: start -->
+
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) [![CRAN status](https://www.r-pkg.org/badges/version/qiverse.sharepoint)](https://CRAN.R-project.org/package=qiverse.sharepoint)
+
+<!-- badges: end -->
+
+The goal of qiverse.sharepoint is to provide a package for accessing sharepoint.
+
+## Installation
+
+You can install the development version of `qiverse.sharepoint`:
+
+``` r
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.sharepoint")
+```
+
+Branches of the development version of `qiverse.sharepoint` can also be installed through the "ref" option:
+
+``` r
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.sharepoint", ref = "branch-a")
+```
+
+## Package Vignettes
+
+The rendered package vignettes can be viewed after installation in R using the following command:
+
+``` r
+browseVignettes("qiverse.sharepoint")
+```

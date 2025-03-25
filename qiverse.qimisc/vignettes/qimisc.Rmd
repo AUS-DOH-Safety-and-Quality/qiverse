@@ -1,0 +1,55 @@
+---
+title: "Multiple Indicator Sigma Chart"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Multiple Indicator Sigma Chart}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = TRUE}
+library(qiverse.qimisc)
+library(qiverse.data)
+```
+
+This package provides functions to prepare data ready for the Multiple Indicator Sigma Chart (MISC), and chart this using plotly.
+
+## Prepare MISC Data
+
+The data that feeds into the Multiple Indicator Sigma Chart requires preparation using the `misc_prep_data` function. This takes two inputs:
+
+-   `funnel_data` - A data.frame/data.table of the funnel data with the columns indicator, group, numerator and denominator.
+
+-   `indicator_data` - A data.frame/data.table of the indicator metadata with the columns indicator_theme, indicator, multiplier, data_type and betteris.
+
+Examples of these datasets are below:
+
+```{r}
+example_funnel_data
+```
+
+```{r}
+example_indicator_data
+```
+
+These datasets must be in the above format to feed into the MISC data preparation.
+
+```{r}
+misc_data <- misc_prep_data(example_funnel_data, example_indicator_data)
+misc_data
+```
+
+## Charting MISC in Plotly
+
+This package provides a function to plot the MISC output using Plotly. An example of this is as follows:
+
+```{r, fig.height = 4, fig.width = 10, fig.align = "center"}
+misc_plotly(misc_data[group == "A"])
+```

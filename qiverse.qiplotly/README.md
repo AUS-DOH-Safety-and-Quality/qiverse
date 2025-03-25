@@ -1,0 +1,31 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# qiverse.qiplotly
+
+<!-- badges: start -->
+
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/qiverse.qiplotly)](https://CRAN.R-project.org/package=qiverse.qiplotly)
+
+<!-- badges: end -->
+
+The goal of qiverse.qiplotly is to provide a package ploting SPC and
+Funnel Plots in Plotly.
+
+## Installation
+
+You can install the development version of `qiverse.qiplotly`:
+
+``` r
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.qiplotly")
+```
+
+Branches of the development version of `qiverse.qiplotly` can also be
+installed through the “ref” option:
+
+``` r
+devtools::install_github("AUS-DOH-Safety-and-Quality/qiverse/qiverse.qiplotly", ref = "branch-a")
+```
