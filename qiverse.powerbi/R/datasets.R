@@ -141,40 +141,57 @@ execute_rest_query_impl <- function(dataset_id, query, access_token) {
 #' @param dataset Name of the dataset to execute query against
 #' @param query DAX query to execute
 #' @param access_token The token generated with the correct PowerBI Dataset
-#' permissions. Use get_az_tk('pbi_df') to create this token.
+#' permissions. Use get_az_tk('pbi_df') or get_az_tk('pbi_df') to create
+#' this token.
 #'
 #' @return DataFrame containing results of query
 #' @export
 execute_xmla_query <- function(workspace, dataset, query, access_token) {
   auth_header <- get_auth_header(access_token)
-  cluster_details <- httr::PUT(url = "https://api.powerbi.com/spglobalservice/GetOrInsertClusterUrisByTenantlocation",
-                               config = auth_header,
-                               httr::content_type_json()) |>
+  
+  # Lookup GUIDs for the Workspace and overall capacity
+  all_workspaces <- httr::GET("https://api.powerbi.com/powerbi/databases/v201606/workspaces",
+                              config = auth_header,
+                              httr::content_type_json()) |>
     httr::content()
-
-  cluster_uri <- cluster_details$DynamicClusterUri
-
-  all_datasets <- httr::GET(paste0(cluster_uri,"/metadata/v202303/gallery/sharedDatasets"),
-                            config = auth_header,
-                            httr::content_type_json()) |>
+  target_workspace <- purrr::keep(all_workspaces, \(x) x$name == workspace)[[1]]
+  workspace_id <- target_workspace$id
+  capacity_id <- target_workspace$capacityObjectId
+  
+  cluster_details <- httr::POST("https://australiasoutheast.pbidedicated.windows.net/webapi/clusterResolve",
+                                config = auth_header,
+                                body = jsonlite::toJSON(list(
+                                  databaseName = NA,
+                                  premiumPublicXmlaEndpoint = TRUE,
+                                  serverName = capacity_id
+                                ), auto_unbox = TRUE),
+                                httr::content_type_json()) |>
     httr::content()
-
-  target_dataset <- purrr::keep(all_datasets, function(x) {
-    x$workspaceName == workspace && x$model$displayName == dataset
-  })[[1]]
-
-  query_url <- paste0(cluster_uri, "/xmla?vs=", target_dataset$model$vsName,
-                                    "&db=", target_dataset$model$dbName)
-
+  
+  astoken <- httr::POST("https://api.powerbi.com/metadata/v201606/generateastoken",
+                        config = auth_header,
+                        body = jsonlite::toJSON(list(
+                          applyAuxiliaryPermission = FALSE,
+                          auxiliaryPermissionOwner = NA,
+                          capacityObjectId = capacity_id,
+                          datasetName = dataset,
+                          intendedUsage = 0,
+                          sourceCapacityObjectId = NA,
+                          workspaceObjectId = workspace_id
+                        ), auto_unbox = TRUE),
+                        httr::content_type_json()) |>
+    httr::content()
+  
   xmla_request <-
     httr::POST(
-      url = query_url,
-      config = auth_header,
-      body = construct_xmla_query(target_dataset$model$dbName, query),
+      url = paste0('https://', cluster_details$clusterFQDN,'/webapi/xmla'),
+      config = httr::add_headers(Authorization = paste("MwcToken", astoken$Token)),
+      body = construct_xmla_query(dataset, query),
       httr::progress(),
       httr::add_headers(.headers = c(
-        "X-Transport-Caps-Negotiation-Flags" = "0,0,0,1,1",
-        "Content-Type" = "text/xml"
+        "x-ms-xmlacaps-negotiation-flags" = "0,0,0,1,1",
+        "Content-Type" = "text/xml",
+        "x-ms-xmlaserver" = cluster_details$coreServerName
       ))
     )
   request_results <- httr::content(xmla_request, encoding = "UTF-8")
