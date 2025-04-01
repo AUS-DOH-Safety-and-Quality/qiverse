@@ -195,5 +195,7 @@ execute_xmla_query <- function(workspace, dataset, query, access_token) {
       ))
     )
   request_results <- httr::content(xmla_request, encoding = "UTF-8")
-  rowset_to_df(request_results)
+  rtn <- rowset_to_df(request_results)
+  names(rtn) <- gsub("\\[|\\]", "", names(rtn))
+  rtn
 }
