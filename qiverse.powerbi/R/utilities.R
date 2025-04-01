@@ -34,15 +34,15 @@ rowset_to_df <- function(xmla_rowset) {
     "boolean" = \(x){ tolower(xml2::xml_text(x)) == "true" }
   )
 
-  purrr::map_dfr(xml2::xml_find_all(xmla_rowset, "//d3:row"), \(row) {
+  rows <- purrr::map_dfr(xml2::xml_find_all(xmla_rowset, "//d3:row"), \(row) {
     row_elems <- xml2::xml_children(row)
-    row_to_df <- row_elems |>
-      purrr::imap(\(x, idx) {
-        curr_type <- metadata[[idx]]$type
+    col_names <- xml2::xml_name(row_elems)
+    row_to_df <- purrr::map2(row_elems, col_names, \(x, x_name) {
+        curr_type <- metadata[[x_name]]$type
         suppressWarnings(xmla_extract_fun[[curr_type]](x))
-        })
+        }) |>
       data.frame()
-    names(row_to_df) <- purrr::map_chr(metadata[xml2::xml_name(row_elems)], "name")
+    names(row_to_df) <- purrr::map_chr(metadata[col_names], "name")
     row_to_df
   })
 }
