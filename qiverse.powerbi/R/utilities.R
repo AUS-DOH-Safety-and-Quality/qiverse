@@ -17,6 +17,19 @@ get_cluster_url <- function(access_token) {
 }
 
 rowset_to_df <- function(xmla_rowset) {
+  # Check if query errored before trying to extract columns
+  query_fault <- xml2::xml_find_all(request_results, "//soap:Fault") |>
+    xml2::xml_children()
+
+  if (length(query_fault) > 0) {
+    fault_details <- xml2::xml_text(query_fault) |>
+      setNames(xml2::xml_name(query_fault))
+
+    stop(paste0(fault_details['faultcode'], ": ", fault_details['faultstring']),
+         call. = FALSE)
+  }
+
+
   schema <- xml2::xml_find_all(xmla_rowset, "//xsd:complexType[@name='row']/xsd:sequence")
 
   metadata <- purrr::map(xml2::xml_children(schema), \(child) {
