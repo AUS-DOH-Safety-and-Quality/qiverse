@@ -18,7 +18,7 @@ get_cluster_url <- function(access_token) {
 
 rowset_to_df <- function(xmla_rowset) {
   # Check if query errored before trying to extract columns
-  query_fault <- xml2::xml_find_all(request_results, "//soap:Fault") |>
+  query_fault <- xml2::xml_find_all(xmla_rowset, "//soap:Fault") |>
     xml2::xml_children()
 
   if (length(query_fault) > 0) {
