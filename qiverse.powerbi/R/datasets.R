@@ -24,7 +24,7 @@ list_datasets <- function(workspace, access_token) {
   }
 
   metadata_content <- httr::content(workspace_request)$value
-  
+
   if (length(metadata_content) == 0) {
     return(NULL)
   }
@@ -103,19 +103,19 @@ execute_rest_query <- function(workspace, dataset, query, access_token) {
 
 execute_rest_query_impl <- function(dataset_id, query, access_token) {
   query_url <- paste0("https://api.powerbi.com/v1.0/myorg/datasets/", dataset_id, "/executeQueries")
-  
+
   rest_query <- httr::POST(url = query_url,
                            body = construct_rest_query(query),
                            config = get_auth_header(access_token),
                            httr::content_type_json())
-  
+
   query_content <- httr::content(rest_query)
-  
+
   if ("error" %in% names(query_content)) {
     stop("Query returned error: ", query_content$error$pbi.error$details[[1]]$detail$value,
          call. = FALSE)
   }
-  
+
   if (("error" %in% names(query_content$results[[1]]))) {
     error_code <- query_content$results[[1]]$error$code
     if (error_code == "DaxByteCountNotSupported") {
@@ -124,12 +124,12 @@ execute_rest_query_impl <- function(dataset_id, query, access_token) {
            call. = FALSE)
     }
   }
-  
+
   output <- query_content$results[[1]]$tables[[1]]$rows |>
     dplyr::bind_rows()
-  
+
   names(output) <- gsub("\\[|\\]", "", names(output))
-  
+
   return(output)
 }
 
@@ -148,7 +148,7 @@ execute_rest_query_impl <- function(dataset_id, query, access_token) {
 #' @export
 execute_xmla_query <- function(workspace, dataset, query, access_token) {
   auth_header <- get_auth_header(access_token)
-  
+
   # Lookup GUIDs for the Workspace and overall capacity
   all_workspaces <- httr::GET("https://api.powerbi.com/powerbi/databases/v201606/workspaces",
                               config = auth_header,
@@ -157,7 +157,7 @@ execute_xmla_query <- function(workspace, dataset, query, access_token) {
   target_workspace <- purrr::keep(all_workspaces, \(x) x$name == workspace)[[1]]
   workspace_id <- target_workspace$id
   capacity_id <- target_workspace$capacityObjectId
-  
+
   cluster_details <- httr::POST("https://australiasoutheast.pbidedicated.windows.net/webapi/clusterResolve",
                                 config = auth_header,
                                 body = jsonlite::toJSON(list(
@@ -167,7 +167,7 @@ execute_xmla_query <- function(workspace, dataset, query, access_token) {
                                 ), auto_unbox = TRUE),
                                 httr::content_type_json()) |>
     httr::content()
-  
+
   astoken <- httr::POST("https://api.powerbi.com/metadata/v201606/generateastoken",
                         config = auth_header,
                         body = jsonlite::toJSON(list(
@@ -181,7 +181,7 @@ execute_xmla_query <- function(workspace, dataset, query, access_token) {
                         ), auto_unbox = TRUE),
                         httr::content_type_json()) |>
     httr::content()
-  
+
   xmla_request <-
     httr::POST(
       url = paste0('https://', cluster_details$clusterFQDN,'/webapi/xmla'),
