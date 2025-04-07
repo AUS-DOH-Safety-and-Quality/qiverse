@@ -32,13 +32,11 @@ snowflake_con <- function(
   if (server_name == "") {
     stop("No server_name was entered")
   }
-  ## Initialise the connection to Snowflake using the Snowflake ODBC driver
-  con <- DBI::dbConnect(odbc::odbc(),
-                        driver = "{SnowflakeDSIIDriver}",
-                        server = paste0(server_name,
-                                        ".azure.snowflakecomputing.com"),
-                        authenticator = "oauth",
-                        token = token$credentials$access_token)
+  ## Initialise the connection to Snowflake using the Snowflake AsDBC driver
+  con <- DBI::dbConnect(adbi::adbi("adbcsnowflake"),
+                        adbc.snowflake.sql.account = paste0(server_name, ".azure"),
+                        adbc.snowflake.sql.auth_type  = "auth_oauth",
+                        adbc.snowflake.sql.client_option.auth_token = token$credentials$access_token)
 
   return(con)
 }
@@ -94,7 +92,7 @@ ingest_to_snowflake <- function(
   # Create schema in Snowflake ####
   DBI::dbGetQuery(con, DBI::SQL(paste0(
     "create schema IF NOT EXISTS ", database_name, ".", schema_name
-  )))
+  )), immediate = TRUE)
 
   # Set Data Type in SQL ####
   sql_data_type <- DBI::dbDataType(con, input_data)
@@ -122,21 +120,21 @@ ingest_to_snowflake <- function(
     "create or replace table ", database_name, ".", schema_name, ".",
     table_name, " ( ", paste0('"', names(input_data), '" ', sql_data_type,
                               collapse = ", "), ");"
-  )))
+  )), immediate = TRUE)
 
   # Create a Staging Area for our File ####
   ## Create an internal stage that references the file format object.
   DBI::dbGetQuery(con, DBI::SQL(paste0(
     "create or replace temporary stage ", database_name, ".", schema_name, ".",
     table_name, "_STAGE", " FILE_FORMAT = ( TYPE = PARQUET );"
-  )))
+  )), immediate = TRUE)
 
   # Stage the data file ####
   ## Uploads the file from our own local directory into the staging area
   put_output <- DBI::dbGetQuery(con, DBI::SQL(paste0(
     "PUT file://", temp_path, " @", database_name, ".", schema_name, ".",
     table_name, "_STAGE", " overwrite=true;"
-  )))
+  )), immediate = TRUE)
 
   # Load the Staged data into the relational table ####
   ## Load the Parquet data into the relational table.
@@ -156,5 +154,5 @@ ingest_to_snowflake <- function(
         FROM @", database_name, ".", schema_name, ".", table_name, "_STAGE",
     "/", put_output$target, "
     ) FILE_FORMAT = ( TYPE = PARQUET );"
-  )))
+  )), immediate = TRUE)
 }

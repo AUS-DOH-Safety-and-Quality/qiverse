@@ -16,7 +16,8 @@ URL: https://github.com/AUS-DOH-Safety-and-Quality/qiverse/qiverse.snowflake
 BugReports: https://github.com/AUS-DOH-Safety-and-Quality/qiverse/issues
 Imports:
   DBI,
-  odbc,
+  adbcsnowflake,
+  adbi,
   arrow,
   data.table
 Suggests:
@@ -24,6 +25,8 @@ Suggests:
   knitr,
   rmarkdown,
   testthat (>= 3.0.0)
-Remotes:
-  AUS-DOH-Safety-and-Quality/qiverse/qiverse.azure
+Additional_repositories:
+  https://aus-doh-safety-and-quality.r-universe.dev/
+  https://r-dbi.r-universe.dev/
+  https://apache.r-universe.dev/
 VignetteBuilder: knitr
