@@ -224,7 +224,7 @@ ingest_dataflow_table <- function(
     # Snowflake accepts all PBI typenames except 'int64
     coltype <- ifelse(column$dataType == "int64", "int", column$dataType)
     # Enclose name in double-quotes in case of spaces in name
-    paste0('"', column$name, '" ', coltype)
+    glue::glue('"{column$name}" {coltype}')
   }) |>
     paste(collapse = ",")
 
