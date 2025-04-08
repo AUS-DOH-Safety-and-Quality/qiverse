@@ -26,15 +26,14 @@ This can be found here:
 }
 
 Also ensure that your default role in Snowflake has been set correctly.
-If you have not, execute the following command in Snowflake
-(replacing your HE number):
+If you have not, execute the following command in Snowflake:
 
-ALTER USER "HExxxxxx@HEALTH.WA.GOV.AU" SET DEFAULT_ROLE = "HQIU_SANDPIT_ALL"
+ALTER USER "MY_USER_ID@EXAMPLE.COM" SET DEFAULT_ROLE = "MY_DEFAULT_ROLE"
 }
 \examples{
  \dontrun{
 # Create Snowflake azure token
 tk <- get_az_tk('sf')
-con <- snowflake_con(server_name = 'hsswa.australia-east', token = tk)
+con <- snowflake_con(server_name = 'my-example.server-australiaeast', token = tk)
 }
 }
