@@ -34,7 +34,7 @@ con <- snowflake_con(token = tk)
 ingest_to_snowflake(
   data = data.frame(Alpha = c('a', 'b', 'c'), Number = 1:3),
   con = con,
-  database_name = 'HQIU_SANDPIT',
+  database_name = 'EXAMPLE_DATASET',
   schema_name = 'EXAMPLE',
   table_name = 'TEST'
 )

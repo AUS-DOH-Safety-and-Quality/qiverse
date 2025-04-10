@@ -45,9 +45,13 @@ get_table_metadata <- function(dataflow_id, table_name, access_token) {
                           httr::content_type_json()) |>
     httr::content()
 
-  purrr::keep(all_tables$content$entities, \(x) {
+  rtn <- purrr::keep(all_tables$content$entities, \(x) {
     x$name == table_name
   })[[1]]
+  # Locale info (e.g. en-GB) is stored in the content object
+  # but not in the table object
+  rtn$locale <- all_tables$content$culture
+  rtn
 }
 
 get_sas_key <- function(dataflow_id, table_name, access_token) {
