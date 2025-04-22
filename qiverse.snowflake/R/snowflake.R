@@ -235,10 +235,9 @@ ingest_dataflow_table <- function(
   blob_storage_container <- location_parts[4]
   filename <- target_table$`pbi:refreshPolicy`$location
 
-  # PBI stores dateTime variables in different formats depending on the locale (for some reason)
-  timestamp_format = ifelse(target_table$locale == "en-GB",
-                            "DD/MM/YYYY HH24:MI:SS",
-                            "DD/MM/YYYY HH12:MI:SS PM")
+  date_format <- ifelse(target_table$locale == "en-US", "MM/DD/YYYY", "DD/MM/YYYY")
+  # Only needed for the TIMESTAMP format, as the TIME format is always 24-hour
+  time_format <- ifelse(target_table$locale == "en-GB", "HH24:MI:SS", "HH12:MI:SS PM")
 
   create_command <- glue::glue(
     "CREATE OR REPLACE TABLE {database_name}.{schema_name}.{table_name}({table_colnames})"
@@ -248,7 +247,7 @@ ingest_dataflow_table <- function(
     "FROM 'azure://{blob_storage_url}/{blob_storage_container}/'",
     "FILES=('{filename}')",
     "CREDENTIALS=(AZURE_SAS_TOKEN='?{sas_key}')",
-    "FILE_FORMAT = (TYPE = 'CSV' FIELD_OPTIONALLY_ENCLOSED_BY = '\"' DATE_FORMAT = 'DD/MM/YYYY' TIMESTAMP_FORMAT = '{timestamp_format}')",
+    "FILE_FORMAT = (TYPE = 'CSV' FIELD_OPTIONALLY_ENCLOSED_BY = '\"' DATE_FORMAT = '{date_format}' TIMESTAMP_FORMAT = '{date_format} {time_format}')",
     .sep = "\n"
   )
 
