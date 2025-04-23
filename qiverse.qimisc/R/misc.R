@@ -29,7 +29,7 @@
 #' @import data.table
 #'
 #' @export
-#' @examples -
+#' @examples
 #' \dontrun{
 #'   library(qiverse.qimisc)
 #'   library(qiverse.data)
@@ -70,4 +70,3 @@ misc <- function(
     better_colour = better_colour
   )
 }
-

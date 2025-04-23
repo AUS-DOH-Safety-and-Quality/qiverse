@@ -18,7 +18,7 @@
 #' @return A MISC plotly output.
 #'
 #' @export
-#' @examples -
+#' @examples
 #' \dontrun{
 #'   library(qiverse.qimisc)
 #'   library(qiverse.data)

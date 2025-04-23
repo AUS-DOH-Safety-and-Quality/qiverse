@@ -55,7 +55,6 @@ provided as data.frames/data.tables. The function will then prepare the data
 for the MISC chart and plot the chart in Plotly.
 }
 \examples{
--
 \dontrun{
   library(qiverse.qimisc)
   library(qiverse.data)
