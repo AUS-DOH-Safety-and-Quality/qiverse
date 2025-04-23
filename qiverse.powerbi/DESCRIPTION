@@ -7,27 +7,27 @@ Authors@R:
     role = c("aut", "cre"),
     email = "safetyandquality@health.wa.gov.au")
 Description: Defines functions needed to connect to PowerBI dataflows/datasets.
-License: GPL (>= 3)
+License: GPL (>= 3) + file LICENSE
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 URL: https://github.com/AUS-DOH-Safety-and-Quality/qiverse/qiverse.powerbi
 BugReports: https://github.com/AUS-DOH-Safety-and-Quality/qiverse/issues
+Depends: R (>= 4.1.0)
 Imports:
   httr,
   purrr,
   readr,
   dplyr,
-  stats,
   stringr,
   jsonlite,
   magrittr,
   data.table,
   glue,
-  xml2,
-  uuid
+  xml2
 Suggests:
+  furrr,
   qiverse.azure,
   knitr,
   rmarkdown,

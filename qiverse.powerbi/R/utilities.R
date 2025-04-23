@@ -22,8 +22,8 @@ rowset_to_df <- function(xmla_rowset) {
     xml2::xml_children()
 
   if (length(query_fault) > 0) {
-    fault_details <- xml2::xml_text(query_fault) |>
-      setNames(xml2::xml_name(query_fault))
+    fault_details <- xml2::xml_text(query_fault)
+    names(fault_details) <- xml2::xml_name(query_fault)
 
     stop(paste0(fault_details['faultcode'], ": ", fault_details['faultstring']),
          call. = FALSE)
