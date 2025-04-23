@@ -210,6 +210,12 @@ ingest_dataflow_table <- function(
   table_name,
   pbi_tk
 ) {
+  for (pkg in c("qiverse.powerbi", "glue")) {
+    if (!require(pkg, quietly = TRUE)) {
+      stop("Package '", pkg, "' is required but not installed. ", call. = FALSE)
+    }
+  }
+
   verbose <- FALSE
   access_token <- pbi_tk$credentials$access_token
   # Extract the metadata and access tokens needed for the target table
