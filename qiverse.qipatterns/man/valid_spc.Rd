@@ -19,10 +19,6 @@ The input data with added valid_spc flag for filtering
 \description{
 Check validity of data for SPC
 }
-\examples{
--
-
-}
 \seealso{
 Other Pattern detection functions: 
 \code{\link{pattern_detection}()},

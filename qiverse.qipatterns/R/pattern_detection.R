@@ -24,8 +24,6 @@
 #' identified patterns
 #' @family Pattern detection functions
 #' @export
-#'
-#' @examples -
 pattern_detection <- function(
     indicator,
     group,

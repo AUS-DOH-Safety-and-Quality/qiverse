@@ -38,7 +38,4 @@ The input data with appended funnel plot values in a data table
 \description{
 Generate funnel plot values and output as data table
 }
-\examples{
--
-}
 \concept{pattern detection functions}

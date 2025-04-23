@@ -15,7 +15,6 @@
 #'
 #' @export
 #' @family Pattern detection functions
-#' @examples -
 pattern_rules <- function(
     numerator,
     denominator,
@@ -49,10 +48,10 @@ pattern_rules <- function(
   input_dt[, index_order := 1:input_dt[, .N]]
 
   # Set SPC Limits
-  input_dt_p <- qiverse.qipatterns:::.spc_limits_p(input_dt[spc_chart_type == "p"]) #nolint
-  input_dt_i <- qiverse.qipatterns:::.spc_limits_i(input_dt[spc_chart_type == "i"]) #nolint
-  input_dt_g <- qiverse.qipatterns:::.spc_limits_g(input_dt[spc_chart_type == "g"]) #nolint
-  input_dt_t <- qiverse.qipatterns:::.spc_limits_t(input_dt[spc_chart_type == "t"]) #nolint
+  input_dt_p <- .spc_limits_p(input_dt[spc_chart_type == "p"]) #nolint
+  input_dt_i <- .spc_limits_i(input_dt[spc_chart_type == "i"]) #nolint
+  input_dt_g <- .spc_limits_g(input_dt[spc_chart_type == "g"]) #nolint
+  input_dt_t <- .spc_limits_t(input_dt[spc_chart_type == "t"]) #nolint
 
   # Combine outputs
   input_dt <- rbind(

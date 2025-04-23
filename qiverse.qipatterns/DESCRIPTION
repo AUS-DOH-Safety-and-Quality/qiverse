@@ -11,9 +11,10 @@ License: GPL (>= 3) + file LICENSE
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 URL: https://github.com/AUS-DOH-Safety-and-Quality/qiverse/qiverse.qipatterns
 BugReports: https://github.com/AUS-DOH-Safety-and-Quality/qiverse/issues
+Depends: R (>= 4.3.0)
 Imports:
   data.table,
   FunnelPlotR
@@ -22,6 +23,6 @@ Suggests:
   knitr,
   rmarkdown,
   testthat (>= 3.0.0)
-Remotes:
-  AUS-DOH-Safety-and-Quality/qiverse/qiverse.sharepoint
+Additional_repositories:
+  https://aus-doh-safety-and-quality.r-universe.dev/
 VignetteBuilder: knitr
