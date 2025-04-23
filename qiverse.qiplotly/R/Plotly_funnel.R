@@ -98,7 +98,7 @@
 #'  a numerator and a denominator. Any summation of numerators and denominators
 #'  by group must be done prior to input into this function.
 #' @export
-#' @examples -
+#' @examples
 #' \dontrun{
 #' # Minimal Example
 #'
@@ -923,4 +923,3 @@ fpl_plotly_create <- function(
   # Otherwise return base chart
   return(fpl_plotly)
 }
-

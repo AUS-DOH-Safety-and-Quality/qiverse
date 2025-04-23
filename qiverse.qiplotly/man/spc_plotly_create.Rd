@@ -183,7 +183,6 @@ NA
 Draw a statistical process control chart in plotly
 }
 \examples{
--
 \dontrun{
 spc_plotly_create(
   x = seq(from = as.Date('2019-02-01'),

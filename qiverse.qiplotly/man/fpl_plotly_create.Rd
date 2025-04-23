@@ -196,7 +196,6 @@ by group must be done prior to input into this function.
 Draw a funnel plot in plotly
 }
 \examples{
--
 \dontrun{
 # Minimal Example
 
