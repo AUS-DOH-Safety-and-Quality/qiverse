@@ -22,9 +22,6 @@ Initialise an AzureKeyVault object for interacting with stored secrets. If
 an AzureAuth access token object is not provided then the authentication
 process is also initiated
 }
-\examples{
--
-}
 \seealso{
 Other Key Vault methods: 
 \code{\link{.secrets_operation}()},

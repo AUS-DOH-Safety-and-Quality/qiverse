@@ -12,7 +12,6 @@
 #'
 #' @family Azure methods
 #' @export
-#' @examples -
 az_authenticated_api_query <- function(method, url, access_token, ...) {
   httr_func <- utils::getFromNamespace(method, "httr")
 

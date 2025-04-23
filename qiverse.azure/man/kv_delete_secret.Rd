@@ -20,9 +20,6 @@ created for the Key Vault resource}
 \description{
 Delete a specified secret from a given Key Vault
 }
-\examples{
--
-}
 \seealso{
 Other Key Vault methods: 
 \code{\link{.init_key_vault}()},

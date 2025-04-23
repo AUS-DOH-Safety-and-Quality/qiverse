@@ -18,9 +18,6 @@ A list of the (names of) secrets stored in the given Key Vault
 \description{
 List the names of secrets stored in a given Azure Key Vault
 }
-\examples{
--
-}
 \seealso{
 Other Key Vault methods: 
 \code{\link{.init_key_vault}()},

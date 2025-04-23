@@ -1,3 +1,6 @@
+# dbutils is only available in Databricks
+globalVariables(c("dbutils.secrets.getBytes"))
+
 #' Generate an Azure authentication token
 #'
 #' @param token_type The type of token to be generated.

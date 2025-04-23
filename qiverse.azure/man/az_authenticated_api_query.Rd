@@ -25,9 +25,6 @@ The result of the API call
 Make a call to a web API which requires an Azure access token for
 authentication
 }
-\examples{
--
-}
 \seealso{
 Other Azure methods: 
 \code{\link{db_secret_scopes_api}()},
