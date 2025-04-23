@@ -15,7 +15,6 @@
 #'
 #' @family pattern detection functions
 #' @export
-#' @examples -
 append_fpl_val <- function(
     numerator,
     denominator,

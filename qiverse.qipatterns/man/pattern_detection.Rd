@@ -62,9 +62,6 @@ identified patterns
 \description{
 Pattern Detection
 }
-\examples{
--
-}
 \seealso{
 Other Pattern detection functions: 
 \code{\link{pattern_rules}()},

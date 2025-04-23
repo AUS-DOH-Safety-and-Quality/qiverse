@@ -23,7 +23,6 @@ A data.table with the required fields for the MISC plotly chart.
 Prepare data for the Multiple Indicator Sigma Chart
 }
 \examples{
--
 \dontrun{
   library(qiverse.qimisc)
   library(qiverse.data)

@@ -95,7 +95,7 @@
 #'  ## Additional requirements for this function
 #'  NA
 #' @export
-#' @examples -
+#' @examples
 #' \dontrun{
 #' spc_plotly_create(
 #'   x = seq(from = as.Date('2019-02-01'),
@@ -997,4 +997,3 @@ spc_plotly_create <- function(
   # Output plotly object
   return(spc_plotly)
 }
-

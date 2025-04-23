@@ -18,7 +18,7 @@
 #' @import data.table
 #'
 #' @export
-#' @examples -
+#' @examples
 #' \dontrun{
 #'   library(qiverse.qimatrix)
 #'   library(qiverse.data)
@@ -182,4 +182,3 @@ spc_funnel_matrix_flextable <- function(
     flextable::append_chunks(i = 1, j = 4, value = flextable::as_image(system.file("icons", "funnel", "FunnelIconWorse.png", package = "qiverse.qimatrix"), width = 1, height = 1))
 
 }
-

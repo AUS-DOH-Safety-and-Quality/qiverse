@@ -8,8 +8,6 @@
 #'
 #' @export
 #' @family Pattern detection functions
-#' @examples -
-#'
 valid_spc <- function(numerator, denominator, period_end) {
   # Dealing with undefined global functions or variables
   `:=` <- NULL

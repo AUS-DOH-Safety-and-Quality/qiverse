@@ -42,9 +42,6 @@ The input data with appended identified patterns
 \description{
 Apply pattern rules
 }
-\examples{
--
-}
 \seealso{
 Other Pattern detection functions: 
 \code{\link{pattern_detection}()},

@@ -43,7 +43,7 @@
 #' @import data.table
 #'
 #' @export
-#' @examples -
+#' @examples
 #' \dontrun{
 #'   library(qiverse.qimatrix)
 #'   library(qiverse.data)

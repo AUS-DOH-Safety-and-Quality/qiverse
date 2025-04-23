@@ -43,7 +43,6 @@ A MISC plotly output.
 Chart the Multiple Indicator Sigma Chart in Plotly
 }
 \examples{
--
 \dontrun{
   library(qiverse.qimisc)
   library(qiverse.data)
