@@ -26,8 +26,6 @@ Suggests:
   rmarkdown,
   testthat (>= 3.0.0),
   glue
-
-
 Additional_repositories:
   https://aus-doh-safety-and-quality.r-universe.dev/
 VignetteBuilder: knitr
