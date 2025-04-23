@@ -1,7 +1,7 @@
 
 on:
   push:
-    branches: [main, workflow-nested]
+    branches: [main]
   pull_request:
     branches: [main]
 
