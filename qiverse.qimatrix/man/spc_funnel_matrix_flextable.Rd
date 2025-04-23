@@ -35,7 +35,6 @@ A flextable visualisation for the SPC Funnel Matrix.
 Construct a Flextable from the SPC Funnel Matrix Data
 }
 \examples{
--
 \dontrun{
   library(qiverse.qimatrix)
   library(qiverse.data)

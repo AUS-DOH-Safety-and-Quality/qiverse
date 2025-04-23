@@ -80,7 +80,6 @@ Extract all favourable and unfavourable SPC and Funnel Plot
 patterns, and export into the SPC Funnel Matrix format.
 }
 \examples{
--
 \dontrun{
   library(qiverse.qimatrix)
   library(qiverse.data)
