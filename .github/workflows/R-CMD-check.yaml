@@ -24,6 +24,7 @@ jobs:
         uses: tj-actions/changed-files@v46
         with:
           files_ignore: .github/**
+          json: true
 
       - name: Detect changed directories
         id: detect

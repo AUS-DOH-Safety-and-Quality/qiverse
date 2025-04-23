@@ -96,8 +96,6 @@ ingest_to_snowflake <- function(
     "create schema IF NOT EXISTS ", database_name, ".", schema_name
   )))
 
-
-
   # Set Data Type in SQL ####
   sql_data_type <- DBI::dbDataType(con, input_data)
   # Convert those with character lengths greater than 255, to be the maximum
