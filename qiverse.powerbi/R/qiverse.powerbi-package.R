@@ -10,7 +10,6 @@
 #' @importFrom readr read_csv
 #' @importFrom glue glue
 #' @importFrom jsonlite toJSON
-#' @importFrom uuid UUIDgenerate
 #' @importFrom xml2 xml_find_all xml_children xml_attr xml_name xml_text
 #'
 "_PACKAGE"

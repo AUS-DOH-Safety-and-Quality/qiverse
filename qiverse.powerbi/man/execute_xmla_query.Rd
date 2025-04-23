@@ -15,7 +15,8 @@ execute_xmla_query(workspace, dataset, query, access_token)
 \item{query}{DAX query to execute}
 
 \item{access_token}{The token generated with the correct PowerBI Dataset
-permissions. Use get_az_tk('pbi_df') to create this token.}
+permissions. Use get_az_tk('pbi_df') or get_az_tk('pbi_df') to create
+this token.}
 }
 \value{
 DataFrame containing results of query

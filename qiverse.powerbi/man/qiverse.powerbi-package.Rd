@@ -12,11 +12,11 @@ A collection of R functions for working with PowerBI Dataflows and Datasets
 Useful links:
 \itemize{
   \item \url{https://github.com/AUS-DOH-Safety-and-Quality/qiverse/qiverse.powerbi}
-  \item Report bugs at \url{https://github.com/AUS-DOH-Safety-and-Quality/qiverse/qiverse.powerbi/issues}
+  \item Report bugs at \url{https://github.com/AUS-DOH-Safety-and-Quality/qiverse/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Healthcare Quality Intelligence Unit (Western Australia Health) \email{safetyandquality@health.wa.gov.au} (\href{https://orcid.org/0000-0001-7000-8065}{ORCID})
+\strong{Maintainer}: Healthcare Quality Intelligence Unit (Western Australia Health) \email{safetyandquality@health.wa.gov.au}
 
 }
