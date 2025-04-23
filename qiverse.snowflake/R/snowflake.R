@@ -176,8 +176,6 @@ ingest_to_snowflake <- function(
 #' Use `get_az_tk("pbi_df")` to create this token.
 #'
 #' @return A data.frame with output metadata on the ingestion process.
-#' @import glue
-#' @import qiverse.powerbi
 #' @export
 #' @examples
 #'  \dontrun{
@@ -211,7 +209,7 @@ ingest_dataflow_table <- function(
   pbi_tk
 ) {
   for (pkg in c("qiverse.powerbi", "glue")) {
-    if (!require(pkg, quietly = TRUE)) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
       stop("Package '", pkg, "' is required but not installed. ", call. = FALSE)
     }
   }
@@ -226,7 +224,7 @@ ingest_dataflow_table <- function(
   sas_key <- qiverse.powerbi:::get_sas_key(dataflow_id, pbi_table, access_token)
 
   # Extract the column names and types
-  table_colnames <- purrr::map_chr(target_table$attributes, \(column) {
+  table_colnames <- sapply(target_table$attributes, \(column) {
     # Snowflake accepts all PBI typenames except 'int64
     coltype <- ifelse(column$dataType == "int64", "int", column$dataType)
     # Enclose name in double-quotes in case of spaces in name
