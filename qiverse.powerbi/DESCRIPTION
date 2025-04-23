@@ -32,6 +32,6 @@ Suggests:
   knitr,
   rmarkdown,
   testthat (>= 3.0.0)
-Remotes:
-  AUS-DOH-Safety-and-Quality/qiverse/qiverse.azure
+Additional_repositories:
+  https://aus-doh-safety-and-quality.r-universe.dev/
 VignetteBuilder: knitr
