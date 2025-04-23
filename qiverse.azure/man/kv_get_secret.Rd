@@ -20,9 +20,6 @@ The value of a secret stored in the given Key Vault
 \description{
 Retrieve the value of a specified secret from a given Key Vault
 }
-\examples{
--
-}
 \seealso{
 Other Key Vault methods: 
 \code{\link{.init_key_vault}()},

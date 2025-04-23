@@ -28,9 +28,6 @@ created for the Key Vault resource}
 \description{
 Create or overwrite a secret in an Azure Key Vault
 }
-\examples{
--
-}
 \seealso{
 Other Key Vault methods: 
 \code{\link{.init_key_vault}()},

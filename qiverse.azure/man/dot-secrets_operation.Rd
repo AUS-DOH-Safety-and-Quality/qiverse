@@ -29,9 +29,6 @@ A generic implementation function for interacting with Azure Key Vault
 secrets. Handles the connection and authentication (if necessary) to the
 Key Vault service
 }
-\examples{
--
-}
 \seealso{
 Other Key Vault methods: 
 \code{\link{.init_key_vault}()},

@@ -14,7 +14,6 @@
 #'
 #' @family Azure methods
 #' @export
-#' @examples -
 db_secret_scopes_api <- function(operation, workspace_url, access_token,
                                  scope_name = NULL) {
   if (!(operation %in% c("list", "create", "delete"))) {
@@ -61,7 +60,6 @@ db_secret_scopes_api <- function(operation, workspace_url, access_token,
 #'
 #' @family Azure methods
 #' @export
-#' @examples -
 db_secrets_api <- function(operation, workspace_url, access_token,
                            scope_name, secret_name = NULL, secret_value = NULL,
                            bytestring = FALSE) {

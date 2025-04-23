@@ -42,9 +42,6 @@ Interact with the Databricks API for managing individual secrets.
 The Databricks API allows for listing, creating,
 and deleting secret scopes.
 }
-\examples{
--
-}
 \seealso{
 Other Azure methods: 
 \code{\link{az_authenticated_api_query}()},

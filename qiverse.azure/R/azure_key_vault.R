@@ -8,7 +8,7 @@
 #'
 #' @return An AzureKeyVault::key_vault() object
 #' @family Key Vault methods
-#' @examples -
+
 .init_key_vault <- function(vault_name, token_object) {
   if (is.null(token_object)) {
     token_object <- qiverse.azure::get_az_tk("key_vault")
@@ -32,7 +32,6 @@
 #' @return An AzureKeyVault::key_vault() object
 #'
 #' @family Key Vault methods
-#' @examples -
 .secrets_operation <- function(vault_name, operation, token_object, ...) {
   kv <- .init_key_vault(vault_name = vault_name, token_object = token_object)
   kv$secrets[[operation]](...)
@@ -48,7 +47,6 @@
 #'
 #' @family Key Vault methods
 #' @export
-#' @examples -
 kv_list_secrets <- function(vault_name, token_object = NULL) {
   .secrets_operation(vault_name = vault_name, operation = "list",
                      token_object = token_object)
@@ -65,7 +63,6 @@ kv_list_secrets <- function(vault_name, token_object = NULL) {
 #'
 #' @family Key Vault methods
 #' @export
-#' @examples -
 kv_get_secret <- function(vault_name, secret_name, token_object = NULL) {
   secret <- .secrets_operation(vault_name = vault_name, operation = "get",
                                token_object = token_object, name = secret_name)
@@ -89,7 +86,6 @@ kv_get_secret <- function(vault_name, secret_name, token_object = NULL) {
 #'
 #' @family Key Vault methods
 #' @export
-#' @examples -
 kv_write_secret <- function(vault_name, secret_name, secret_value,
                             bytestring = FALSE, token_object = NULL) {
   content_type <- NULL
@@ -117,7 +113,6 @@ kv_write_secret <- function(vault_name, secret_name, secret_value,
 #'
 #' @family Key Vault methods
 #' @export
-#' @examples -
 kv_delete_secret <- function(vault_name, secret_name, confirm = TRUE,
                              token_object = NULL) {
   .secrets_operation(vault_name = vault_name,
