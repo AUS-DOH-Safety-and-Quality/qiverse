@@ -27,6 +27,7 @@ Imports:
   glue,
   xml2
 Suggests:
+  zlib,
   furrr,
   qiverse.azure,
   knitr,
