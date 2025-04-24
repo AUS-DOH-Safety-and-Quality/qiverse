@@ -90,3 +90,32 @@ construct_rest_query <- function(query) {
     }}'
   )
 }
+
+#' Decode a PowerBI Compressed Table String to JSON
+#'
+#' @description When entering data using the 'Enter Data' function in PowerBI, the
+#' table is stored as JSON file, compressed, and the binary stored as a base64 string.
+#'
+#' This function takes the base64 string and returns the JSON representation of the
+#' table.
+#'
+#' @param table_str The base64 string representation of the table.
+#'
+#' @return A JSON string representing the table.
+#' @export
+#' @examples
+#' table_str <- "i45W8lXSUfJNzElVitWJVnIDctxSc2HcCCDXMS+/JCO1SKEktSgXLBgKFAzNy87LL88D8/2AfL/8EoXigtTkzLTM1BSl2FgA"
+#' table_string_to_json(table_str) |> cat()
+#' # [["M","Male"],["F","Female"],["X","Another term"],["U","Unknown"],["N","Not specified"]]
+table_string_to_json <- function(table_str) {
+  for (pkg in c("zlib")) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      stop("Package '", pkg, "' is required but not installed. ", call. = FALSE)
+    }
+  }
+
+  table_str |>
+    jsonlite::base64_dec() |>
+    zlib::decompress(wbits = -15) |>
+    rawToChar()
+}
