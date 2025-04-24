@@ -116,6 +116,8 @@ table_string_to_json <- function(table_str) {
 
   table_str |>
     jsonlite::base64_dec() |>
+    # PBI compresses without standard gzip header
+    # setting a negative wbits suppresses the header check
     zlib::decompress(wbits = -15) |>
     rawToChar()
 }
