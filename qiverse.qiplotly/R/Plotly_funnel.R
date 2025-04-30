@@ -324,7 +324,7 @@ fpl_plotly_create <- function(
   ## Flag 3 sigma outliers
   funnel_data <- funnel_data |>
     dplyr::mutate(outlier_3sigma = ifelse(
-      rr * multiplier >= UCL99 | rr * multiplier <= LCL99,
+      rr * multiplier > UCL99 | rr * multiplier < LCL99,
       1, 0
     ))
 
