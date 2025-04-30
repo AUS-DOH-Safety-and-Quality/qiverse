@@ -60,6 +60,13 @@ rowset_to_df <- function(xmla_rowset) {
   })
 }
 
+escape_xml_query <- function(query) {
+  query |>
+    stringr::str_replace_all("\\&", "&amp;") |>
+    stringr::str_replace_all("\\<", "&lt;") |>
+    stringr::str_replace_all("\\>", "&gt;")
+}
+
 construct_xmla_query <- function(dataset, query) {
   glue::glue('
     <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
@@ -69,7 +76,7 @@ construct_xmla_query <- function(dataset, query) {
       </Header>
       <Body>
         <Execute xmlns="urn:schemas-microsoft-com:xml-analysis">
-          <Command><Statement>{query}</Statement></Command>
+          <Command><Statement>{escape_xml_query(query)}</Statement></Command>
           <Properties>
             <PropertyList>
               <Catalog>{dataset}</Catalog>
