@@ -106,9 +106,9 @@ append_fpl_val <- function(
                      better_is = better_is[1])]
 
   #Check which points are outliers
-  funnel_data[better_is == "Lower" & fpl_row_value >= fpl_ul99,
+  funnel_data[better_is == "Lower" & fpl_row_value > fpl_ul99,
               fpl_astro := period_end[1]][
-                better_is == "Higher" & fpl_row_value <= fpl_ll99,
+                better_is == "Higher" & fpl_row_value < fpl_ll99,
                 fpl_astro := period_end[1]]
   #remove better_is field
   funnel_data[, better_is := NULL]
