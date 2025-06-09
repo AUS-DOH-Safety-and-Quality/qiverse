@@ -120,11 +120,14 @@ table_string_to_json <- function(table_str) {
       stop("Package '", pkg, "' is required but not installed. ", call. = FALSE)
     }
   }
-
-  table_str |>
+  # Need to wrap the call in sapply to properly a vector of strings
+  # otherwise base64_dec will treat as a single large string
+  sapply(table_str, \(x) {
+    x |>
     jsonlite::base64_dec() |>
     # PBI compresses without standard gzip header
     # setting a negative wbits suppresses the header check
     zlib::decompress(wbits = -15) |>
     rawToChar()
+  }, USE.NAMES = FALSE)
 }

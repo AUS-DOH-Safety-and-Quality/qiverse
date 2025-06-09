@@ -8,6 +8,22 @@ test_that("table_str_to_json works", {
     result,
     '[["M","Male"],["F","Female"],["X","Another term"],["U","Unknown"],["N","Not specified"]]'
   )
+
+  # Check handling of multiple input strings
+  table_strs <- c(
+    "i45WMlDSUfLLz0tVitWJVjIEcjwSUxQ8HJ01ijXBQnmlOTlA0dC8nMy87NQUpdhYAA==",
+    "i45W8ssvUXAsS8zMSUzKSVXSUTJQitWJVvKoLMjPSywpSkzNzUwEihqCRf3yi3ITc4BcI5ii1CJkVcZKsbEA"
+  )
+
+  true_res <- c(
+    '[["0","None"],["1","Had HAC(s)"],["null","Unlinked"]]',
+    '[["Not Available","0"],["Hyponatraemia","1"],["Normal","2"],["Hypernatraemia","3"]]'
+  )
+
+  expect_equal(
+    table_str_to_json(table_strs),
+    true_res
+  )
 })
 
 test_that("queries escaped for xml", {
