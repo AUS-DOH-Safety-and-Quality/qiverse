@@ -117,9 +117,21 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
 
   target_table <- get_table_metadata(dataflow_id, table_name, access_token)
 
+  # All our dataflows are either en-AU, en-US, or en-GB
+  #  but add warning message in case this changes
+  if (!(target_table$locale %in% c("en-AU", "en-US", "en-GB"))) {
+    warning(
+      "The dataflow's locale is: ", target_table$locale,
+      ", for which date-time parsing has not been specifically implemented.",
+      " Please open an issue at: https://github.com/AUS-DOH-Safety-and-Quality/qiverse",
+      call. = FALSE
+    )
+  }
+
   # Extract the column names and types
   table_colnames <- purrr::map_chr(target_table$attributes, "name")
 
+  # Use en-AU locale formatting by default
   pbi_to_readr_type_map <- list(
     "string" = readr::col_character(),
     "date" = readr::col_date(format = "%d/%m/%Y"),
@@ -129,6 +141,18 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
     "dateTime" = readr::col_datetime(format = "%d/%m/%Y %H:%M:%S %p"),
     "time" = readr::col_time(format = "%H:%M:%S")
   )
+
+  if (target_table$locale == "en-GB") {
+    # en-GB uses 24hr notation for dateTime types (no AM/PM suffix)
+    pbi_to_readr_type_map[["dateTime"]] <- readr::col_datetime(format = "%d/%m/%Y %H:%M:%S")
+  }
+
+  if (target_table$locale == "en-US") {
+    # en-US just has months swapped
+    pbi_to_readr_type_map[["dateTime"]] <- readr::col_datetime(format = "%m/%d/%Y %H:%M:%S %p")
+    pbi_to_readr_type_map[["date"]] <- readr::col_datetime(format = "%m/%d/%Y")
+  }
+
   table_coltypes <- purrr::map(target_table$attributes, \(x) {
     pbi_to_readr_type_map[[x$dataType]]
   })
