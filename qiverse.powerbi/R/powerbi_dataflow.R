@@ -150,7 +150,7 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
   if (target_table$locale == "en-US") {
     # en-US just has months swapped
     pbi_to_readr_type_map[["dateTime"]] <- readr::col_datetime(format = "%m/%d/%Y %H:%M:%S %p")
-    pbi_to_readr_type_map[["date"]] <- readr::col_datetime(format = "%m/%d/%Y")
+    pbi_to_readr_type_map[["date"]] <- readr::col_date(format = "%m/%d/%Y")
   }
 
   table_coltypes <- purrr::map(target_table$attributes, \(x) {
