@@ -128,7 +128,7 @@ execute_rest_query_impl <- function(dataset_id, query, access_token) {
   output <- query_content$results[[1]]$tables[[1]]$rows |>
     dplyr::bind_rows()
 
-  names(output) <- gsub("([a-zA-Z]*)?\\[|\\]", "", names(output))
+  names(output) <- gsub("(.*)?\\[|\\]", "", names(output))
 
   return(output)
 }
@@ -196,6 +196,6 @@ execute_xmla_query <- function(workspace, dataset, query, access_token) {
     )
   request_results <- httr::content(xmla_request, encoding = "UTF-8")
   rtn <- rowset_to_df(request_results)
-  names(rtn) <- gsub("([a-zA-Z]*)?\\[|\\]", "", names(rtn))
+  names(rtn) <- gsub("(.*)?\\[|\\]", "", names(rtn))
   rtn
 }
