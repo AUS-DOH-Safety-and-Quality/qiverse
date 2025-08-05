@@ -9,6 +9,10 @@ name: R-CMD-check.yaml
 
 permissions: read-all
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   detect-directory-changes:
     name: "Check which packages have changed"
