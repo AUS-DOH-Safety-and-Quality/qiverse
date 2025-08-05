@@ -98,31 +98,30 @@ construct_rest_query <- function(query) {
   )
 }
 
-#' Decode a PowerBI Compressed Table String to JSON
+#' Decode a PowerBI Compressed String
 #'
-#' @description When entering data using the 'Enter Data' function in PowerBI, the
-#' table is stored as JSON file, compressed, and the binary stored as a base64 string.
+#' @description For more efficient storage, PowerBI will store strings in a compressed
+#' binary format - compressed using the deflate algorithm and then represented as a base64 string.
 #'
-#' This function takes the base64 string and returns the JSON representation of the
-#' table.
+#' This function takes the base64 string and decompresses it to return the original string.
 #'
-#' @param table_str The base64 string representation of the table.
+#' @param compressed_string The base64 string of the compressed data.
 #'
-#' @return A JSON string representing the table.
+#' @return Original string after decompression.
 #' @export
 #' @examples
 #' table_str <- "i45W8lXSUfJNzElVitWJVnIDctxSc2HcCCDXMS+/JCO1SKEktSgXLBgKFAzNy87LL88D8/2AfL/8EoXigtTkzLTM1BSl2FgA"
-#' table_string_to_json(table_str) |> cat()
+#' decompress_string(table_str) |> cat()
 #' # [["M","Male"],["F","Female"],["X","Another term"],["U","Unknown"],["N","Not specified"]]
-table_string_to_json <- function(table_str) {
+decompress_string <- function(compressed_string) {
   for (pkg in c("zlib")) {
     if (!requireNamespace(pkg, quietly = TRUE)) {
       stop("Package '", pkg, "' is required but not installed. ", call. = FALSE)
     }
   }
-  # Need to wrap the call in sapply to properly a vector of strings
+  # Need to wrap the call in sapply to properly handle a vector of strings
   # otherwise base64_dec will treat as a single large string
-  sapply(table_str, \(x) {
+  sapply(compressed_string, \(x) {
     x |>
     jsonlite::base64_dec() |>
     # PBI compresses without standard gzip header

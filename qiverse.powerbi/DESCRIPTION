@@ -1,6 +1,6 @@
 Package: qiverse.powerbi
 Title: PowerBI Connectivity
-Version: 0.0.6
+Version: 0.0.7
 Authors@R:
     person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
     family = "",
