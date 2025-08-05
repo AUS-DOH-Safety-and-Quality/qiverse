@@ -1,5 +1,3 @@
-context("utilities")
-
 test_that("decompress_string works", {
   # Example to decode a PowerBI Compressed Table String to JSON
   table_str <- "i45W8lXSUfJNzElVitWJVnIDctxSc2HcCCDXMS+/JCO1SKEktSgXLBgKFAzNy87LL88D8/2AfL/8EoXigtTkzLTM1BSl2FgA"

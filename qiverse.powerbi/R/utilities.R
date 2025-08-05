@@ -110,7 +110,8 @@ construct_rest_query <- function(query) {
 #' @return Original string after decompression.
 #' @export
 #' @examples
-#' table_str <- "i45W8lXSUfJNzElVitWJVnIDctxSc2HcCCDXMS+/JCO1SKEktSgXLBgKFAzNy87LL88D8/2AfL/8EoXigtTkzLTM1BSl2FgA"
+#' table_str <- paste0("i45W8lXSUfJNzElVitWJVnIDctxSc2HcCCDXMS+/JCO1SKEktSgXLBgKFAzNy87LL88D8/",
+#'                     "2AfL/8EoXigtTkzLTM1BSl2FgA")  # Split across lines for R CMD check NOTE
 #' decompress_string(table_str) |> cat()
 #' # [["M","Male"],["F","Female"],["X","Another term"],["U","Unknown"],["N","Not specified"]]
 decompress_string <- function(compressed_string) {

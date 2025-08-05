@@ -19,7 +19,8 @@ binary format - compressed using the deflate algorithm and then represented as a
 This function takes the base64 string and decompresses it to return the original string.
 }
 \examples{
-table_str <- "i45W8lXSUfJNzElVitWJVnIDctxSc2HcCCDXMS+/JCO1SKEktSgXLBgKFAzNy87LL88D8/2AfL/8EoXigtTkzLTM1BSl2FgA"
+table_str <- paste0("i45W8lXSUfJNzElVitWJVnIDctxSc2HcCCDXMS+/JCO1SKEktSgXLBgKFAzNy87LL88D8/",
+                    "2AfL/8EoXigtTkzLTM1BSl2FgA")  # Split across lines for R CMD check NOTE
 decompress_string(table_str) |> cat()
 # [["M","Male"],["F","Female"],["X","Another term"],["U","Unknown"],["N","Not specified"]]
 }
