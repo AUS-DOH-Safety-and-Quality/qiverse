@@ -121,7 +121,7 @@ decompress_string <- function(compressed_string) {
   }
   # Need to wrap the call in sapply to properly handle a vector of strings
   # otherwise base64_dec will treat as a single large string
-  sapply(table_str, \(x) {
+  sapply(compressed_string, \(x) {
     x |>
     jsonlite::base64_dec() |>
     # PBI compresses without standard gzip header
