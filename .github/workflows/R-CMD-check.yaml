@@ -1,7 +1,7 @@
 
 on:
   push:
-    branches: [main]
+    branches: [main, fix-notes]
   pull_request:
     branches: [main]
 
@@ -51,7 +51,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: ${{ fromJSON(needs.detect-directory-changes.outputs.changed) }}
+        #package: ${{ fromJSON(needs.detect-directory-changes.outputs.changed) }}
+        package: [qiverse, qiverse.azure, qiverse.data, qiverse.powerbi, qiverse.qimatrix, qiverse.qimisc, qiverse.qipatterns, qiverse.qiplotly, qiverse.sharepoint, qiverse.snowflake ]
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
