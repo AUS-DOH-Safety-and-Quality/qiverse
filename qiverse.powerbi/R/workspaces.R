@@ -35,6 +35,13 @@ list_workspaces <- function(access_token) {
 #'
 #' @return DataFrame containing the names, GUIDs, and descriptions for all dataflows in workspace
 #' @export
+list_dataflows <- function(workspace, access_token) {
+  workspace_metadata <- qiverse.powerbi::list_workspaces(access_token)
+  if (!(workspace %in% workspace_metadata$Workspace)) {
+    stop("No workspace called: ", workspace, " in tenant!", call. = FALSE)
+  }
+
+  workspace_id <- workspace_metadata[workspace_metadata$Workspace == workspace,]$WorkspaceId
   base_url <- paste0("https://api.powerbi.com/v1.0/myorg/groups/", workspace_id, "/dataflows")
   metadata_request <- httr::GET(url = base_url,
                                 config = get_auth_header(access_token),
@@ -50,10 +57,13 @@ list_workspaces <- function(access_token) {
   content_to_dataframe <- metadata_content$value |>
     purrr::keep(\(x) !is.null(x$name)) |>
     purrr::map_dfr(\(x) {
+      x[c("Workspace", "WorkspaceId", "name", "objectId")]
     })
 
+  names(content_to_dataframe) <- c("Workspace", "WorkspaceId", "Dataflow", "DataflowId")
   content_to_dataframe
 }
+
 
 list_reports <- function(workspace_id, access_token) {
   base_url <- paste0("https://api.powerbi.com/v1.0/myorg/groups/", workspace_id, "/reports")
