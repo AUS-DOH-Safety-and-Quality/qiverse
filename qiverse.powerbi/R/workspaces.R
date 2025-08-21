@@ -52,15 +52,29 @@ list_dataflows <- function(workspace, access_token) {
          call. = TRUE)
   }
 
-  metadata_content <- httr::content(metadata_request)
+  metadata_content <- httr::content(metadata_request)$value
 
-  content_to_dataframe <- metadata_content$value |>
-    purrr::keep(\(x) !is.null(x$name)) |>
-    purrr::map_dfr(\(x) {
-      x[c("Workspace", "WorkspaceId", "name", "objectId")]
-    })
+  if (length(metadata_content) == 0) {
+    return(NULL)
+  }
 
-  names(content_to_dataframe) <- c("Workspace", "WorkspaceId", "Dataflow", "DataflowId")
+  content_to_dataframe <- purrr::map_dfr(metadata_content, \(metadata){
+    do.call(data.frame, purrr::keep(metadata, \(x){length(x) > 0}))
+  })
+  content_to_dataframe$Workspace <- workspace
+  content_to_dataframe$WorkspaceId <- workspace_id
+  if (!("configuredBy" %in% colnames(content_to_dataframe))) {
+    content_to_dataframe$configuredBy <- ""
+  }
+  if (!("name" %in% colnames(content_to_dataframe))) {
+    content_to_dataframe$name <- ""
+  }
+  if (!("objectId" %in% colnames(content_to_dataframe))) {
+    content_to_dataframe$name <- ""
+  }
+
+  content_to_dataframe <- content_to_dataframe[,c("Workspace", "WorkspaceId", "name", "objectId", "configuredBy")]
+  names(content_to_dataframe) <- c("Workspace", "WorkspaceId", "Dataflow", "DataflowId", "DatasetOwner")
   content_to_dataframe
 }
 
