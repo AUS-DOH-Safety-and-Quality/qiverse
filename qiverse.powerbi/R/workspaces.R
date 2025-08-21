@@ -26,7 +26,15 @@ list_workspaces <- function(access_token) {
 }
 
 
-list_dataflows <- function(workspace_id, access_token) {
+
+#' Request metadata for all dataflows in specified workspace
+#'
+#' @param workspace Name of the workspace containing dataflows
+#' @param access_token The token generated with the correct PowerBI Dataflow
+#' permissions. Use get_az_tk('pbi_df') to create this token.
+#'
+#' @return DataFrame containing the names, GUIDs, and descriptions for all dataflows in workspace
+#' @export
   base_url <- paste0("https://api.powerbi.com/v1.0/myorg/groups/", workspace_id, "/dataflows")
   metadata_request <- httr::GET(url = base_url,
                                 config = get_auth_header(access_token),
@@ -42,10 +50,8 @@ list_dataflows <- function(workspace_id, access_token) {
   content_to_dataframe <- metadata_content$value |>
     purrr::keep(\(x) !is.null(x$name)) |>
     purrr::map_dfr(\(x) {
-      x[c("name", "objectId")]
     })
 
-  names(content_to_dataframe) <- c("Dataflow", "DataflowId")
   content_to_dataframe
 }
 
