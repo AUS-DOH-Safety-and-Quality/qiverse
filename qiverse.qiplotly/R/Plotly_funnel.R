@@ -490,7 +490,7 @@ fpl_plotly_create <- function(
       plotly::add_trace(
         name = target_options$legend_name,
         data = lim_data,
-        x = ~number.seq,
+        x = ~number_seq,
         y = target,
         type = "scatter",
         mode = "lines",
@@ -562,7 +562,7 @@ fpl_plotly_create <- function(
     plotly::add_trace(
       name = "Upper Control Limit 99.8%",
       data = lim_data,
-      x = ~number.seq,
+      x = ~number_seq,
       y = ~ul998,
       type = "scatter",
       mode = "lines",
@@ -574,7 +574,7 @@ fpl_plotly_create <- function(
     plotly::add_trace(
       name = "Upper Warning Limit 95%",
       data = lim_data,
-      x = ~number.seq,
+      x = ~number_seq,
       y = ~ul95,
       type = "scatter",
       mode = "lines",
@@ -612,7 +612,7 @@ fpl_plotly_create <- function(
     plotly::add_trace(
       name = "Centerline",
       data = lim_data,
-      x = ~number.seq,
+      x = ~number_seq,
       y = centre_line,
       type = "scatter",
       mode = "lines",
@@ -632,7 +632,7 @@ fpl_plotly_create <- function(
     plotly::add_trace(
       name = "Lower Warning Limit 95%",
       data = lim_data,
-      x = ~number.seq,
+      x = ~number_seq,
       y = ~ll95,
       type = "scatter",
       mode = "lines",
@@ -644,7 +644,7 @@ fpl_plotly_create <- function(
     plotly::add_trace(
       name = "Lower Control Limit 99.8%",
       data = lim_data,
-      x = ~number.seq,
+      x = ~number_seq,
       y = ~ll998,
       type = "scatter",
       mode = "lines",
