@@ -51,6 +51,10 @@ snowflake_con <- function(
 #' @param database_name The database where the table will be stored.
 #' @param schema_name The schema for the table to be stored.
 #' @param table_name The name of the table for Snowflake
+#' @param role_name The role to use for the session. If NULL, no role is set
+#' and the user account the default is used.
+#' @param warehouse_name The warehouse to use for the session. If NULL, no
+#' warehouse is set and the user account the default is used.
 #'
 #' @return A data.frame with output metadata on the ingestion process.
 #' @import data.table
@@ -75,7 +79,9 @@ ingest_to_snowflake <- function(
   con,
   database_name,
   schema_name,
-  table_name
+  table_name,
+  role_name = NULL,
+  warehouse_name = NULL
 ) {
   # Copy data
   input_data <- copy(data)
@@ -90,6 +96,16 @@ ingest_to_snowflake <- function(
   temp_path <- gsub("\\\\", "/", temp_path)
   # Write as parquet file into temporary path
   arrow::write_parquet(input_data, sink = temp_path)
+
+  # Use role if specified ####
+  if (!is.null(role_name)) {
+    DBI::dbGetQuery(con, DBI::SQL(paste0("USE ROLE ", role_name, ";")))
+  }
+
+  # Use warehouse if specified ####
+  if (!is.null(warehouse_name)) {
+    DBI::dbGetQuery(con, DBI::SQL(paste0("USE WAREHOUSE ", warehouse_name, ";")))
+  }
 
   # Create schema in Snowflake ####
   DBI::dbGetQuery(con, DBI::SQL(paste0(
