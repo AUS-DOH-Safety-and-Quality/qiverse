@@ -107,11 +107,6 @@ ingest_to_snowflake <- function(
     DBI::dbGetQuery(con, DBI::SQL(paste0("USE WAREHOUSE ", warehouse_name, ";")))
   }
 
-  # Create schema in Snowflake ####
-  DBI::dbGetQuery(con, DBI::SQL(paste0(
-    "create schema IF NOT EXISTS ", database_name, ".", schema_name
-  )))
-
   # Set Data Type in SQL ####
   sql_data_type <- DBI::dbDataType(con, input_data)
   # Convert those with character lengths greater than 255, to be the maximum
