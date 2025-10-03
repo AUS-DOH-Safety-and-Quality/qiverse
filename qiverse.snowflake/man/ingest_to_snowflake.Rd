@@ -4,7 +4,15 @@
 \alias{ingest_to_snowflake}
 \title{Ingest table into Snowflake}
 \usage{
-ingest_to_snowflake(data, con, database_name, schema_name, table_name)
+ingest_to_snowflake(
+  data,
+  con,
+  database_name,
+  schema_name,
+  table_name,
+  role_name = NULL,
+  warehouse_name = NULL
+)
 }
 \arguments{
 \item{data}{This is the R object that we are importing into snowflake.
@@ -17,6 +25,12 @@ This must be a data.frame, data.table or tibble.}
 \item{schema_name}{The schema for the table to be stored.}
 
 \item{table_name}{The name of the table for Snowflake}
+
+\item{role_name}{The role to use for the session. If NULL, no role is set
+and the user account the default is used.}
+
+\item{warehouse_name}{The warehouse to use for the session. If NULL, no
+warehouse is set and the user account the default is used.}
 }
 \value{
 A data.frame with output metadata on the ingestion process.
