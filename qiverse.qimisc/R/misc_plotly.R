@@ -64,6 +64,9 @@ misc_plotly <- function(data,
   ### Set blank for others
   data[is.na(suffix), suffix := ""]
 
+  ## Set centerline to 100 for SR data type
+  data[data_type == "SR", cl := 100]
+
   #see my comment on the hovertext below
   data[, hovertext := paste0(
     "<br><b>", indicator_theme, ": ", indicator, "</b>",
