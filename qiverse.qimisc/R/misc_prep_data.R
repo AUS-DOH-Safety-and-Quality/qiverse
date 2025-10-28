@@ -104,7 +104,7 @@ misc_prep_data <- function(funnel_data, indicator_data) {
       }
 
       # Extract out values , Uzscore, control limits
-      funnel_data <- funnel$aggregated_data[, c("group", "Uzscore",
+      funnel_data <- funnel$aggregated_data[, c("group", "Wuzscore", "Uzscore",
                                                 "LCL99", "UCL99",
                                                 "OD99LCL", "OD99UCL",  "s")] |>
         data.table::as.data.table()
@@ -135,6 +135,11 @@ misc_prep_data <- function(funnel_data, indicator_data) {
                     LCL99 = LCL99 * 100,
                     OD99LCL = OD99LCL * 100,
                     OD99UCL = OD99UCL * 100)]
+
+  # Apply winsorisation fix for data_type SR
+  ## As the SR method is CQC which uses winsorisation, need to use the Wuzscore instead of the Uzscore
+  data_funnel[data_type == "SR", Uzscore := Wuzscore]
+  data_funnel[, Wuzscore := NULL]
 
   # Apply overdispersion
   # calculating Z score for over dispersion
