@@ -104,7 +104,7 @@ misc_prep_data <- function(funnel_data, indicator_data) {
       }
 
       # Extract out values , Uzscore, control limits
-      funnel_data <- funnel$aggregated_data[, c("group", "Wuzscore", "Uzscore",
+      funnel_data <- funnel$aggregated_data[, c("group", "rr", "Uzscore",
                                                 "LCL99", "UCL99",
                                                 "OD99LCL", "OD99UCL",  "s")] |>
         data.table::as.data.table()
@@ -136,10 +136,34 @@ misc_prep_data <- function(funnel_data, indicator_data) {
                     OD99LCL = OD99LCL * 100,
                     OD99UCL = OD99UCL * 100)]
 
-  # Apply winsorisation fix for data_type SR
-  ## As the SR method is CQC which uses winsorisation, need to use the Wuzscore instead of the Uzscore
-  data_funnel[data_type == "SR", Uzscore := Wuzscore]
-  data_funnel[, Wuzscore := NULL]
+  # Function to map an indirectly-standardised ratio (SR) value
+  #   (i.e., observed/predicted) to a z-score which reflects the value's position
+  #   on a funnel plot.
+  #
+  # FunnelPlotR uses exact Poisson limits for SR data with no OD adjustment,
+  #   implemented using the Chi-Square distribution for continuous values:
+  #   https://github.com/nhs-r-community/FunnelPlotR/blob/main/R/calculate_limits.R#L36
+  #
+  sr_to_zscore <- function(rr, denominator) {
+    # Check whether value is above/below the centerline
+    #   as the df for values in the upper tail (above centerline)
+    #   should have +1 added
+    offset <- ifelse(rr > 1, 1, 0)
+
+    # Map the observed ratio to a probability (in [0-1]) via the Chi-Square CDF
+    log_p <- pchisq(rr * 2 * denominator, 2 * (denominator + offset), log.p = TRUE)
+
+    # Use the standard-normal quantile function to map the probability to
+    #  a z-score
+    qnorm(log_p, log.p = TRUE)
+  }
+
+  # Map the SR Ratios to z-scores
+  data_funnel[data_type == "SR" & overdispersion == FALSE, Uzscore := sr_to_zscore(
+    rr = rr,
+    denominator = denominator
+  )]
+  data_funnel[, rr := NULL]
 
   # Apply overdispersion
   # calculating Z score for over dispersion
