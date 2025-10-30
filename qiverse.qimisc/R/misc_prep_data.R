@@ -163,6 +163,9 @@ misc_prep_data <- function(funnel_data, indicator_data) {
     rr = rr,
     denominator = denominator
   )]
+  ## Handle infinite z-scores (when rr = 0)
+  data_funnel[data_type == "SR" & overdispersion == FALSE & rr == 0 &
+                is.infinite(Uzscore) & Uzscore < 0, Uzscore := -99]
   data_funnel[, rr := NULL]
 
   # Apply overdispersion
