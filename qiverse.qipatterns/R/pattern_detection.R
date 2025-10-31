@@ -42,8 +42,6 @@ pattern_detection <- function(
     trend_size = 5,
     shift_size = 7
 ) {
-  
-  
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
   . <- fpl_astro <- unique_key <- spc_astro <- spc_shift <- spc_trend <-
