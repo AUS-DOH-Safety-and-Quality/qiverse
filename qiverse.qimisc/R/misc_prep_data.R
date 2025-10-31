@@ -34,7 +34,7 @@ misc_prep_data <- function(funnel_data, indicator_data) {
     numerator <- denominator <- value <- multiplier <- betteris <-
     Uzscore_betteris <- Uzscore <- data_type <- suffix <- UCL99 <- LCL99 <-
     OD99LCL <- OD99UCL <- s <- ODUzscore <- #nolint
-    `:=`  <- .N <- overdispersion <- NULL #nolint
+    `:=`  <- .N <- overdispersion <- rr <- NULL #nolint
 
   #  not sure if order of the functions matters, I suspect it doesn't, but the order of the functions is different betwen misc_plotly() and misc_prep_data()
   # Load Data
@@ -151,11 +151,11 @@ misc_prep_data <- function(funnel_data, indicator_data) {
     offset <- ifelse(rr > 1, 1, 0)
 
     # Map the observed ratio to a probability (in [0-1]) via the Chi-Square CDF
-    log_p <- pchisq(rr * 2 * denominator, 2 * (denominator + offset), log.p = TRUE)
+    log_p <- stats::pchisq(rr * 2 * denominator, 2 * (denominator + offset), log.p = TRUE)
 
     # Use the standard-normal quantile function to map the probability to
     #  a z-score
-    qnorm(log_p, log.p = TRUE)
+    stats::qnorm(log_p, log.p = TRUE)
   }
 
   # Map the SR Ratios to z-scores
@@ -163,6 +163,9 @@ misc_prep_data <- function(funnel_data, indicator_data) {
     rr = rr,
     denominator = denominator
   )]
+  ## Handle infinite z-scores (when rr = 0)
+  data_funnel[data_type == "SR" & overdispersion == FALSE & rr == 0 &
+                is.infinite(Uzscore) & Uzscore < 0, Uzscore := -99]
   data_funnel[, rr := NULL]
 
   # Apply overdispersion
