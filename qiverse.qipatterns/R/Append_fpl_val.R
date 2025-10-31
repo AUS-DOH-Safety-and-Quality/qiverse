@@ -99,7 +99,7 @@ append_fpl_val <- function(
   # Apply overdispersion
   # calculating Z score for over dispersion
   # brought it from Power BI visual for funnel chart since it need to be align to it (by Andrew Johnson)
-  funnel_data$ODUzscore <- (funnel_data$Uzscore * funnel_data$s) / sqrt(funnel_data$s^2 + funnel_data$tau2)
+  funnel_data[, ODUzscore := (Uzscore * s) / sqrt(s^2 + tau2)]
   
   #overwrite the values when over dispersion flag is true
   funnel_data[overdispersion == TRUE,
