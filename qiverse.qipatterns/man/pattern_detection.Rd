@@ -12,6 +12,7 @@ pattern_detection(
   denominator,
   multiplier,
   better_is,
+  overdispersion = FALSE,
   spc_chart_type = "p",
   funnel_chart_type = "PR",
   parent_indicator = NA,
@@ -23,41 +24,40 @@ pattern_detection(
 )
 }
 \arguments{
-\item{indicator}{A vector of indicator codes}
+  \item{indicator}{A vector of indicator codes.}
 
-\item{group}{A vector of group ids}
+  \item{group}{A vector of group IDs.}
 
-\item{period_end}{A vector of dates of type Date format: \%d/\%m/\%Y:12/11/2021}
+  \item{period_end}{A vector of dates. Format: \%d/\%m/\%Y (e.g., 12/11/2021).}
 
-\item{numerator}{A numeric vector}
+  \item{numerator}{A numeric vector.}
 
-\item{denominator}{A numeric vector}
+  \item{denominator}{A numeric vector.}
 
-\item{multiplier}{A string identifying the multiplication factor. Default 1}
+  \item{multiplier}{A numeric value used as a multiplication factor. Default is 1.}
 
-\item{better_is}{A character string, shows direction of positive change.}
+  \item{better_is}{A character string indicating the direction of positive change ("higher" or "lower").}
 
-\item{spc_chart_type}{A string identifying the type of spc chart. Default "p"}
+  \item{overdispersion}{Logical. If TRUE, adjusts for overdispersion in funnel plot calculations. Default is FALSE.}
 
-\item{funnel_chart_type}{A string identifying the type of funnel plot.
-Default "PR"}
+  \item{spc_chart_type}{A string identifying the type of SPC chart. Default is "p".}
 
-\item{parent_indicator}{A vector used for indicator grouping.}
+  \item{funnel_chart_type}{A string identifying the type of funnel plot. Default is "PR".}
 
-\item{indicator_name}{A vector of descriptive names for indicators}
+  \item{parent_indicator}{A vector used for indicator grouping.}
 
-\item{group_name}{A vector of descriptive names for groups}
+  \item{indicator_name}{A vector of descriptive names for indicators.}
 
-\item{funnel_data_points}{A vector of which data points are included in
-the funnel plot calculation}
+  \item{group_name}{A vector of descriptive names for groups.}
 
-\item{trend_size}{The number of points in a trend pattern}
+  \item{funnel_data_points}{A vector indicating which data points are included in the funnel plot calculation.}
 
-\item{shift_size}{The number of points in a shift pattern}
+  \item{trend_size}{The number of points in a trend pattern.}
+
+  \item{shift_size}{The number of points in a shift pattern.}
 }
 \value{
-A data table of unique indicator group rows with any
-identified patterns
+A data table of unique indicator-group rows with any identified patterns.
 }
 \description{
 Pattern Detection

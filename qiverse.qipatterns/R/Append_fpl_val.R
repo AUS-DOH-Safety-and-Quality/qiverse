@@ -22,11 +22,12 @@ append_fpl_val <- function(
     funnel_chart_type = "PR",
     multiplier = 1,
     better_is,
+    overdispersion = FALSE,
     period_end
 ) {
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
-  . <- rr <- LCL95 <- UCL95 <- LCL99 <- UCL99 <- fpl_rr <-
+  . <- rr <- LCL95 <- UCL95 <- LCL99 <- UCL99 <- OD99LCL <- OD99UCL <- s <- ODUzscore  <- fpl_rr <-
     fpl_row_value <- fpl_ul99 <- fpl_astro <- fpl_ll99 <- `:=` <- NULL
 
   #Take the input data and generate a data table
@@ -34,7 +35,8 @@ append_fpl_val <- function(
                                          group = as.character(group),
                                          multiplier = multiplier,
                                          funnel_chart_type = funnel_chart_type,
-                                         better_is = better_is)
+                                         better_is = better_is,
+                                         overdispersion = overdispersion)
 
   #if the data input cannot make a funnel skip and output 0 for all values
   if (sum(denominator) == 0 | length(unique(funnel_input$group)) <= 1) { #nolint
@@ -92,8 +94,20 @@ append_fpl_val <- function(
   #extract data from funnel object as data table
   funnel_data <- ind_funnel$plot$data |>
     data.table::as.data.table()
+ funnel_data$tau2 <- ind_funnel$tau2
 
-  # change group from factor to character
+  # Apply overdispersion
+  # calculating Z score for over dispersion
+  # brought it from Power BI visual for funnel chart since it need to be align to it (by Andrew Johnson)
+  funnel_data[, ODUzscore := (Uzscore * s) / sqrt(s^2 + tau2)]
+  
+  #overwrite the values when over dispersion flag is true
+  funnel_data[overdispersion == TRUE,
+              `:=` (UCL99 = OD99UCL,
+                    LCL99 = OD99LCL,
+                    Uzscore = ODUzscore)]
+    
+ # change group from factor to character
   funnel_data[, group := as.character(group)]
   # select only the columns we want to keep from funnel data
   funnel_data <- funnel_data[, .(group = group, fpl_rr = rr,

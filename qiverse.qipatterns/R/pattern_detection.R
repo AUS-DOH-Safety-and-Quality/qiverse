@@ -32,6 +32,7 @@ pattern_detection <- function(
     denominator,
     multiplier,
     better_is,
+    overdispersion = FALSE,
     spc_chart_type = "p",
     funnel_chart_type = "PR",
     parent_indicator = NA,
@@ -46,13 +47,12 @@ pattern_detection <- function(
   . <- fpl_astro <- unique_key <- spc_astro <- spc_shift <- spc_trend <-
     spc_twointhree <- astro <- shift <- trend <- twointhree <-
     `:=` <- valid_spc <- NULL
-
+  
   #create data table
-  input_data <- data.table::data.table(indicator, group, period_end,
-                                       numerator,
+  input_data <- data.table::data.table(indicator, group, period_end, numerator,
                                        denominator, multiplier, spc_chart_type,
                                        funnel_chart_type, parent_indicator, better_is,
-                                       indicator_name, group_name,
+                                       overdispersion, indicator_name, group_name,
                                        funnel_data_points)
 
   #Create aggregate data for spc"s by indicator
@@ -67,29 +67,30 @@ pattern_detection <- function(
                               fpl_row_value = NA_integer_,
                               fpl_astro = as.Date(NA)),
                           by = .(indicator, multiplier, period_end,
-                                 better_is, spc_chart_type, funnel_chart_type,
+                                 better_is, overdispersion, spc_chart_type, funnel_chart_type,
                                  parent_indicator, indicator_name)]
-
+  
   data.table::setcolorder(aggregate,
                           c("indicator", "group", "period_end",
                             "numerator", "denominator", "multiplier",
                             "spc_chart_type", "funnel_chart_type", "parent_indicator",
-                            "better_is", "indicator_name", "group_name",
+                            "better_is", "overdispersion", "indicator_name", "group_name",
                             "funnel_data_points", "fpl_rr", "fpl_ll95",
                             "fpl_ul95", "fpl_ll99", "fpl_ul99", "fpl_row_value",
                             "fpl_astro"))
-
+  
   #Filter to current funnel, for each indicator calculate the funnel plot values
   input_data_funnel <- input_data[funnel_data_points == "Yes",
-                                  qiverse.qipatterns::append_fpl_val(
+                                    qiverse.qipatterns::append_fpl_val(
                                     numerator, denominator,
                                     group, funnel_chart_type = funnel_chart_type[1],
                                     multiplier = multiplier[1], better_is = better_is[1],
+                                    overdispersion = overdispersion[1],
                                     period_end = max(period_end)),
                                   by = .(indicator)]
   #console feedback
   cat("Funnel Patterns Completed", "\n")
-
+  
   #merge back the funnel data to main
   input_data <- merge(input_data, input_data_funnel, all = TRUE,
                       by = c("indicator", "group"))
@@ -97,7 +98,7 @@ pattern_detection <- function(
   if(length(unique(group)) > 1) {
     input_data <- rbind(input_data, aggregate)
   }
-
+  
   #Validate that each indicator and group combination has enough data points to make an SPC
   input_data_valid <- input_data[, qiverse.qipatterns::valid_spc(numerator,
                                                                  denominator,
@@ -110,7 +111,7 @@ pattern_detection <- function(
                              "numerator", "denominator"))
   #filter out invalid data
   input_data <- input_data[valid_spc == TRUE]
-
+  
   cat("Start SPC Pattern Detection", "\n")
   #calculate spc values
   input_data_spc <- input_data[, qiverse.qipatterns::pattern_rules(
@@ -131,17 +132,17 @@ pattern_detection <- function(
   )
   #remove the join key
   input_data[, unique_key := NULL]
-
+  
   #console feedback
   cat("SPC Patterns Completed", "\n")
-
+  
   #summarise data by indicator group
   #input_data <- input_data[group == "Aggregate", funnel_data_points := "Yes"] #nolint
   #find the latest patterns for each combination
   input_data <- input_data[funnel_data_points == "Yes", by = .(indicator_name,
-                                                             group_name,
-                                                             parent_indicator,
-                                                             better_is),
+                                                               group_name,
+                                                               parent_indicator,
+                                                               better_is),
                            .(numerator = sum(numerator),
                              denominator = as.numeric(format(sum(denominator),
                                                              nsmall = 2)),
@@ -151,13 +152,13 @@ pattern_detection <- function(
                              twointhree = max(spc_twointhree, na.rm = TRUE),
                              fpl_astro = max(fpl_astro, na.rm = TRUE)
                            )] |> suppressWarnings()
-
+  
   #max introduces infinites when no patterns are identified for a combination
   input_data[is.infinite(astro), astro := NA]
   input_data[is.infinite(shift), shift := NA]
   input_data[is.infinite(trend), trend := NA]
   input_data[is.infinite(twointhree), twointhree := NA]
   input_data[is.infinite(fpl_astro), fpl_astro := NA]
-
+  
   return(input_data)
 }
