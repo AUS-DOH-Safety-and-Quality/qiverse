@@ -54,7 +54,6 @@ pattern_detection <- function(
                                        funnel_chart_type, parent_indicator, better_is,
                                        overdispersion, indicator_name, group_name,
                                        funnel_data_points)
-  
 
   #Create aggregate data for spc"s by indicator
   aggregate <- input_data[, .(numerator = sum(numerator),
