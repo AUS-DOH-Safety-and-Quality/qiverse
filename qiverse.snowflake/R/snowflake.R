@@ -269,3 +269,85 @@ ingest_dataflow_table <- function(
   DBI::dbGetQuery(con, create_command)
   DBI::dbGetQuery(con, ingest_command)
 }
+
+#' Create a View in Snowflake based on an existing table or view
+#'
+#' This function creates or replaces a view in the specified target database
+#' and schema, using the column definitions from a source table.
+#'
+#' @param con The connection established by the `snowflake_con()` function.
+#' @param from_database Source database name containing the table, dynamic table or view to select columns from.
+#' @param from_schema Source schema name containing the table, dynamic table or view to select columns from.
+#' @param from_object Source table, dynamic table or view name to select columns from.
+#' @param to_database Target database name where the view will be created.
+#' @param to_schema Target schema name where the view will be created.
+#' @param to_object Target view name to be created or replaced.
+#' @param role_name The role to use for the session.
+#' @param warehouse_name The warehouse to use for the session.
+#'
+#' @return A data.frame with output metadata on the final SQL execution
+#' @export
+#' @examples
+#'  \dontrun{
+#' # Create Snowflake azure token
+#' tk <- get_az_tk('sf')
+#' con <- snowflake_con(token = tk)
+#'
+#' # Ingest Example To Snowflake
+#' create_view_from_definition <- function(
+    #'     con,
+#'     from_database = "DEV_PERSISTENT",
+#'     from_schema = "EXAMPLE",
+#'     from_object = "TEST",
+#'     to_database "DEV_PRESENTATION",
+#'     to_schema = "EXAMPLE",
+#'     to_object = "TEST",
+#'     role_name = NULL,
+#'     warehouse_name = NULL
+#' )
+#' )
+#'}
+create_view_from_definition <- function(
+    con,
+    from_database,
+    from_schema,
+    from_object,
+    to_database,
+    to_schema,
+    to_object,
+    role_name = NULL,
+    warehouse_name = NULL
+){
+  # Use role if specified ####
+  if (!is.null(role_name)) {
+    DBI::dbGetQuery(con, DBI::SQL(paste0("USE ROLE ", role_name, ";")))
+  }
+
+  # Use warehouse if specified ####
+  if (!is.null(warehouse_name)) {
+    DBI::dbGetQuery(con, DBI::SQL(paste0("USE WAREHOUSE ", warehouse_name, ";")))
+  }
+
+  # Identify Columns
+  columndef_command <- paste0(
+    "SELECT COLUMN_NAME",
+    " FROM ", from_database, ".INFORMATION_SCHEMA.COLUMNS",
+    " WHERE TABLE_CATALOG = '", from_database, "'",
+    " AND TABLE_SCHEMA = '", from_schema, "'",
+    " AND TABLE_NAME = '", from_object, "'",
+    " ORDER BY ORDINAL_POSITION"
+  )
+
+  df_colnames <- DBI::dbGetQuery(con, columndef_command) |>
+    as.data.table()
+
+  # Create view definition
+  viewdef_command <- paste0(
+    "CREATE OR REPLACE VIEW ", to_database, ".", to_schema, ".", to_object, " AS", "\n",
+    "SELECT ", "\n",
+    "    ", paste0(sapply(df_colnames$COLUMN_NAME, function(x) paste0('"', x, '"')), collapse = ",\n    "), "\n",
+    "FROM ", from_database, ".", from_schema, ".", from_object
+  )
+
+  DBI::dbGetQuery(con, viewdef_command)
+}
