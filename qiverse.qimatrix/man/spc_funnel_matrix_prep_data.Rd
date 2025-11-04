@@ -93,6 +93,7 @@ patterns, and export into the SPC Funnel Matrix format.
     denominator = example_spc_data$denominator,
     multiplier = example_spc_data$multiplier,
     better_is = example_spc_data$better_is,
+    overdispersion = FALSE,
     parent_group_name = "All",
     parent_indicator = "All",
     spc_chart_type = example_spc_data$spc_chart_type,
