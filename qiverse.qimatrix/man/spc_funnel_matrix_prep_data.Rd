@@ -19,7 +19,8 @@ spc_funnel_matrix_prep_data(
   funnel_chart_type = "PR",
   indicator_name = indicator,
   group_name = group,
-  funnel_data_points = "Yes"
+  funnel_data_points = "Yes",
+  overdispersion = FALSE
 )
 }
 \arguments{
@@ -71,6 +72,9 @@ Default group variable}
 
 \item{funnel_data_points}{A vector of "Yes" or NA, marks which data points
 are included in the funnel plot calculation. Default "Yes"}
+
+\item{overdispersion}{A logical or numeric value indicating whether to adjust
+for overdispersion in the funnel plot. Default is FALSE.}
 }
 \value{
 A data.table with the required fields for the SPC Funnel Matrix.
@@ -96,7 +100,8 @@ patterns, and export into the SPC Funnel Matrix format.
     parent_indicator = "All",
     spc_chart_type = example_spc_data$spc_chart_type,
     funnel_chart_type = example_spc_data$funnel_chart_type,
-    funnel_data_points = "Yes"
+    funnel_data_points = "Yes",
+    overdispersion = FALSE
   )
 }
 }
