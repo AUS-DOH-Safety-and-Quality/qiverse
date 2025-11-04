@@ -13,6 +13,7 @@ spc_funnel_matrix_prep_data(
   denominator,
   multiplier = 1,
   better_is = "Higher",
+  overdispersion = FALSE,
   parent_group_name = "All",
   parent_indicator = "All",
   spc_chart_type = "p",
