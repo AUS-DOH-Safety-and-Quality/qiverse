@@ -22,6 +22,8 @@
 #' unfavourable, "Lower" for points above the upper control limit to be
 #' unfavourable, and "Neutral" if the direction is not stated.
 #' Default is "Higher"
+#' @param overdispersion A logical value indicating whether to apply an
+#' overdispersion adjustment to control limits. Default is FALSE.
 #' @param parent_group_name A vector of parent group names which are to be
 #' displayed in the tooltip. These are the major categories for the groups.
 #' Default is "All"
@@ -72,6 +74,7 @@ spc_funnel_matrix_prep_data <- function(
   denominator,
   multiplier = 1,
   better_is = "Higher",
+  overdispersion = FALSE,
   parent_group_name = "All",
   parent_indicator = "All",
   spc_chart_type = "p",
@@ -104,7 +107,7 @@ spc_funnel_matrix_prep_data <- function(
     indicator, group, period_end,
     period_start, numerator,
     denominator, multiplier, parent_group_name, spc_chart_type,
-    funnel_chart_type, parent_indicator, better_is,
+    funnel_chart_type, parent_indicator, better_is, overdispersion,
     indicator_name, group_name,
     funnel_data_points
   )
@@ -116,13 +119,13 @@ spc_funnel_matrix_prep_data <- function(
   unfav <- qiverse.qipatterns::pattern_detection(
     indicator, group,
     period_end, numerator, denominator, multiplier,
-    better_is, spc_chart_type, funnel_chart_type,
+    better_is, overdispersion, spc_chart_type, funnel_chart_type,
     parent_indicator, indicator_name,
     group_name, funnel_data_points)
   fav <- qiverse.qipatterns::pattern_detection(
     indicator, group,
     period_end, numerator, denominator, multiplier,
-    worseis, spc_chart_type, funnel_chart_type,
+    worseis, overdispersion, spc_chart_type, funnel_chart_type,
     parent_indicator, indicator_name,
     group_name, funnel_data_points)
 

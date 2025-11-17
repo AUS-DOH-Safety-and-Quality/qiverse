@@ -13,6 +13,7 @@ spc_funnel_matrix_prep_data(
   denominator,
   multiplier = 1,
   better_is = "Higher",
+  overdispersion = FALSE,
   parent_group_name = "All",
   parent_indicator = "All",
   spc_chart_type = "p",
@@ -49,6 +50,9 @@ the indicator. "Higher" for points below the lower control limit to be
 unfavourable, "Lower" for points above the upper control limit to be
 unfavourable, and "Neutral" if the direction is not stated.
 Default is "Higher"}
+
+\item{overdispersion}{A logical value indicating whether to apply an
+overdispersion adjustment to control limits. Default is FALSE.}
 
 \item{parent_group_name}{A vector of parent group names which are to be
 displayed in the tooltip. These are the major categories for the groups.
