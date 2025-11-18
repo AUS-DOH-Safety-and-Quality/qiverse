@@ -130,3 +130,35 @@ decompress_string <- function(compressed_string) {
     rawToChar()
   }, USE.NAMES = FALSE)
 }
+
+# Query the cluster resolve endpoint to get XMLA server details for a given capacity (needed for querying datasets)
+get_pbi_cluster_details <- function(capacity_id, access_token) {
+  httr::POST("https://australiasoutheast.pbidedicated.windows.net/webapi/clusterResolve",
+              config = get_auth_header(access_token),
+              body = jsonlite::toJSON(list(
+                databaseName = NA,
+                premiumPublicXmlaEndpoint = TRUE,
+                serverName = capacity_id
+              ), auto_unbox = TRUE),
+              httr::content_type_json()) |>
+    httr::content()
+}
+
+# Generate an XMLA access token for a PowerBI Dataset given the capacity and workspace IDs
+get_dataset_access_token <- function(capacity_id, workspace_id, access_token) {
+  astoken <- httr::POST("https://api.powerbi.com/metadata/v201606/generateastoken",
+                        config = get_auth_header(access_token),
+                        body = jsonlite::toJSON(list(
+                          applyAuxiliaryPermission = FALSE,
+                          auxiliaryPermissionOwner = NA,
+                          capacityObjectId = capacity_id,
+                          datasetName = NA,
+                          intendedUsage = 0,
+                          sourceCapacityObjectId = NA,
+                          workspaceObjectId = workspace_id
+                        ), auto_unbox = TRUE),
+                        httr::content_type_json()) |>
+    httr::content()
+
+  astoken$Token
+}
