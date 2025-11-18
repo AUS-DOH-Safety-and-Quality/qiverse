@@ -58,6 +58,20 @@ rowset_to_df <- function(xmla_rowset) {
     names(row_to_df) <- purrr::map_chr(metadata[col_names], "name")
     row_to_df
   })
+  if (nrow(rows) == 0 && ncol(rows) == 0) {
+    # No rows returned, create empty dataframe with correct columns
+    rows <- purrr::map_dfc(metadata, \(col_meta) {
+      vector(mode = switch(col_meta$type,
+                           "long" = "integer",
+                           "double" = "double",
+                           "string" = "character",
+                           "dateTime" = "character",
+                           "boolean" = "logical",
+                           "character"), length = 0)
+    })
+    names(rows) <- purrr::map_chr(metadata, "name")
+  }
+  rows
 }
 
 escape_xml_query <- function(query) {
@@ -79,7 +93,7 @@ construct_xmla_query <- function(dataset, query) {
           <Command><Statement>{escape_xml_query(query)}</Statement></Command>
           <Properties>
             <PropertyList>
-              <Catalog>{dataset}</Catalog>
+              <Catalog>{escape_xml_query(dataset)}</Catalog>
               <Format>Tabular</Format>
             </PropertyList>
           </Properties>
