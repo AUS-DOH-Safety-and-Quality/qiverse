@@ -29,7 +29,6 @@ rowset_to_df <- function(xmla_rowset) {
          call. = FALSE)
   }
 
-
   schema <- xml2::xml_find_all(xmla_rowset, "//xsd:complexType[@name='row']/xsd:sequence")
 
   metadata <- purrr::map(xml2::xml_children(schema), \(child) {
@@ -47,17 +46,35 @@ rowset_to_df <- function(xmla_rowset) {
     "boolean" = \(x){ tolower(xml2::xml_text(x)) == "true" }
   )
 
-  rows <- purrr::map_dfr(xml2::xml_find_all(xmla_rowset, "//d3:row"), \(row) {
-    row_elems <- xml2::xml_children(row)
-    col_names <- xml2::xml_name(row_elems)
-    row_to_df <- purrr::map2(row_elems, col_names, \(x, x_name) {
-        curr_type <- metadata[[x_name]]$type
-        suppressWarnings(xmla_extract_fun[[curr_type]](x))
-        }) |>
-      data.frame()
-    names(row_to_df) <- purrr::map_chr(metadata[col_names], "name")
-    row_to_df
+  rows <- purrr::map_dfc(metadata, function(col_meta) {
+    vector(mode = switch(col_meta$type,
+                          "long" = "integer",
+                          "double" = "double",
+                          "string" = "character",
+                          "dateTime" = "character",
+                          "boolean" = "logical",
+                          "character"), length = 0)
   })
+  col_names <- purrr::map_chr(metadata, "name")
+  names(rows) <- col_names
+
+  all_rows <- xml2::xml_find_all(xmla_rowset, "//d3:row")
+  n_rows <- length(all_rows)
+
+  if (n_rows == 0) {
+    return(rows)
+  }
+
+  res <- purrr::map(seq_len(n_rows), function(idx) {
+    purrr::map_dfc(xml2::xml_children(all_rows[[idx]]), function(elem) {
+      xml_name <- xml2::xml_name(elem)
+      xml_type <- metadata[[xml_name]]$type
+      col_name <- metadata[[xml_name]]$name
+      setNames(list(xmla_extract_fun[[xml_type]](elem)), col_name)
+    })
+  })
+
+  dplyr::bind_rows(rows, res)
 }
 
 escape_xml_query <- function(query) {
@@ -79,7 +96,7 @@ construct_xmla_query <- function(dataset, query) {
           <Command><Statement>{escape_xml_query(query)}</Statement></Command>
           <Properties>
             <PropertyList>
-              <Catalog>{dataset}</Catalog>
+              <Catalog>{escape_xml_query(dataset)}</Catalog>
               <Format>Tabular</Format>
             </PropertyList>
           </Properties>
