@@ -38,17 +38,6 @@ append_fpl_val <- function(
                                          better_is = better_is,
                                          overdispersion = overdispersion)
 
-  #if the data input cannot make a funnel skip and output 0 for all values
-  if (sum(denominator) == 0 | length(unique(funnel_input$group)) <= 1) { #nolint
-    funnel_input <- data.table::data.table(
-      group = unique(funnel_input$group)
-    )
-    funnel_input[, c("fpl_rr", "fpl_ll95", "fpl_ll99",
-                     "fpl_ul95", "fpl_ul99", "fpl_row_value") := 0]
-    funnel_input[, fpl_astro := as.Date(NA)]
-    return(funnel_input)
-  }
-
   # Create Funnel
   FunnelPlotR_version <-
     asNamespace("FunnelPlotR")$`.__NAMESPACE__.`$spec[["version"]]
@@ -100,13 +89,16 @@ append_fpl_val <- function(
   # calculating Z score for over dispersion
   # brought it from Power BI visual for funnel chart since it need to be align to it (by Andrew Johnson)
   funnel_data[, ODUzscore := (Uzscore * s) / sqrt(s^2 + tau2)]
-  
+
   #overwrite the values when over dispersion flag is true
-  funnel_data[overdispersion == TRUE,
-              `:=` (UCL99 = OD99UCL,
-                    LCL99 = OD99LCL,
-                    Uzscore = ODUzscore)]
-    
+  if(overdispersion == TRUE){
+    funnel_data[,
+                `:=` (UCL99 = OD99UCL,
+                      LCL99 = OD99LCL,
+                      Uzscore = ODUzscore)]
+  }
+
+
  # change group from factor to character
   funnel_data[, group := as.character(group)]
   # select only the columns we want to keep from funnel data
