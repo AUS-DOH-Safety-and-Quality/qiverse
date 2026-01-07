@@ -14,51 +14,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  detect-directory-changes:
-    name: "Check which packages have changed"
-    runs-on: ubuntu-latest
-    outputs:
-      changed: ${{ steps.detect.outputs.result }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v46
-        with:
-          files_ignore: .github/**
-          json: true
-
-      - name: Detect changed directories
-        uses: actions/github-script@v6
-        id: detect
-        with:
-          script: |
-            // Filter changed files to only the unique top-level directories
-            const changedDirs = JSON.parse('${{ steps.changed-files.outputs.all_changed_files  }}')
-                                    .map(file => file.split('/')[0])
-                                    .filter((dir, index, self) => self.indexOf(dir) === index);
-            return changedDirs;
-
   R-CMD-check:
-    name: ubuntu-latest ('release')
-    needs: detect-directory-changes
-    if: needs.detect-directory-changes.outputs.changed != '[]'
+    name: R CMD check (${{ matrix.config.package }})
 
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        package: ${{ fromJSON(needs.detect-directory-changes.outputs.changed) }}
+        config:
+          - { package: 'qiverse.azure' }
+          - { package: 'qiverse.data' }
+          - { package: 'qiverse.powerbi' }
+          - { package: 'qiverse.qimatrix' }
+          - { package: 'qiverse.qimisc' }
+          - { package: 'qiverse.qipatterns' }
+          - { package: 'qiverse.qiplotly' }
+          - { package: 'qiverse.sharepoint' }
+          - { package: 'qiverse.snowflake' }
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -70,12 +50,12 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          working-directory: ${{ matrix.package }}
+          working-directory: ${{ matrix.config.package }}
           extra-packages: any::rcmdcheck
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
         with:
-          working-directory: ${{ matrix.package }}
+          working-directory: ${{ matrix.config.package }}
           upload-snapshots: true
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
