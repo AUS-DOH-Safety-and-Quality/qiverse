@@ -16,21 +16,22 @@ append_fpl_val(
 )
 }
 \arguments{
-  \item{numerator}{A numeric vector}
+\item{numerator}{A numeric vector}
 
-  \item{denominator}{A numeric vector}
+\item{denominator}{A numeric vector}
 
-  \item{group}{A vector of group ids}
+\item{group}{A vector of group ids}
 
-  \item{funnel_chart_type}{A string identifying the type of funnel plot. Default "PR"}
+\item{funnel_chart_type}{A string identifying the type of funnel plot.
+Default "PR"}
 
-  \item{multiplier}{A numeric value used as a multiplication factor. Default is 1}
+\item{multiplier}{A string identifying the multiplication factor. Default 1}
 
-  \item{better_is}{A character string indicating the direction of positive change ("higher" or "lower")}
+\item{better_is}{A character string, shows direction of positive change.}
 
-  \item{overdispersion}{Logical. If TRUE, adjusts for overdispersion in funnel plot calculations. Default is FALSE}
-
-  \item{period_end}{A string representing the maximum date of the funnel period, used as the identifier for funnel astronomical points. Format: \%d/\%m/\%Y (e.g., 15/12/2022)}
+\item{period_end}{A string of the maximum date of the funnel period for use
+as the identifier for funnel astronomical points
+type Date format: \%d/\%m/\%Y:15/12/2022}
 }
 \value{
 The input data with appended funnel plot values in a data table
