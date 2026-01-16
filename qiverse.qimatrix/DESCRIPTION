@@ -1,6 +1,6 @@
 Package: qiverse.qimatrix
 Title: QI Matrix
-Version: 0.0.2.1
+Version: 0.0.2.2
 Authors@R:
     person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
     family = "",

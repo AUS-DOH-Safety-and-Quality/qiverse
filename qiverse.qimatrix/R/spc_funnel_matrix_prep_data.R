@@ -117,17 +117,17 @@ spc_funnel_matrix_prep_data <- function(
 
   # Apply pattern detection script for unfavourable and favourable
   unfav <- qiverse.qipatterns::pattern_detection(
-    indicator, group,
-    period_end, numerator, denominator, multiplier,
-    better_is, overdispersion, spc_chart_type, funnel_chart_type,
-    parent_indicator, indicator_name,
-    group_name, funnel_data_points)
+    indicator = indicator, group = group,
+    period_end = period_end, numerator = numerator, denominator = denominator, multiplier = multiplier,
+    better_is = better_is, overdispersion = overdispersion, spc_chart_type = spc_chart_type, funnel_chart_type = funnel_chart_type,
+    parent_indicator = parent_indicator, indicator_name = indicator_name,
+    group_name = group_name, funnel_data_points = funnel_data_points)
   fav <- qiverse.qipatterns::pattern_detection(
-    indicator, group,
-    period_end, numerator, denominator, multiplier,
-    worseis, overdispersion, spc_chart_type, funnel_chart_type,
-    parent_indicator, indicator_name,
-    group_name, funnel_data_points)
+    indicator = indicator, group = group,
+    period_end = period_end, numerator = numerator, denominator = denominator, multiplier = multiplier,
+    better_is = worseis, overdispersion, spc_chart_type, funnel_chart_type,
+    parent_indicator = parent_indicator, indicator_name = indicator_name,
+    group_name = group_name, funnel_data_points = funnel_data_points)
 
   # Rename columns
   setnames(unfav, old = c("fpl_astro", "astro", "shift",
