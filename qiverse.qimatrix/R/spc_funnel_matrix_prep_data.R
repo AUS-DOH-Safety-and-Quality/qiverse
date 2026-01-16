@@ -125,7 +125,7 @@ spc_funnel_matrix_prep_data <- function(
   fav <- qiverse.qipatterns::pattern_detection(
     indicator = indicator, group = group,
     period_end = period_end, numerator = numerator, denominator = denominator, multiplier = multiplier,
-    better_is = worseis, overdispersion, spc_chart_type, funnel_chart_type,
+    better_is = worseis, overdispersion = overdispersion, spc_chart_type = spc_chart_type, funnel_chart_type = funnel_chart_type,
     parent_indicator = parent_indicator, indicator_name = indicator_name,
     group_name = group_name, funnel_data_points = funnel_data_points)
 
