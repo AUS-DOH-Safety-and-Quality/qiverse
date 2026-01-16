@@ -7,6 +7,7 @@
 #' Default "PR"
 #' @param multiplier A string identifying the multiplication factor. Default 1
 #' @param better_is A character string, shows direction of positive change.
+#' @param overdispersion A boolean flag for whether to adjust for overdispersion
 #' @param period_end A string of the maximum date of the funnel period for use
 #'  as the identifier for funnel astronomical points
 #'  type Date format: %d/%m/%Y:15/12/2022
@@ -28,7 +29,7 @@ append_fpl_val <- function(
   # Dealing with undefined global functions or variables (see datatable-import
   # vignette)
   . <- rr <- LCL95 <- UCL95 <- LCL99 <- UCL99 <- OD99LCL <- OD99UCL <- s <- ODUzscore  <- fpl_rr <-
-    fpl_row_value <- fpl_ul99 <- fpl_astro <- fpl_ll99 <- `:=` <- NULL
+    fpl_row_value <- fpl_ul99 <- fpl_astro <- fpl_ll99 <- Uzscore <- tau2 <- `:=` <- NULL
 
   #Take the input data and generate a data table
   funnel_input <- data.table::data.table(numerator, denominator,

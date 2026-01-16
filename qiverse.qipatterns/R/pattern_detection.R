@@ -15,6 +15,7 @@
 #' @param group_name A vector of descriptive names for groups
 #' @param funnel_data_points A vector of which data points are included in
 #' the funnel plot calculation
+#' @param overdispersion A boolean flag for whether to adjust for overdispersion
 #' @param trend_size The number of points in a trend pattern
 #' @param shift_size The number of points in a shift pattern
 #'
