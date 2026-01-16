@@ -79,7 +79,6 @@ pattern_detection <- function(
                             "funnel_data_points", "fpl_rr", "fpl_ll95",
                             "fpl_ul95", "fpl_ll99", "fpl_ul99", "fpl_row_value",
                             "fpl_astro"))
-  message(colnames(input_data))
 
   #Filter to current funnel, for each indicator calculate the funnel plot values
   input_data_funnel <- input_data[funnel_data_points == "Yes",

@@ -61,7 +61,6 @@ append_fpl_val <- function(
 
   # For FunnelPlotR version 0.5.0 and above
   if (FunnelPlotR_version >= "0.5.0") {
-    message("data_type: ", funnel_chart_type)
     ind_funnel <- FunnelPlotR::funnel_plot(
       .data = data.frame(
         denominator = denominator,
