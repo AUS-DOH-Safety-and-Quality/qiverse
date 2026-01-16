@@ -29,6 +29,8 @@ Default "PR"}
 
 \item{better_is}{A character string, shows direction of positive change.}
 
+\item{overdispersion}{A boolean flag for whether to adjust for overdispersion}
+
 \item{period_end}{A string of the maximum date of the funnel period for use
 as the identifier for funnel astronomical points
 type Date format: \%d/\%m/\%Y:15/12/2022}
