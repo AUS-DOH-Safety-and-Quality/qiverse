@@ -1,7 +1,3 @@
-glue_chars <- function(...) {
-  as.character(glue::glue(..., .envir = parent.frame(), .sep = "\n"))
-}
-
 get_auth_header <- function(access_token) {
   httr::add_headers(Authorization = paste("Bearer", access_token))
 }
@@ -14,6 +10,36 @@ get_cluster_url <- function(access_token) {
     httr::content()
 
   cluster_details$clusterUrl
+}
+
+.bind_rows_base <- function(df_list) {
+  if (length(df_list) == 0) {
+    return(data.frame())
+  }
+
+  df_list <- Filter(function(x) !is.null(x), df_list)
+  if (length(df_list) == 0) {
+    return(data.frame())
+  }
+
+  df_list <- lapply(df_list, function(x) {
+    if (is.data.frame(x)) {
+      return(x)
+    }
+    as.data.frame(x, stringsAsFactors = FALSE)
+  })
+
+  all_names <- unique(unlist(lapply(df_list, names), use.names = FALSE))
+
+  df_list <- lapply(df_list, function(df) {
+    missing_names <- setdiff(all_names, names(df))
+    for (nm in missing_names) {
+      df[[nm]] <- NA
+    }
+    df[all_names]
+  })
+
+  do.call(rbind, df_list)
 }
 
 rowset_to_df <- function(xmla_rowset) {
@@ -31,12 +57,12 @@ rowset_to_df <- function(xmla_rowset) {
 
   schema <- xml2::xml_find_all(xmla_rowset, "//xsd:complexType[@name='row']/xsd:sequence")
 
-  metadata <- purrr::map(xml2::xml_children(schema), \(child) {
+  metadata <- lapply(xml2::xml_children(schema), \(child) {
     list(name = xml2::xml_attr(child, "field"),
          type = gsub("xsd:","",xml2::xml_attr(child, "type"), fixed = TRUE))
   })
 
-  names(metadata) <- purrr::map_chr(xml2::xml_children(schema), \(child) {xml2::xml_attr(child, "name")})
+  names(metadata) <- sapply(xml2::xml_children(schema), \(child) {xml2::xml_attr(child, "name")})
 
   xmla_extract_fun <- list(
     "long" = xml2::xml_integer,
@@ -46,46 +72,50 @@ rowset_to_df <- function(xmla_rowset) {
     "boolean" = \(x){ tolower(xml2::xml_text(x)) == "true" }
   )
 
-  rows <- purrr::map_dfc(metadata, function(col_meta) {
-    vector(mode = switch(col_meta$type,
-                          "long" = "integer",
-                          "double" = "double",
-                          "string" = "character",
-                          "dateTime" = "character",
-                          "boolean" = "logical",
-                          "character"), length = 0)
-  })
-  col_names <- purrr::map_chr(metadata, "name")
-  names(rows) <- col_names
-
   all_rows <- xml2::xml_find_all(xmla_rowset, "//d3:row")
   n_rows <- length(all_rows)
+
+  rows <- as.data.frame(
+    lapply(metadata, function(col_meta) {
+      switch(
+        col_meta$type,
+        "long" = integer(n_rows),
+        "double" = double(n_rows),
+        "string" = character(n_rows),
+        "dateTime" = as.Date(rep(NA_character_, n_rows)),
+        "boolean" = logical(n_rows)
+      )
+    }),
+    stringsAsFactors = FALSE
+  )
+  col_names <- sapply(metadata, \(xml_col) xml_col[["name"]])
+  names(rows) <- col_names
+
 
   if (n_rows == 0) {
     return(rows)
   }
 
-  res <- purrr::map(seq_len(n_rows), function(idx) {
-    purrr::map_dfc(xml2::xml_children(all_rows[[idx]]), function(elem) {
+  for (idx in seq_len(n_rows)) {
+    for (elem in xml2::xml_children(all_rows[[idx]])) {
       xml_name <- xml2::xml_name(elem)
       xml_type <- metadata[[xml_name]]$type
       col_name <- metadata[[xml_name]]$name
-      setNames(list(xmla_extract_fun[[xml_type]](elem)), col_name)
-    })
-  })
+      rows[idx, col_name] <- xmla_extract_fun[[xml_type]](elem)
+    }
+  }
 
-  dplyr::bind_rows(rows, res)
+  rows
 }
 
 escape_xml_query <- function(query) {
-  query |>
-    stringr::str_replace_all("\\&", "&amp;") |>
-    stringr::str_replace_all("\\<", "&lt;") |>
-    stringr::str_replace_all("\\>", "&gt;")
+  query <- gsub("&", "&amp;", query, fixed = TRUE)
+  query <- gsub("<", "&lt;", query, fixed = TRUE)
+  gsub(">", "&gt;", query, fixed = TRUE)
 }
 
 construct_xmla_query <- function(dataset, query) {
-  glue::glue('
+  paste0('
     <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
       <Header>
         <BeginSession soap:mustUnderstand="1" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns="urn:schemas-microsoft-com:xml-analysis" />
@@ -93,10 +123,10 @@ construct_xmla_query <- function(dataset, query) {
       </Header>
       <Body>
         <Execute xmlns="urn:schemas-microsoft-com:xml-analysis">
-          <Command><Statement>{escape_xml_query(query)}</Statement></Command>
+          <Command><Statement>', escape_xml_query(query), '</Statement></Command>
           <Properties>
             <PropertyList>
-              <Catalog>{escape_xml_query(dataset)}</Catalog>
+              <Catalog>', escape_xml_query(dataset),'</Catalog>
               <Format>Tabular</Format>
             </PropertyList>
           </Properties>
@@ -107,11 +137,11 @@ construct_xmla_query <- function(dataset, query) {
 }
 
 construct_rest_query <- function(query) {
-  glue::glue(
-    '{{
-      "queries": [{{ "query": "{query}" }}],
-      "serializerSettings": {{ "includeNulls": true }}
-    }}'
+  paste0(
+    '{
+      "queries": [{ "query": "', query, '" }],
+      "serializerSettings": { "includeNulls": true }
+    }'
   )
 }
 

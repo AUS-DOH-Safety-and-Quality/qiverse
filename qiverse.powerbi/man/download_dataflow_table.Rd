@@ -27,7 +27,7 @@ permissions. Use get_az_tk('pbi_df') to create this token.}
 running. Default is TRUE.}
 }
 \value{
-A tibble of the PowerBI table from the PowerBI dataflow.
+A data.frame of the PowerBI table from the PowerBI dataflow.
 }
 \description{
 This function provides the ability to download tables from within PowerBI
