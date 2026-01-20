@@ -11,28 +11,32 @@ get_dataflow_metadata <- function(workspace_name, dataflow_name, access_token,
   # We need the unique identifier for the dataflow of interest, but we only
   # have its name. As such, we request the metadata of all dataflows that we
   # have access to and filter the results
-  target_dataflow <- httr::GET(url = paste0(cluster_url, "/metadata/v201901/gallery/dataflows"),
-                               config = get_auth_header(access_token),
-                               httr::content_type_json()) |>
-    httr::content() |>
-    purrr::keep(\(x) {
-      if (is.null(x$cdsaModel$displayName)) {
-        FALSE
-      } else {
-        x$workspaceName == workspace_name && x$cdsaModel$displayName == dataflow_name
-      }
-    })
+  all_dataflows <- httr::GET(url = paste0(cluster_url, "/metadata/v201901/gallery/dataflows"),
+                             config = get_auth_header(access_token),
+                             httr::content_type_json()) |>
+    httr::content()
+
+  target_dataflow <- Filter(function(x) {
+    if (is.null(x$cdsaModel$displayName)) {
+      FALSE
+    } else {
+      x$workspaceName == workspace_name && x$cdsaModel$displayName == dataflow_name
+    }
+  }, all_dataflows)
 
   # Keep last edited target dataflow
   if (length(target_dataflow) > 1) {
     # Find max last edited date
-    max_last_edit_date <- purrr::map(target_dataflow, \(x) {
-      x$cdsaModel$lastEditedTimeUTC})|>
-      # extract max of list
-      purrr::reduce(max)
+    last_edit_times <- vapply(target_dataflow, function(x) {
+      t <- x$cdsaModel$lastEditedTimeUTC
+      if (is.null(t)) NA_character_ else t
+    }, character(1))
+    max_last_edit_date <- max(last_edit_times, na.rm = TRUE)
     # Choose last edited date dataflow
-    target_dataflow <- target_dataflow |>
-      purrr::keep(\(x) {x$cdsaModel$lastEditedTimeUTC == max_last_edit_date})
+    target_dataflow <- Filter(function(x) {
+      t <- x$cdsaModel$lastEditedTimeUTC
+      !is.null(t) && identical(t, max_last_edit_date)
+    }, target_dataflow)
   }
   target_dataflow[[1]]
 }
@@ -45,9 +49,9 @@ get_table_metadata <- function(dataflow_id, table_name, access_token) {
                           httr::content_type_json()) |>
     httr::content()
 
-  rtn <- purrr::keep(all_tables$content$entities, \(x) {
-    x$name == table_name
-  })[[1]]
+  rtn <- Filter(function(x) {
+    !is.null(x$name) && identical(x$name, table_name)
+  }, all_tables$content$entities)[[1]]
   # Locale info (e.g. en-GB) is stored in the content object
   # but not in the table object
   rtn$locale <- all_tables$content$culture
@@ -91,7 +95,7 @@ get_sas_key <- function(dataflow_id, table_name, access_token) {
 #' @param verbose Whether to print status messages while the function is
 #' running. Default is TRUE.
 #'
-#' @return A tibble of the PowerBI table from the PowerBI dataflow.
+#' @return A data.frame of the PowerBI table from the PowerBI dataflow.
 #' @export
 #' @examples
 #'  \dontrun{
@@ -128,34 +132,81 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
     )
   }
 
+  .pbi_parse_logical <- function(x) {
+    x <- trimws(tolower(as.character(x)))
+    ifelse(
+      x %in% c("true", "t", "1", "yes", "y"),
+      TRUE,
+      ifelse(x %in% c("false", "f", "0", "no", "n"), FALSE, NA)
+    )
+  }
+
+  .pbi_parse_double <- function(x) {
+    # PowerBI exports commonly include thousand separators for en-* locales.
+    x <- gsub(",", "", as.character(x), fixed = TRUE)
+    suppressWarnings(as.numeric(x))
+  }
+
+  .pbi_parse_int64 <- function(x) {
+    # Base R has no 64-bit integer type; use numeric.
+    .pbi_parse_double(x)
+  }
+
+  .pbi_read_csv_base <- function(csv_url, col_names, type_by_name, locale) {
+    date_fmt <- "%d/%m/%Y"
+    datetime_fmt <- "%d/%m/%Y %H:%M:%S %p"
+
+    if (identical(locale, "en-GB")) {
+      datetime_fmt <- "%d/%m/%Y %H:%M:%S"
+    }
+
+    if (identical(locale, "en-US")) {
+      date_fmt <- "%m/%d/%Y"
+      datetime_fmt <- "%m/%d/%Y %H:%M:%S %p"
+    }
+
+    con <- url(csv_url, open = "rt", encoding = "UTF-8")
+    on.exit(close(con), add = TRUE)
+
+    df <- utils::read.csv(
+      con,
+      header = FALSE,
+      col.names = col_names,
+      colClasses = rep("character", length(col_names)),
+      stringsAsFactors = FALSE,
+      check.names = FALSE,
+      comment.char = "",
+      na.strings = c("", "NA", "NaN")
+    )
+
+    for (nm in col_names) {
+      pbi_type <- type_by_name[[nm]]
+      if (is.null(pbi_type)) {
+        next
+      }
+
+      df[[nm]] <- switch(
+        pbi_type,
+        "string" = as.character(df[[nm]]),
+        "double" = .pbi_parse_double(df[[nm]]),
+        "int64" = .pbi_parse_int64(df[[nm]]),
+        "boolean" = .pbi_parse_logical(df[[nm]]),
+        "date" = as.Date(df[[nm]], format = date_fmt),
+        "dateTime" = as.POSIXct(df[[nm]], format = datetime_fmt, tz = "UTC"),
+        "time" = as.difftime(df[[nm]], format = "%H:%M:%S", units = "secs"),
+        df[[nm]]
+      )
+    }
+
+    df
+  }
+
   # Extract the column names and types
-  table_colnames <- purrr::map_chr(target_table$attributes, "name")
-
-  # Use en-AU locale formatting by default
-  pbi_to_readr_type_map <- list(
-    "string" = readr::col_character(),
-    "date" = readr::col_date(format = "%d/%m/%Y"),
-    "double" = readr::col_double(),
-    "int64" = readr::col_integer(),
-    "boolean" = readr::col_logical(),
-    "dateTime" = readr::col_datetime(format = "%d/%m/%Y %H:%M:%S %p"),
-    "time" = readr::col_time(format = "%H:%M:%S")
+  table_colnames <- vapply(target_table$attributes, function(x) x[["name"]], character(1))
+  type_by_name <- setNames(
+    vapply(target_table$attributes, function(x) x[["dataType"]], character(1)),
+    table_colnames
   )
-
-  if (target_table$locale == "en-GB") {
-    # en-GB uses 24hr notation for dateTime types (no AM/PM suffix)
-    pbi_to_readr_type_map[["dateTime"]] <- readr::col_datetime(format = "%d/%m/%Y %H:%M:%S")
-  }
-
-  if (target_table$locale == "en-US") {
-    # en-US just has months swapped
-    pbi_to_readr_type_map[["dateTime"]] <- readr::col_datetime(format = "%m/%d/%Y %H:%M:%S %p")
-    pbi_to_readr_type_map[["date"]] <- readr::col_date(format = "%m/%d/%Y")
-  }
-
-  table_coltypes <- purrr::map(target_table$attributes, \(x) {
-    pbi_to_readr_type_map[[x$dataType]]
-  })
 
   sas_key <- get_sas_key(dataflow_id, table_name, access_token)
 
@@ -165,9 +216,11 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
   }
 
   # Now we can simply append the generated SAS to the blob storage download URL
-  # and pass the result to the read_csv function. This will handle downloading
-  # the table to R and adding the extracted column names
-  readr::read_csv(paste0(target_table$partitions[[1]]$location, "&", sas_key),
-                  col_names = table_colnames,
-                  col_types = table_coltypes)
+  # and download the CSV into R.
+  .pbi_read_csv_base(
+    paste0(target_table$partitions[[1]]$location, "&", sas_key),
+    col_names = table_colnames,
+    type_by_name = type_by_name,
+    locale = target_table$locale
+  )
 }

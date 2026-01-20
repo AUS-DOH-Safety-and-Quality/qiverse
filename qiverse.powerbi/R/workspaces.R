@@ -18,8 +18,7 @@ list_workspaces <- function(access_token) {
 
   metadata_content <- httr::content(metadata_request)
 
-  content_to_dataframe <- metadata_content$value |>
-    dplyr::bind_rows()
+  content_to_dataframe <- .bind_rows_base(metadata_content$value)
   content_to_dataframe <- content_to_dataframe[,c("name", "id", "capacityId")]
   names(content_to_dataframe) <- c("Workspace", "WorkspaceId", "CapacityID")
   content_to_dataframe
@@ -58,9 +57,9 @@ list_dataflows <- function(workspace, access_token) {
     return(NULL)
   }
 
-  content_to_dataframe <- purrr::map_dfr(metadata_content, \(metadata){
-    do.call(data.frame, purrr::keep(metadata, \(x){length(x) > 0}))
-  })
+  content_to_dataframe <- .bind_rows_base(lapply(metadata_content, function(metadata) {
+    do.call(data.frame, Filter(function(x) length(x) > 0, metadata))
+  }))
   content_to_dataframe$Workspace <- workspace
   content_to_dataframe$WorkspaceId <- workspace_id
   if (!("configuredBy" %in% colnames(content_to_dataframe))) {
@@ -91,11 +90,10 @@ list_reports <- function(workspace_id, access_token) {
   }
   metadata_content <- httr::content(metadata_request)
 
-  content_to_dataframe <- metadata_content$value |>
-    purrr::keep(\(x) !is.null(x$name)) |>
-    purrr::map_dfr(\(x) {
-      x[c("name", "id", "webUrl", "embedUrl")]
-    })
+  reports <- Filter(function(x) !is.null(x$name), metadata_content$value)
+  content_to_dataframe <- .bind_rows_base(lapply(reports, function(x) {
+    as.data.frame(x[c("name", "id", "webUrl", "embedUrl")], stringsAsFactors = FALSE)
+  }))
   names(content_to_dataframe) <- c("Report", "ReportId", "WebUrl", "EmbedUrl")
   content_to_dataframe
 }

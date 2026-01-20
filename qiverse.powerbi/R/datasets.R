@@ -29,9 +29,9 @@ list_datasets <- function(workspace, access_token) {
     return(NULL)
   }
 
-  content_to_dataframe <- purrr::map_dfr(metadata_content, \(metadata){
-    do.call(data.frame, purrr::keep(metadata, \(x){length(x) > 0}))
-  })
+  content_to_dataframe <- .bind_rows_base(lapply(metadata_content, function(metadata) {
+    do.call(data.frame, Filter(function(x) length(x) > 0, metadata))
+  }))
   content_to_dataframe$Workspace <- workspace
   content_to_dataframe$WorkspaceId <- workspace_id
   if (!("configuredBy" %in% colnames(content_to_dataframe))) {
@@ -125,8 +125,7 @@ execute_rest_query_impl <- function(dataset_id, query, access_token) {
     }
   }
 
-  output <- query_content$results[[1]]$tables[[1]]$rows |>
-    dplyr::bind_rows()
+  output <- do.call(rbind, lapply(query_content$results[[1]]$tables[[1]]$rows, as.data.frame))
 
   names(output) <- gsub("(.*)?\\[|\\]", "", names(output))
 
@@ -175,7 +174,10 @@ execute_xmla_query <- function(workspace, dataset, query, access_token) {
                               config = auth_header,
                               httr::content_type_json()) |>
     httr::content()
-  target_workspace <- purrr::keep(all_workspaces, \(x) x$name == workspace)[[1]]
+
+  target_workspace <- Filter(function(x) {
+    !is.null(x$name) && identical(x$name, workspace)
+  }, all_workspaces)[[1]]
   workspace_id <- target_workspace$id
   capacity_id <- target_workspace$capacityObjectId
 
