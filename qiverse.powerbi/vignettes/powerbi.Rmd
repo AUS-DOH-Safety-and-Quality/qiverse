@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, include = FALSE}
+```{r setup, include = FALSE, eval = FALSE}
 library(qiverse.azure)
 library(qiverse.powerbi)
 ```
@@ -27,7 +27,7 @@ A PowerBI dataflow is a type of data source that allows users to create, transfo
 
 The `qiverse.powerbi` package stores a function that downloads PowerBI dataflow tables using the REST API and a Azure Access Token to authenticate to the PowerBI online service. An example set of code for `download_dataflow_table` is below:
 
-``` R
+```{r, eval = FALSE}
 # Create PowerBI Dataflow azure token
 library(qiverse.azure)
 tk <- get_az_tk('pbi_df')
@@ -35,7 +35,7 @@ tk <- get_az_tk('pbi_df')
 # Load table from PowerBI dataflow
 library(qiverse.powerbi)
 data_test <- download_dataflow_table(
-  workspace_name = "My Workspace Name", 
+  workspace_name = "My Workspace Name",
   dataflow_name = "calendar",
   table_name = "CalendarToToday",
   access_token = tk$credentials$access_token
@@ -60,7 +60,7 @@ A PowerBI dataset is a structured collection of data that serves as the foundati
 
 The `qiverse.powerbi` package stores a function that downloads PowerBI Dataset tables using the REST API, using the Azure Access Token to authenticate to the PowerBI online service. An example set of code for `download_dataset_table_rest` is below:
 
-``` R
+```{r, eval = FALSE}
 # Create PowerBI Dataset azure token
 library(qiverse.azure)
 tk <- get_az_tk('pbi_ds')
