@@ -1,6 +1,6 @@
 Package: qiverse.qiplotly
 Title: Quality Improvement Plotly Charts
-Version: 0.1.4
+Version: 0.1.5
 Authors@R:
     person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
     family = "",
@@ -17,6 +17,7 @@ BugReports: https://github.com/AUS-DOH-Safety-and-Quality/qiverse/issues
 Depends: R (>= 4.3.0)
 Imports:
   FunnelPlotR (>= 0.6.0),
+  qiverse.qipatterns,
   dplyr,
   plotly,
   qicharts2,
@@ -25,7 +26,6 @@ Imports:
   data.table,
   RCurl
 Suggests:
-  qiverse.qipatterns,
   testthat (>= 3.0.0)
 Additional_repositories:
   https://aus-doh-safety-and-quality.r-universe.dev/
