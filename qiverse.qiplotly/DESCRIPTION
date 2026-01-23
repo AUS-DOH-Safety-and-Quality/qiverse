@@ -27,5 +27,5 @@ Imports:
   RCurl
 Suggests:
   testthat (>= 3.0.0)
-Additional_repositories:
-  https://aus-doh-safety-and-quality.r-universe.dev/
+Remotes:
+  AUS-DOH-Safety-and-Quality/qiverse/qiverse.qipatterns
