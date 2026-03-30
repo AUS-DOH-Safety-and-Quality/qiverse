@@ -231,8 +231,22 @@ ingest_dataflow_table <- function(
   target_dataflow <- qiverse.powerbi:::get_dataflow_metadata(pbi_workspace, pbi_dataflow,
                                                               access_token, verbose)
   dataflow_id <- target_dataflow$cdsaModel$objectId
-  target_table <- qiverse.powerbi:::get_table_metadata(dataflow_id, pbi_table, access_token)
-  sas_key <- qiverse.powerbi:::get_sas_key(dataflow_id, pbi_table, access_token)
+  ingest_dataflow_table_impl(con, dataflow_id, pbi_table, database_name,
+                              schema_name, table_name, pbi_tk)
+}
+
+ingest_dataflow_table_impl <- function(
+  con,
+  pbi_dataflow_id,
+  pbi_table,
+  database_name,
+  schema_name,
+  table_name,
+  pbi_tk
+) {
+  access_token <- pbi_tk$credentials$access_token
+  target_table <- qiverse.powerbi:::get_table_metadata(pbi_dataflow_id, pbi_table, access_token)
+  sas_key <- qiverse.powerbi:::get_sas_key(pbi_dataflow_id, pbi_table, access_token)
 
   # Extract the column names and types
   table_colnames <- sapply(target_table$attributes, \(column) {
