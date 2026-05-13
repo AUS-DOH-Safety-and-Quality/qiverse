@@ -125,9 +125,14 @@ execute_rest_query_impl <- function(dataset_id, query, access_token) {
     }
   }
 
-  output <- do.call(rbind, lapply(query_content$results[[1]]$tables[[1]]$rows, as.data.frame))
+  result_rows <- lapply(query_content$results[[1]]$tables[[1]]$rows, \(rowset) {
+    rowset[sapply(rowset, is.null)] <- NA
+    as.data.frame(rowset)
+  })
 
-  names(output) <- gsub("(.*)?\\[|\\]", "", names(output))
+  output <- do.call(rbind, result_rows)
+
+  names(output) <- gsub("(.*)?\\[|\\]", "", names(query_content$results[[1]]$tables[[1]]$rows[[1]]))
 
   return(output)
 }
