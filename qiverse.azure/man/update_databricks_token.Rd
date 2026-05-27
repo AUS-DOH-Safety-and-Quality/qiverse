@@ -12,9 +12,6 @@ update_databricks_token(workspace_url)
 \description{
 Generates a new Azure access token and stores it as a Databricks
 secret in the specified workspace under your username.
-
-The token MUST be generated with MFA for usage on Databricks, and this function
-will error if MFA is not used.
 }
 \seealso{
 Other Azure methods:

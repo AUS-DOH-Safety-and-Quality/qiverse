@@ -163,9 +163,6 @@ store_databricks_access_token <- function(token, url, username) {
 #' @description Generates a new Azure access token and stores it as a Databricks
 #' secret in the specified workspace under your username.
 #'
-#' The token MUST be generated with MFA for usage on Databricks, and this function
-#' will error if MFA is not used.
-#'
 #' @param workspace_url The workspace URL of the databricks instance
 #'
 #' @return NULL
@@ -173,10 +170,16 @@ store_databricks_access_token <- function(token, url, username) {
 #' @family Azure methods
 #' @export
 update_databricks_token <- function(workspace_url) {
-  db_token <- AzureAuth::get_azure_token(resource = "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d",
-                                         tenant = "common",
-                                         app = "a672d62c-fc7b-4e81-a576-e60dc46e951d",
-                                         use_cache = FALSE)
+  db_token <- AzureAuth::get_azure_token(
+    # Default resource ID for Azure Databricks
+    resource = "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d",
+    tenant = "common",
+    # App ID for Excel for PowerQuery
+    app = "a672d62c-fc7b-4e81-a576-e60dc46e951d",
+    # Ensure that token has MFA claim for usage outside of corporate network
+    token_args = list(claims = '{"access_token":{"amr":{"values":["mfa"]}}}'),
+    use_cache = FALSE
+  )
   db_token$refresh()
 
   if (!("mfa" %in% AzureAuth::decode_jwt(db_token)$payload$amr)) {
