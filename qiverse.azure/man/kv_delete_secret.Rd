@@ -21,11 +21,11 @@ created for the Key Vault resource}
 Delete a specified secret from a given Key Vault
 }
 \seealso{
-Other Key Vault methods: 
-\code{\link{.init_key_vault}()},
-\code{\link{.secrets_operation}()},
-\code{\link{kv_get_secret}()},
-\code{\link{kv_list_secrets}()},
-\code{\link{kv_write_secret}()}
+Other Key Vault methods:
+\code{\link[=.init_key_vault]{.init_key_vault()}},
+\code{\link[=.secrets_operation]{.secrets_operation()}},
+\code{\link[=kv_get_secret]{kv_get_secret()}},
+\code{\link[=kv_list_secrets]{kv_list_secrets()}},
+\code{\link[=kv_write_secret]{kv_write_secret()}}
 }
 \concept{Key Vault methods}

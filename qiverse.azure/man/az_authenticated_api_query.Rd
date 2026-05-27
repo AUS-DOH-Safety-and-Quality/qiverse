@@ -26,9 +26,10 @@ Make a call to a web API which requires an Azure access token for
 authentication
 }
 \seealso{
-Other Azure methods: 
-\code{\link{db_secret_scopes_api}()},
-\code{\link{db_secrets_api}()},
-\code{\link{store_databricks_access_token}()}
+Other Azure methods:
+\code{\link[=db_secret_scopes_api]{db_secret_scopes_api()}},
+\code{\link[=db_secrets_api]{db_secrets_api()}},
+\code{\link[=store_databricks_access_token]{store_databricks_access_token()}},
+\code{\link[=update_databricks_token]{update_databricks_token()}}
 }
 \concept{Azure methods}

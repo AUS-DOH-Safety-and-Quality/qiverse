@@ -19,11 +19,11 @@ A list of the (names of) secrets stored in the given Key Vault
 List the names of secrets stored in a given Azure Key Vault
 }
 \seealso{
-Other Key Vault methods: 
-\code{\link{.init_key_vault}()},
-\code{\link{.secrets_operation}()},
-\code{\link{kv_delete_secret}()},
-\code{\link{kv_get_secret}()},
-\code{\link{kv_write_secret}()}
+Other Key Vault methods:
+\code{\link[=.init_key_vault]{.init_key_vault()}},
+\code{\link[=.secrets_operation]{.secrets_operation()}},
+\code{\link[=kv_delete_secret]{kv_delete_secret()}},
+\code{\link[=kv_get_secret]{kv_get_secret()}},
+\code{\link[=kv_write_secret]{kv_write_secret()}}
 }
 \concept{Key Vault methods}

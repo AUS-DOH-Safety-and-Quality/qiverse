@@ -29,11 +29,11 @@ created for the Key Vault resource}
 Create or overwrite a secret in an Azure Key Vault
 }
 \seealso{
-Other Key Vault methods: 
-\code{\link{.init_key_vault}()},
-\code{\link{.secrets_operation}()},
-\code{\link{kv_delete_secret}()},
-\code{\link{kv_get_secret}()},
-\code{\link{kv_list_secrets}()}
+Other Key Vault methods:
+\code{\link[=.init_key_vault]{.init_key_vault()}},
+\code{\link[=.secrets_operation]{.secrets_operation()}},
+\code{\link[=kv_delete_secret]{kv_delete_secret()}},
+\code{\link[=kv_get_secret]{kv_get_secret()}},
+\code{\link[=kv_list_secrets]{kv_list_secrets()}}
 }
 \concept{Key Vault methods}
