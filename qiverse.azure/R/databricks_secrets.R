@@ -157,3 +157,61 @@ store_databricks_access_token <- function(token, url, username) {
                                 secret_value = token_as_bytes,
                                 bytestring = TRUE)
 }
+
+#' Refresh Databricks Azure Token Secret
+#'
+#' @description Generates a new Azure access token and stores it as a Databricks
+#' secret in the specified workspace under your username.
+#'
+#' The token MUST be generated with MFA for usage on Databricks, and this function
+#' will error if MFA is not used.
+#'
+#' @param workspace_url The workspace URL of the databricks instance
+#'
+#' @return NULL
+#'
+#' @family Azure methods
+#' @export
+update_databricks_token <- function(workspace_url) {
+  db_token <- AzureAuth::get_azure_token(resource = "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d",
+                                         tenant = "common",
+                                         app = "a672d62c-fc7b-4e81-a576-e60dc46e951d",
+                                         use_cache = FALSE)
+  db_token$refresh()
+
+  if (!("mfa" %in% AzureAuth::decode_jwt(db_token)$payload$amr)) {
+    stop("MFA was not used when authenticating! ",
+          "Try disconnecting from the corporate network and calling again.")
+  }
+
+  user_details <- az_authenticated_api_query(
+    "GET",
+    paste0(workspace_url,"/api/2.0/preview/scim/v2/Me"),
+    db_token$credentials$access_token
+  )
+
+  username <- user_details$userName
+
+  initialise_scope <- db_secret_scopes_api(
+    operation = "create",
+    scope_name = username,
+    workspace_url = workspace_url,
+    access_token = db_token$credentials$access_token
+  )
+
+  # Convert token into bytes
+  token_as_bytes <- serialize(db_token, NULL)
+
+  upload_token <- db_secrets_api(operation = "put",
+                                workspace_url = workspace_url,
+                                access_token = db_token$credentials$access_token,
+                                scope_name = username,
+                                secret_name = "azure_token",
+                                secret_value = token_as_bytes,
+                                bytestring = TRUE)
+  if (upload_token$status_code == 200) {
+    "Secret updated successfully!"
+  } else {
+    "Error updating secret!"
+  }
+}

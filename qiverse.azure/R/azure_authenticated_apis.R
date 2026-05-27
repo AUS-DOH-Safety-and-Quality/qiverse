@@ -32,6 +32,9 @@ az_authenticated_api_query <- function(method, url, access_token, ...) {
   }
 
   query_result <- do.call(httr_func, args)
+  if (query_result$status_code != 200) {
+    stop("Query: '", paste(method, url), "' returned error code: ", query_result$status_code)
+  }
   query_content <- httr::content(query_result)
 
   if (length(query_content) > 0) {

@@ -29,9 +29,10 @@ Interact with the Databricks API for managing secret scopes
 and deleting secret scopes.
 }
 \seealso{
-Other Azure methods: 
-\code{\link{az_authenticated_api_query}()},
-\code{\link{db_secrets_api}()},
-\code{\link{store_databricks_access_token}()}
+Other Azure methods:
+\code{\link[=az_authenticated_api_query]{az_authenticated_api_query()}},
+\code{\link[=db_secrets_api]{db_secrets_api()}},
+\code{\link[=store_databricks_access_token]{store_databricks_access_token()}},
+\code{\link[=update_databricks_token]{update_databricks_token()}}
 }
 \concept{Azure methods}
