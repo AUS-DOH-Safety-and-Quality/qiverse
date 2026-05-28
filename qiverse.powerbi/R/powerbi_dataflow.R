@@ -203,7 +203,7 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
 
   # Extract the column names and types
   table_colnames <- vapply(target_table$attributes, function(x) x[["name"]], character(1))
-  type_by_name <- setNames(
+  type_by_name <- stats::setNames(
     vapply(target_table$attributes, function(x) x[["dataType"]], character(1)),
     table_colnames
   )
