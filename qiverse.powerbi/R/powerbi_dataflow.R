@@ -203,7 +203,7 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
 
   # Extract the column names and types
   table_colnames <- vapply(target_table$attributes, function(x) x[["name"]], character(1))
-  type_by_name <- setNames(
+  type_by_name <- stats::setNames(
     vapply(target_table$attributes, function(x) x[["dataType"]], character(1)),
     table_colnames
   )
@@ -223,4 +223,83 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
     type_by_name = type_by_name,
     locale = target_table$locale
   )
+}
+
+#' Refresh PowerBI Dataflow
+#'
+#' This function provides the ability to refresh PowerBI dataflows, via an R
+#' wrapper using the PowerBI REST API.
+#'
+#' @param workspace_name The PowerBI workspace name.
+#' @param dataflow_name The name of the PowerBI Dataflow within the workspace.
+#' @param access_token The token generated with the correct PowerBI Dataflow
+#' permissions. Use get_az_tk('pbi_df') to create this token.
+#' @param verbose Whether to print status messages while the function is
+#' running. Default is TRUE.
+#'
+#' @return A response object from the POST request.
+#' @export
+#' @examples
+#'  \dontrun{
+#' # Create PowerBI Dataflow azure token
+#' tk <- get_az_tk('pbi_df')
+#'
+#' # Load AD dummy file from PowerBI dataflow
+#' refresh_result <- refresh_dataflow(
+#'   workspace_name = "My Workspace Name",
+#'   dataflow_name = "My Dataflow Name",
+#'   access_token = tk$credentials$access_token
+#' )
+#'}
+refresh_dataflow <- function(
+  workspace_name,
+  dataflow_name,
+  access_token,
+  verbose = TRUE
+) {
+
+  # Get dataflow metadata using utility function
+  target_dataflow <- get_dataflow_metadata(workspace_name, dataflow_name,
+                                           access_token, FALSE)
+  # Extract ids
+  dataflow_id <- target_dataflow$cdsaModel$objectId
+  workspace_id <- target_dataflow$workspaceObjectId
+
+  # Trigger POST refresh
+  refresh_response <- httr::POST(
+    url = paste0(
+      "https://api.powerbi.com/v1.0/myorg/groups/",
+      workspace_id,
+      "/dataflows/",
+      dataflow_id,
+      "/refreshes"
+    ),
+    config = get_auth_header(access_token),
+    httr::content_type_json(),
+    body = "{}"
+  )
+
+  # Status code handling
+  if (verbose == TRUE) {
+    if (refresh_response$status_code == 200) {
+      message(
+        sprintf(
+          "Dataflow '%s' in workspace '%s' is refreshing...",
+          dataflow_name,
+          workspace_name
+        )
+      )
+    } else {
+      # Print errors
+      message(
+        sprintf(
+          "Status code %s. See response content (httr::content()) for error details...",
+          refresh_response$status_code
+        )
+      )
+    }
+  }
+
+  # Return response
+  return(refresh_response)
 }
