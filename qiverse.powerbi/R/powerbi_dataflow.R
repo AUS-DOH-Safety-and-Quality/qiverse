@@ -303,3 +303,77 @@ refresh_dataflow <- function(
   # Return response
   return(refresh_response)
 }
+
+#' Update PowerBI Dataflow compute engine behaviour
+#'
+#' This function provides the ability to change the compute engine behaviour for
+#' a selected PowerBI dataflow, via an R wrapper using the PowerBI REST API.
+#'
+#' You have to be the owner of the PowerBI dataflow to use this function,
+#' otherwise there will be an 401 unauthorised error.
+#'
+#' @param workspace_name The PowerBI workspace name.
+#' @param dataflow_name The name of the PowerBI Dataflow within the workspace.
+#' @param compute_engine The compute engine behaviour setting to be
+#' applied. Must be one of "computeOptimized", "computeOn" or "computeDisabled".
+#' @param access_token The token generated with the correct PowerBI Dataflow
+#' permissions. Use get_az_tk('pbi_df') to create this token.
+#'
+#' @return A response object from the PATCH request.
+#' @export
+#' @examples
+#'  \dontrun{
+#' # Create PowerBI Dataflow azure token
+#' tk <- get_az_tk('pbi_df')
+#'
+#' # Load AD dummy file from PowerBI dataflow
+#' update_dataflow_compute_engine <- refresh_dataflow(
+#'   workspace_name = "My Workspace Name",
+#'   dataflow_name = "My Dataflow Name",
+#'   compute_engine = "computeOptimized",
+#'   access_token = tk$credentials$access_token
+#' )
+#'}
+update_dataflow_compute_engine <- function(
+    workspace_name,
+    dataflow_name,
+    compute_engine,
+    access_token
+) {
+  # Check if compute engine behaviour is a valid option
+  valid_compute_engine <- c("computeOptimized", "computeOn", "computeDisabled")
+  if (!(compute_engine %in% valid_compute_engine)) {
+    stop(paste0(
+      "compute_engine setting of '", compute_engine, "' ",
+      "is not recognised. Must be one of: ",
+      paste0(valid_compute_engine, collapse = ", "), ". \n",
+      "See https://learn.microsoft.com/en-us/rest/api/power-bi/dataflows/update-dataflow#request-body")
+    )
+  }
+
+  # Get dataflow metadata using utility function
+  target_dataflow <- get_dataflow_metadata(workspace_name, dataflow_name,
+                                           access_token, FALSE)
+  # Extract ids
+  dataflow_id <- target_dataflow$cdsaModel$objectId
+  workspace_id <- target_dataflow$workspaceObjectId
+
+  # Update dataflow compute engine behaviour using PATCH
+  update_response <- httr::PATCH(
+    url = paste0(
+      "https://api.powerbi.com/v1.0/myorg/groups/",
+      workspace_id,
+      "/dataflows/",
+      dataflow_id
+    ),
+    config = get_auth_header(access_token),
+    httr::content_type_json(),
+    body = sprintf('{
+      "computeEngineBehavior": "%s"
+    }', compute_engine
+    )
+  )
+
+  # Return response
+  return(update_response)
+}

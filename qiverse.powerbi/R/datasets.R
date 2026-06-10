@@ -196,3 +196,77 @@ execute_xmla_query <- function(workspace, dataset, query, access_token) {
                           query,
                           astoken)
 }
+
+#' Update PowerBI Semantic Model (Dataset) storage mode
+#'
+#' This function provides the ability to change the storage mode for a selected
+#' PowerBI dataset, via an R wrapper using the PowerBI REST API.
+#'
+#' You do not have to be the owner of the semantic model to use this function.
+#'
+#' @param workspace_name The PowerBI workspace name.
+#' @param dataset_name The name of the PowerBI Dataflow within the workspace.
+#' @param storage_mode The compute engine behaviour setting to be
+#' applied. Must be one of "Abf" (small semantic model format) or "PremiumFiles"
+#'  (large semantic model format).
+#' @param access_token The token generated with the correct PowerBI Dataflow
+#' permissions. Use get_az_tk('pbi_df') to create this token.
+#'
+#' @return A response object from the PATCH request.
+#' @export
+#' @examples
+#'  \dontrun{
+#' # Create PowerBI Dataflow azure token
+#' tk <- get_az_tk('pbi_df')
+#'
+#' # Load AD dummy file from PowerBI dataflow
+#' update_dataset_storage_mode <- refresh_dataflow(
+#'   workspace_name = "My Workspace Name",
+#'   dataset_name = "My Dataset Name",
+#'   storage_mode = "PremiumFiles",
+#'   access_token = tk$credentials$access_token
+#' )
+#'}
+update_dataset_storage_mode <- function(
+    workspace_name,
+    dataset_name,
+    storage_mode,
+    access_token
+) {
+  # Get dataset metadata
+  dataset_metadata <- list_datasets(workspace, access_token)
+  if (!(dataset %in% dataset_metadata$Dataset)) {
+    stop("No dataset called: ", dataset, "in workspace: ", workspace, "!", call. = FALSE)
+  }
+
+  target_dataset <- dataset_metadata[dataset_metadata$Dataset == dataset_name, ]
+  dataset_id <- target_dataset$DatasetId
+
+  # Check if compute engine behaviour is a valid option
+  valid_storage_mode <- c("PremiumFiles", "Abf")
+  if (!(storage_mode %in% valid_storage_mode)) {
+    stop(paste0(
+      "target_storage_mode setting of '", storage_mode, "' ",
+      "is not recognised. Must be one of: ",
+      paste0(valid_storage_mode, collapse = ", "), ". \n",
+      "See https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/update-dataset#examples")
+    )
+  }
+
+  # Update dataset dataset storage mode using PATCH
+  update_response <- httr::PATCH(
+    url = paste0(
+      "https://api.powerbi.com/v1.0/myorg/datasets/",
+      dataset_id
+    ),
+    config = get_auth_header(access_token),
+    httr::content_type_json(),
+    body = sprintf('{
+      "targetStorageMode": "%s"
+    }', storage_mode
+    )
+  )
+
+  # Return response
+  return(update_response)
+}
