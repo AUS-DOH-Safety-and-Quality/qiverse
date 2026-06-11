@@ -180,7 +180,7 @@ decompress_string <- function(compressed_string) {
 
 # Query the cluster resolve endpoint to get XMLA server details for a given capacity (needed for querying datasets)
 get_pbi_cluster_details <- function(capacity_id, access_token) {
-  httr::POST("https://australiasoutheast.pbidedicated.windows.net/webapi/clusterResolve",
+  httr::POST("https://australiaeast.pbidedicated.windows.net/webapi/clusterResolve",
               config = get_auth_header(access_token),
               body = jsonlite::toJSON(list(
                 databaseName = NA,
