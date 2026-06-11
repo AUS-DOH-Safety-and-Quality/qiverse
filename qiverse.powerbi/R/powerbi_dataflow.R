@@ -327,7 +327,7 @@ refresh_dataflow <- function(
 #' tk <- get_az_tk('pbi_df')
 #'
 #' # Load AD dummy file from PowerBI dataflow
-#' update_dataflow_compute_engine <- refresh_dataflow(
+#' response <- update_dataflow_compute_engine(
 #'   workspace_name = "My Workspace Name",
 #'   dataflow_name = "My Dataflow Name",
 #'   compute_engine = "computeOptimized",

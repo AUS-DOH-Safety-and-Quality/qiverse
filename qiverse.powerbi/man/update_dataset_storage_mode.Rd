@@ -38,8 +38,7 @@ You do not have to be the owner of the semantic model to use this function.
 # Create PowerBI Dataflow azure token
 tk <- get_az_tk('pbi_df')
 
-# Load AD dummy file from PowerBI dataflow
-update_dataset_storage_mode <- refresh_dataflow(
+response <- update_dataset_storage_mode(
   workspace_name = "My Workspace Name",
   dataset_name = "My Dataset Name",
   storage_mode = "PremiumFiles",

@@ -219,8 +219,7 @@ execute_xmla_query <- function(workspace, dataset, query, access_token) {
 #' # Create PowerBI Dataflow azure token
 #' tk <- get_az_tk('pbi_df')
 #'
-#' # Load AD dummy file from PowerBI dataflow
-#' update_dataset_storage_mode <- refresh_dataflow(
+#' response <- update_dataset_storage_mode(
 #'   workspace_name = "My Workspace Name",
 #'   dataset_name = "My Dataset Name",
 #'   storage_mode = "PremiumFiles",
@@ -234,9 +233,9 @@ update_dataset_storage_mode <- function(
     access_token
 ) {
   # Get dataset metadata
-  dataset_metadata <- list_datasets(workspace, access_token)
-  if (!(dataset %in% dataset_metadata$Dataset)) {
-    stop("No dataset called: ", dataset, "in workspace: ", workspace, "!", call. = FALSE)
+  dataset_metadata <- list_datasets(workspace_name, access_token)
+  if (!(dataset_name %in% dataset_metadata$Dataset)) {
+    stop("No dataset called: ", dataset_name, "in workspace: ", workspace_name, "!", call. = FALSE)
   }
 
   target_dataset <- dataset_metadata[dataset_metadata$Dataset == dataset_name, ]
