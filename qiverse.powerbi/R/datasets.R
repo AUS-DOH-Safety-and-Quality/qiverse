@@ -185,8 +185,9 @@ execute_xmla_query <- function(workspace, dataset, query, access_token) {
   }, all_workspaces)[[1]]
   workspace_id <- target_workspace$id
   capacity_id <- target_workspace$capacityObjectId
+  region_name <- gsub("pbidedicated://(.*).pbidedicated.windows.net/.*", "\\1", target_workspace$capacityUri)
 
-  cluster_details <- get_pbi_cluster_details(capacity_id, access_token)
+  cluster_details <- get_pbi_cluster_details(region_name, capacity_id, access_token)
 
   astoken <- get_dataset_access_token(capacity_id, workspace_id, access_token)
 
