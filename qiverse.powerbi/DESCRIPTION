@@ -19,6 +19,7 @@ Imports:
   jsonlite,
   xml2
 Suggests:
+  arrow,
   zlib,
   knitr,
   rmarkdown,

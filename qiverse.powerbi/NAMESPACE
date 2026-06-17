@@ -3,6 +3,7 @@
 export(decompress_string)
 export(download_dataflow_table)
 export(download_dataset_table)
+export(execute_arrow_query)
 export(execute_rest_query)
 export(execute_xmla_query)
 export(list_dataflows)
