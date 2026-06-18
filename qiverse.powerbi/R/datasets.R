@@ -74,7 +74,6 @@ download_dataset_table <- function(workspace, dataset, table,
     stop("Invalid method: ", method, "! Valid values are \"XMLA\" or \"REST\".",
          call. = FALSE)
   }
-  names(table_query) <- gsub(paste0(table, "\\[|\\]"), "", names(table_query))
   table_query
 }
 
@@ -156,7 +155,8 @@ execute_arrow_query_impl <- function(workspace_id, dataset_id, query, access_tok
   }) |>
     stats::setNames(sapply(schema_types, \(x) trimws(x[1])))
 
-  arrow_query$cast(target_schema = arrow::schema(new_schema))$to_data_frame()
+  arrow_query$cast(target_schema = arrow::schema(new_schema))$to_data_frame() |>
+    clean_dataset_names()
 }
 
 execute_rest_query_impl <- function(dataset_id, query, access_token) {
@@ -183,16 +183,14 @@ execute_rest_query_impl <- function(dataset_id, query, access_token) {
     }
   }
 
-  result_rows <- lapply(query_content$results[[1]]$tables[[1]]$rows, \(rowset) {
+  resultset <- query_content$results[[1]]$tables[[1]]$rows
+  result_rows <- lapply(resultset, \(rowset) {
     rowset[sapply(rowset, is.null)] <- NA
     as.data.frame(rowset)
   })
 
-  output <- do.call(rbind, result_rows)
-
-  names(output) <- gsub("(.*)?\\[|\\]", "", names(query_content$results[[1]]$tables[[1]]$rows[[1]]))
-
-  return(output)
+  do.call(rbind.data.frame, result_rows) |>
+    clean_dataset_names(names(resultset[[1]]))
 }
 
 execute_xmla_query_impl <- function(cluster_url, xmla_server, dataset, query,
@@ -209,11 +207,10 @@ execute_xmla_query_impl <- function(cluster_url, xmla_server, dataset, query,
         "x-ms-xmlaserver" = xmla_server
       ))
     )
-  rtn <- httr::content(xmla_request, encoding = "UTF-8", as = "raw") |>
-          xml2::read_xml(options = c("NOBLANKS", "HUGE")) |>
-          rowset_to_df()
-  names(rtn) <- gsub("(.*)?\\[|\\]", "", names(rtn))
-  rtn
+  httr::content(xmla_request, encoding = "UTF-8", as = "raw") |>
+    xml2::read_xml(options = c("NOBLANKS", "HUGE")) |>
+    rowset_to_df() |>
+    clean_dataset_names()
 }
 
 
