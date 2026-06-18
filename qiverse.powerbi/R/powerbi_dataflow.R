@@ -92,10 +92,14 @@ get_sas_key <- function(dataflow_id, table_name, access_token) {
 #' accessed.
 #' @param access_token The token generated with the correct PowerBI Dataflow
 #' permissions. Use get_az_tk('pbi_df') to create this token.
+#' @param destfile Optional output filepath to save raw dataflow CSV file to.
+#' If `NULL` (default) the CSV is read into an R `data.frame`. If non-null,
+#' the CSV file is downloaded to specified filepath and the function has no return.
 #' @param verbose Whether to print status messages while the function is
 #' running. Default is TRUE.
 #'
-#' @return A data.frame of the PowerBI table from the PowerBI dataflow.
+#' @return A data.frame of the PowerBI table from the PowerBI dataflow if
+#' `destfile = NULL`, otherwise none
 #' @export
 #' @examples
 #'  \dontrun{
@@ -109,11 +113,20 @@ get_sas_key <- function(dataflow_id, table_name, access_token) {
 #'   table_name = "My Table Name",
 #'   access_token = tk$credentials$access_token
 #' )
+#'
+#' # Download AD dummy file from PowerBI dataflow to local .csv file
+#' download_dataflow_table(
+#'   workspace_name = "My Workspace Name",
+#'   dataflow_name = "My Dataflow Name",
+#'   table_name = "My Table Name",
+#'   access_token = tk$credentials$access_token,
+#'   destfile = "my_table_name.csv"
+#' )
 #'}
 download_dataflow_table <- function(workspace_name, dataflow_name,
                                     table_name, access_token,
+                                    destfile = NULL,
                                     verbose = TRUE) {
-
   target_dataflow <- get_dataflow_metadata(workspace_name, dataflow_name,
                                            access_token, verbose)
   # Extract
@@ -132,75 +145,6 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
     )
   }
 
-  .pbi_parse_logical <- function(x) {
-    x <- trimws(tolower(as.character(x)))
-    ifelse(
-      x %in% c("true", "t", "1", "yes", "y"),
-      TRUE,
-      ifelse(x %in% c("false", "f", "0", "no", "n"), FALSE, NA)
-    )
-  }
-
-  .pbi_parse_double <- function(x) {
-    # PowerBI exports commonly include thousand separators for en-* locales.
-    x <- gsub(",", "", as.character(x), fixed = TRUE)
-    suppressWarnings(as.numeric(x))
-  }
-
-  .pbi_parse_int64 <- function(x) {
-    # Base R has no 64-bit integer type; use numeric.
-    .pbi_parse_double(x)
-  }
-
-  .pbi_read_csv_base <- function(csv_url, col_names, type_by_name, locale) {
-    date_fmt <- "%d/%m/%Y"
-    datetime_fmt <- "%d/%m/%Y %H:%M:%S %p"
-
-    if (identical(locale, "en-GB")) {
-      datetime_fmt <- "%d/%m/%Y %H:%M:%S"
-    }
-
-    if (identical(locale, "en-US")) {
-      date_fmt <- "%m/%d/%Y"
-      datetime_fmt <- "%m/%d/%Y %H:%M:%S %p"
-    }
-
-    con <- url(csv_url, open = "rt", encoding = "UTF-8")
-    on.exit(close(con), add = TRUE)
-
-    df <- utils::read.csv(
-      con,
-      header = FALSE,
-      col.names = col_names,
-      colClasses = rep("character", length(col_names)),
-      stringsAsFactors = FALSE,
-      check.names = FALSE,
-      comment.char = "",
-      na.strings = c("", "NA", "NaN")
-    )
-
-    for (nm in col_names) {
-      pbi_type <- type_by_name[[nm]]
-      if (is.null(pbi_type)) {
-        next
-      }
-
-      df[[nm]] <- switch(
-        pbi_type,
-        "string" = as.character(df[[nm]]),
-        "double" = .pbi_parse_double(df[[nm]]),
-        "int64" = .pbi_parse_int64(df[[nm]]),
-        "boolean" = .pbi_parse_logical(df[[nm]]),
-        "date" = as.Date(df[[nm]], format = date_fmt),
-        "dateTime" = as.POSIXct(df[[nm]], format = datetime_fmt, tz = "UTC"),
-        "time" = as.difftime(df[[nm]], format = "%H:%M:%S", units = "secs"),
-        df[[nm]]
-      )
-    }
-
-    df
-  }
-
   # Extract the column names and types
   table_colnames <- vapply(target_table$attributes, function(x) x[["name"]], character(1))
   type_by_name <- stats::setNames(
@@ -210,19 +154,31 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
 
   sas_key <- get_sas_key(dataflow_id, table_name, access_token)
 
-
   if (interactive() && isTRUE(verbose)) {
     message("Downloading dataflow table...")
   }
 
   # Now we can simply append the generated SAS to the blob storage download URL
   # and download the CSV into R.
-  .pbi_read_csv_base(
-    paste0(target_table$partitions[[1]]$location, "&", sas_key),
-    col_names = table_colnames,
-    type_by_name = type_by_name,
-    locale = target_table$locale
-  )
+  csv_url <- paste0(target_table$partitions[[1]]$location, "&", sas_key)
+  con <- url(csv_url, open = "rt", encoding = "UTF-8")
+  on.exit(close(con), add = TRUE)
+
+  if (is.null(destfile)) {
+    .pbi_read_csv_base(
+      con,
+      col_names = table_colnames,
+      type_by_name = type_by_name,
+      locale = target_table$locale
+    )
+  } else {
+    csv_text <- c(
+      paste0(table_colnames, collapse = ","),
+      readLines(con)
+    )
+    cat(csv_text, file = destfile, sep = "\n", append = FALSE)
+    invisible(NULL)
+  }
 }
 
 #' Refresh PowerBI Dataflow

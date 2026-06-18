@@ -9,6 +9,7 @@ download_dataflow_table(
   dataflow_name,
   table_name,
   access_token,
+  destfile = NULL,
   verbose = TRUE
 )
 }
@@ -23,11 +24,16 @@ accessed.}
 \item{access_token}{The token generated with the correct PowerBI Dataflow
 permissions. Use get_az_tk('pbi_df') to create this token.}
 
+\item{destfile}{Optional output filepath to save raw dataflow CSV file to.
+If \code{NULL} (default) the CSV is read into an R \code{data.frame}. If non-null,
+the CSV file is downloaded to specified filepath and the function has no return.}
+
 \item{verbose}{Whether to print status messages while the function is
 running. Default is TRUE.}
 }
 \value{
-A data.frame of the PowerBI table from the PowerBI dataflow.
+A data.frame of the PowerBI table from the PowerBI dataflow if
+\code{destfile = NULL}, otherwise none
 }
 \description{
 This function provides the ability to download tables from within PowerBI
@@ -45,6 +51,15 @@ ad_dummy <- download_dataflow_table(
   dataflow_name = "My Dataflow Name",
   table_name = "My Table Name",
   access_token = tk$credentials$access_token
+)
+
+# Download AD dummy file from PowerBI dataflow to local .csv file
+download_dataflow_table(
+  workspace_name = "My Workspace Name",
+  dataflow_name = "My Dataflow Name",
+  table_name = "My Table Name",
+  access_token = tk$credentials$access_token,
+  destfile = "my_table_name.csv"
 )
 }
 }

@@ -19,4 +19,9 @@ Useful links:
 \author{
 \strong{Maintainer}: Healthcare Quality Intelligence Unit (Western Australia Health) \email{safetyandquality@health.wa.gov.au}
 
+Authors:
+\itemize{
+  \item Healthcare Quality Intelligence Unit (Western Australia Health) \email{safetyandquality@health.wa.gov.au}
+}
+
 }
