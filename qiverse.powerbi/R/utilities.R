@@ -275,3 +275,12 @@ get_dataset_access_token <- function(capacity_id, workspace_id, access_token) {
 
   df
 }
+
+# DAX queries return column names with a "{table_name}[{column_name}]" structure,
+# so rename to only the inner "{column_name}"
+clean_dataset_names <- function(df, curr_names = NULL) {
+  if (is.null(curr_names)) {
+    curr_names <- names(df)
+  }
+  stats::setNames(df, gsub("(.*)?\\[(.*)\\]", "\\2", curr_names))
+}

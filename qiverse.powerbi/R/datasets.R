@@ -74,7 +74,6 @@ download_dataset_table <- function(workspace, dataset, table,
     stop("Invalid method: ", method, "! Valid values are \"XMLA\" or \"REST\".",
          call. = FALSE)
   }
-  names(table_query) <- gsub(paste0(table, "\\[|\\]"), "", names(table_query))
   table_query
 }
 
@@ -101,6 +100,65 @@ execute_rest_query <- function(workspace, dataset, query, access_token) {
   execute_rest_query_impl(dataset_id, query, access_token)
 }
 
+#' Execute a DAX query against a specified PowerBI Dataset using the REST
+#' Arrow API endpoint.
+#'
+#' This endpoint has no restrictions on the size of the result and will
+#' transfer data in a compressed format (Apache Arrow), and should be
+#' preferred.
+#'
+#' @param workspace Name of the workspace containing dataflow
+#' @param dataset Name of the dataset to execute query against
+#' @param query DAX query to execute
+#' @param access_token The token generated with the correct PowerBI Dataset
+#' permissions. Use get_az_tk('pbi_ds') to create this token.
+#'
+#' @return DataFrame containing results of query
+#' @export
+execute_arrow_query <- function(workspace, dataset, query, access_token) {
+  if (!("arrow" %in% utils::installed.packages()[,"Package"])) {
+    stop("This function requires the 'arrow' package, but it is not installed!")
+  }
+  dataset_metadata <- list_datasets(workspace, access_token)
+  if (!(dataset %in% dataset_metadata$Dataset)) {
+    stop("No dataset called: ", dataset, "in workspace: ", workspace, "!", call. = FALSE)
+  }
+
+  target_dataset <- dataset_metadata[dataset_metadata$Dataset == dataset, ]
+  workspace_id <- target_dataset$WorkspaceId
+  dataset_id <- target_dataset$DatasetId
+
+  execute_arrow_query_impl(workspace_id, dataset_id, query, access_token)
+}
+
+execute_arrow_query_impl <- function(workspace_id, dataset_id, query, access_token) {
+  query_url <- paste0("https://api.powerbi.com/v1.0/myorg/groups/", workspace_id, "/datasets/", dataset_id, "/executeDaxQueries")
+
+  arrow_query <- httr::POST(
+    url = query_url,
+    body = jsonlite::toJSON(list(query = query), auto_unbox = TRUE),
+    config = httr::add_headers(Authorization = paste("Bearer", access_token)),
+    httr::content_type_json()
+  ) |>
+    httr::content(as = "raw") |>
+    arrow::read_ipc_stream(as_data_frame = FALSE)
+
+  # PBI returns data as 'dictionary' types (e.g., dictionary<double>), which get converted to 'factor' types by R
+  # Need to extract the target type and update the schema before converting to R
+  schema_types <- strsplit(utils::capture.output(arrow_query$schema)[-1], ":")
+  new_schema <- lapply(schema_types, \(comps) {
+    type <- gsub(".*values=([a-zA-Z0-9]+)(\\[[a-z]+\\])?,.*", "\\1", comps[2])
+    # The 'double' alias isn't exported by the arrow package, so replace with 'float64'
+    type <- gsub("double", "float64", type)
+    # Extract and call the appropriate 'type' function (e.g., `arrow::float64()`)
+    getExportedValue("arrow", type)()
+  }) |>
+    stats::setNames(sapply(schema_types, \(x) trimws(x[1])))
+
+  arrow_query$cast(target_schema = arrow::schema(new_schema))$to_data_frame() |>
+    clean_dataset_names()
+}
+
 execute_rest_query_impl <- function(dataset_id, query, access_token) {
   query_url <- paste0("https://api.powerbi.com/v1.0/myorg/datasets/", dataset_id, "/executeQueries")
 
@@ -125,16 +183,14 @@ execute_rest_query_impl <- function(dataset_id, query, access_token) {
     }
   }
 
-  result_rows <- lapply(query_content$results[[1]]$tables[[1]]$rows, \(rowset) {
+  resultset <- query_content$results[[1]]$tables[[1]]$rows
+  result_rows <- lapply(resultset, \(rowset) {
     rowset[sapply(rowset, is.null)] <- NA
     as.data.frame(rowset)
   })
 
-  output <- do.call(rbind, result_rows)
-
-  names(output) <- gsub("(.*)?\\[|\\]", "", names(query_content$results[[1]]$tables[[1]]$rows[[1]]))
-
-  return(output)
+  do.call(rbind.data.frame, result_rows) |>
+    clean_dataset_names(names(resultset[[1]]))
 }
 
 execute_xmla_query_impl <- function(cluster_url, xmla_server, dataset, query,
@@ -151,11 +207,10 @@ execute_xmla_query_impl <- function(cluster_url, xmla_server, dataset, query,
         "x-ms-xmlaserver" = xmla_server
       ))
     )
-  rtn <- httr::content(xmla_request, encoding = "UTF-8", as = "raw") |>
-          xml2::read_xml(options = c("NOBLANKS", "HUGE")) |>
-          rowset_to_df()
-  names(rtn) <- gsub("(.*)?\\[|\\]", "", names(rtn))
-  rtn
+  httr::content(xmla_request, encoding = "UTF-8", as = "raw") |>
+    xml2::read_xml(options = c("NOBLANKS", "HUGE")) |>
+    rowset_to_df() |>
+    clean_dataset_names()
 }
 
 
