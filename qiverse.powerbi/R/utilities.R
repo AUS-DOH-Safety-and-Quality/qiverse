@@ -209,3 +209,69 @@ get_dataset_access_token <- function(capacity_id, workspace_id, access_token) {
 
   astoken$Token
 }
+
+.pbi_parse_logical <- function(x) {
+  x <- trimws(tolower(as.character(x)))
+  ifelse(
+    x %in% c("true", "t", "1", "yes", "y"),
+    TRUE,
+    ifelse(x %in% c("false", "f", "0", "no", "n"), FALSE, NA)
+  )
+}
+
+.pbi_parse_double <- function(x) {
+  # PowerBI exports commonly include thousand separators for en-* locales.
+  x <- gsub(",", "", as.character(x), fixed = TRUE)
+  suppressWarnings(as.numeric(x))
+}
+
+.pbi_parse_int64 <- function(x) {
+  # Base R has no 64-bit integer type; use numeric.
+  .pbi_parse_double(x)
+}
+
+.pbi_read_csv_base <- function(csv_con, col_names, type_by_name, locale) {
+  date_fmt <- "%d/%m/%Y"
+  datetime_fmt <- "%d/%m/%Y %H:%M:%S %p"
+
+  if (identical(locale, "en-GB")) {
+    datetime_fmt <- "%d/%m/%Y %H:%M:%S"
+  }
+
+  if (identical(locale, "en-US")) {
+    date_fmt <- "%m/%d/%Y"
+    datetime_fmt <- "%m/%d/%Y %H:%M:%S %p"
+  }
+
+  df <- utils::read.csv(
+    csv_con,
+    header = FALSE,
+    col.names = col_names,
+    colClasses = rep("character", length(col_names)),
+    stringsAsFactors = FALSE,
+    check.names = FALSE,
+    comment.char = "",
+    na.strings = c("", "NA", "NaN")
+  )
+
+  for (nm in col_names) {
+    pbi_type <- type_by_name[[nm]]
+    if (is.null(pbi_type)) {
+      next
+    }
+
+    df[[nm]] <- switch(
+      pbi_type,
+      "string" = as.character(df[[nm]]),
+      "double" = .pbi_parse_double(df[[nm]]),
+      "int64" = .pbi_parse_int64(df[[nm]]),
+      "boolean" = .pbi_parse_logical(df[[nm]]),
+      "date" = as.Date(df[[nm]], format = date_fmt),
+      "dateTime" = as.POSIXct(df[[nm]], format = datetime_fmt, tz = "UTC"),
+      "time" = as.difftime(df[[nm]], format = "%H:%M:%S", units = "secs"),
+      df[[nm]]
+    )
+  }
+
+  df
+}
