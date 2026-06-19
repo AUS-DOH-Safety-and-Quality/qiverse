@@ -132,39 +132,43 @@ download_dataflow_table <- function(workspace_name, dataflow_name,
   # Extract
   dataflow_id <- target_dataflow$cdsaModel$objectId
 
-  target_table <- get_table_metadata(dataflow_id, table_name, access_token)
+  download_dataflow_table_impl(dataflow_id, table_name, access_token, destfile, verbose)
+}
 
-  # All our dataflows are either en-AU, en-US, or en-GB
-  #  but add warning message in case this changes
-  if (!(target_table$locale %in% c("en-AU", "en-US", "en-GB"))) {
-    warning(
-      "The dataflow's locale is: ", target_table$locale,
-      ", for which date-time parsing has not been specifically implemented.",
-      " Please open an issue at: https://github.com/AUS-DOH-Safety-and-Quality/qiverse",
-      call. = FALSE
-    )
-  }
+download_dataflow_table_impl <- function(dataflow_id, table_name, access_token, destfile, verbose) {
+  target_table <- get_table_metadata(dataflow_id, table_name, access_token)
+  sas_key <- get_sas_key(dataflow_id, table_name, access_token)
+
+  # Now we can simply append the generated SAS to the blob storage download URL to download the CSV
+  csv_url <- paste0(target_table$partitions[[1]]$location, "&", sas_key)
+  con <- url(csv_url, open = "rt", encoding = "UTF-8")
+  on.exit(close(con), add = TRUE)
 
   # Extract the column names and types
   table_colnames <- vapply(target_table$attributes, function(x) x[["name"]], character(1))
-  type_by_name <- stats::setNames(
-    vapply(target_table$attributes, function(x) x[["dataType"]], character(1)),
-    table_colnames
-  )
-
-  sas_key <- get_sas_key(dataflow_id, table_name, access_token)
 
   if (interactive() && isTRUE(verbose)) {
     message("Downloading dataflow table...")
   }
 
-  # Now we can simply append the generated SAS to the blob storage download URL
-  # and download the CSV into R.
-  csv_url <- paste0(target_table$partitions[[1]]$location, "&", sas_key)
-  con <- url(csv_url, open = "rt", encoding = "UTF-8")
-  on.exit(close(con), add = TRUE)
-
   if (is.null(destfile)) {
+    type_by_name <- stats::setNames(
+      vapply(target_table$attributes, function(x) x[["dataType"]], character(1)),
+      table_colnames
+    )
+
+    has_dt_types <- any(c("date", "dateTime", "time") %in% type_by_name)
+    # All our dataflows are either en-AU, en-US, or en-GB
+    #  but add warning message in case this changes
+    if (has_dt_types && !(target_table$locale %in% c("en-AU", "en-US", "en-GB"))) {
+      warning(
+        "The dataflow's locale is: ", target_table$locale,
+        ", for which date-time parsing has not been specifically implemented.",
+        " If you encounter unexpected results, please open an issue at: https://github.com/AUS-DOH-Safety-and-Quality/qiverse",
+        call. = FALSE
+      )
+    }
+
     .pbi_read_csv_base(
       con,
       col_names = table_colnames,
