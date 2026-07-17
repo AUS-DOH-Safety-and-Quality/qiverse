@@ -194,21 +194,29 @@ update_databricks_token <- function(workspace_url) {
   )
 
   username <- user_details$userName
+  .upload_databricks_token(db_token, username, workspace_url)
+}
 
-  initialise_scope <- db_secret_scopes_api(
-    operation = "create",
-    scope_name = username,
-    workspace_url = workspace_url,
-    access_token = db_token$credentials$access_token
-  )
+.upload_databricks_token <- function(token, user, workspace, create = TRUE) {
+  token$resource <- "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
+  token$refresh()
+
+  if (create) {
+    initialise_scope <- db_secret_scopes_api(
+      operation = "create",
+      scope_name = user,
+      workspace_url = workspace,
+      access_token = token$credentials$access_token
+    )
+  }
 
   # Convert token into bytes
-  token_as_bytes <- serialize(db_token, NULL)
+  token_as_bytes <- serialize(token, NULL)
 
   upload_token <- db_secrets_api(operation = "put",
-                                workspace_url = workspace_url,
-                                access_token = db_token$credentials$access_token,
-                                scope_name = username,
+                                workspace_url = workspace,
+                                access_token = token$credentials$access_token,
+                                scope_name = user,
                                 secret_name = "azure_token",
                                 secret_value = token_as_bytes,
                                 bytestring = TRUE)

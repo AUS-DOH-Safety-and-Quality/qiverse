@@ -1,5 +1,5 @@
 # dbutils is only available in Databricks
-globalVariables(c("dbutils.secrets.getBytes"))
+globalVariables(c("dbutils.secrets.getBytes", "dbutils.secrets.get", "first", "sql", "sparkR.conf"))
 
 #' Generate an Azure authentication token
 #'
@@ -53,6 +53,11 @@ get_az_tk <- function(
     "sf" = "https://analysis.windows.net/powerbi/connector/Snowflake",
     "key_vault" = "https://vault.azure.net"
   )
+
+
+  if (Sys.getenv("DATABRICKS_INSTANCE_ID") != "") {
+    return(.get_token_databricks(resource[[token_type]]))
+  }
 
   app <- list(
     "pbi_df" = app_id_pbi_df,
@@ -119,4 +124,39 @@ get_az_tk <- function(
 
   # Output token ####
   return(token)
+}
+
+.get_token_databricks <- function(resource = "https://analysis.windows.net/powerbi/api", update_secret = TRUE) {
+  # Use the SparkR package to extract the username of the current user of the notebook
+  utils::getFromNamespace("first", "SparkR")
+  utils::getFromNamespace("sql", "SparkR")
+  utils::getFromNamespace("sparkR.conf", "SparkR")
+  user_name <- first(sql("SELECT current_user() AS username"))$username
+  token_bytes <- dbutils.secrets.getBytes(scope = user_name, key = "azure_token")
+
+  # Convert the byte-string to an actual R object
+  tk <- unserialize(token_bytes)
+  if (update_secret) {
+    workspace <- paste0("https://", sparkR.conf("spark.databricks.workspaceUrl"))
+    upload_status <- .upload_databricks_token(tk, user_name, workspace, create = FALSE)
+    if (upload_status != "Secret updated successfully!") {
+      warning("Databricks secret update failed!")
+    }
+  }
+
+  if (resource == "https://graph.microsoft.com") {
+    tk$resource <- "api://4b11f2f7-5188-47f0-bacd-831568585cb5"
+    tk$refresh()
+    AzureAuth::get_azure_token(
+      resource = "https://graph.microsoft.com",
+      tenant = "5d26beb9-d730-4343-a251-d170ca86377c",
+      app = dbutils.secrets.get(scope="key-vault-secrets", key="az-app-id-sharepoint"),
+      password = dbutils.secrets.get(scope="key-vault-secrets", key="az-cli-secret-id-sharepoint"),
+      on_behalf_of = tk
+    )
+  } else {
+    tk$resource <- resource
+    tk$refresh()
+    tk
+  }
 }
