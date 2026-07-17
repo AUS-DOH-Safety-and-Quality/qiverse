@@ -1,5 +1,5 @@
 # dbutils is only available in Databricks
-globalVariables(c("dbutils.secrets.getBytes", "dbutils.secrets.get", "first", "sql", "sparkR.conf"))
+globalVariables(c("dbutils.secrets.getBytes", "dbutils.secrets.get"))
 
 #' Generate an Azure authentication token
 #'
@@ -128,16 +128,13 @@ get_az_tk <- function(
 
 .get_token_databricks <- function(resource = "https://analysis.windows.net/powerbi/api", update_secret = TRUE) {
   # Use the SparkR package to extract the username of the current user of the notebook
-  utils::getFromNamespace("first", "SparkR")
-  utils::getFromNamespace("sql", "SparkR")
-  utils::getFromNamespace("sparkR.conf", "SparkR")
-  user_name <- first(sql("SELECT current_user() AS username"))$username
+  user_name <- SparkR::first(SparkR::sql("SELECT current_user() AS username"))$username
   token_bytes <- dbutils.secrets.getBytes(scope = user_name, key = "azure_token")
 
   # Convert the byte-string to an actual R object
   tk <- unserialize(token_bytes)
   if (update_secret) {
-    workspace <- paste0("https://", sparkR.conf("spark.databricks.workspaceUrl"))
+    workspace <- paste0("https://", SparkR::sparkR.conf("spark.databricks.workspaceUrl"))
     upload_status <- .upload_databricks_token(tk, user_name, workspace, create = FALSE)
     if (upload_status != "Secret updated successfully!") {
       warning("Databricks secret update failed!")

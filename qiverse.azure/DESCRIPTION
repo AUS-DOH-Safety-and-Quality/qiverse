@@ -22,7 +22,8 @@ Imports:
 Suggests:
   knitr,
   rmarkdown,
-  testthat (>= 3.0.0)
+  testthat (>= 3.0.0),
+  SparkR
 Remotes:
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.0.0
