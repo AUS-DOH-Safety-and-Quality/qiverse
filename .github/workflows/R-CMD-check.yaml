@@ -51,10 +51,12 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           working-directory: ${{ matrix.config.package }}
-          extra-packages: any::rcmdcheck
+          extra-packages: any::rcmdcheck SparkR=?ignore
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
+        env:
+          _R_CHECK_FORCE_SUGGESTS_: false
         with:
           working-directory: ${{ matrix.config.package }}
           upload-snapshots: true
