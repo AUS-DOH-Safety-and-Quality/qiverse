@@ -4,20 +4,26 @@
 \alias{update_databricks_token}
 \title{Refresh Databricks Azure Token Secret}
 \usage{
-update_databricks_token(workspace_url)
+update_databricks_token(
+  workspace_url,
+  app_id = "a672d62c-fc7b-4e81-a576-e60dc46e951d"
+)
 }
 \arguments{
 \item{workspace_url}{The workspace URL of the databricks instance}
+
+\item{app_id}{The App ID used to authenticate to. Default is the App ID for
+Excel for PowerQuery.}
 }
 \description{
 Generates a new Azure access token and stores it as a Databricks
 secret in the specified workspace under your username.
 }
 \seealso{
-Other Azure methods:
-\code{\link[=az_authenticated_api_query]{az_authenticated_api_query()}},
-\code{\link[=db_secret_scopes_api]{db_secret_scopes_api()}},
-\code{\link[=db_secrets_api]{db_secrets_api()}},
-\code{\link[=store_databricks_access_token]{store_databricks_access_token()}}
+Other Azure methods: 
+\code{\link{az_authenticated_api_query}()},
+\code{\link{db_secret_scopes_api}()},
+\code{\link{db_secrets_api}()},
+\code{\link{store_databricks_access_token}()}
 }
 \concept{Azure methods}
