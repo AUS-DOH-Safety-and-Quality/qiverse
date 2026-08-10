@@ -1,6 +1,6 @@
 Package: qiverse.azure
 Title: PowerBI, Sharepoint and Snowflake Connectivity
-Version: 0.0.3
+Version: 0.0.4
 Authors@R:
     person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
     family = "",
@@ -26,3 +26,4 @@ Suggests:
 Remotes:
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.0.0
+RoxygenNote: 7.3.3
