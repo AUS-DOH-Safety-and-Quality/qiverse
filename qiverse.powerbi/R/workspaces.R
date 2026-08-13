@@ -1,11 +1,16 @@
 #' Request metadata for all Workspaces in Tenant
 #'
-#' @param access_token The token generated with the correct PowerBI Dataset
-#' permissions. Use get_az_tk('pbi_ds') to create this token.
+#' @param access_token Token for authorising the connection to PowerBI. Valid options are:
+#' \itemize{
+#' \item `NULL`(default): Automatically generate via `qiverse.azure::get_az_tk('pbi_df')`
+#' \item An `AzureAuth` object: Will be refreshed for the `https://analysis.windows.net/powerbi/api` resource
+#' \item A single string specifying the access token
+#'}
 #'
 #' @return DataFrame containing the names, GUIDs, and capacity GUIDs for all workspaces in tenant.
 #' @export
-list_workspaces <- function(access_token) {
+list_workspaces <- function(access_token = NULL) {
+  access_token <- init_access_token(access_token)
   base_url <- "https://api.powerbi.com/v1.0/myorg/groups"
   metadata_request <- httr::GET(url = base_url,
                                 config = get_auth_header(access_token),
@@ -29,12 +34,17 @@ list_workspaces <- function(access_token) {
 #' Request metadata for all dataflows in specified workspace
 #'
 #' @param workspace Name of the workspace containing dataflows
-#' @param access_token The token generated with the correct PowerBI Dataflow
-#' permissions. Use get_az_tk('pbi_df') to create this token.
+#' @param access_token Token for authorising the connection to PowerBI. Valid options are:
+#' \itemize{
+#' \item `NULL`(default): Automatically generate via `qiverse.azure::get_az_tk('pbi_df')`
+#' \item An `AzureAuth` object: Will be refreshed for the `https://analysis.windows.net/powerbi/api` resource
+#' \item A single string specifying the access token
+#'}
 #'
 #' @return DataFrame containing the names, GUIDs, and descriptions for all dataflows in workspace
 #' @export
-list_dataflows <- function(workspace, access_token) {
+list_dataflows <- function(workspace, access_token = NULL) {
+  access_token <- init_access_token(access_token)
   workspace_metadata <- qiverse.powerbi::list_workspaces(access_token)
   if (!(workspace %in% workspace_metadata$Workspace)) {
     stop("No workspace called: ", workspace, " in tenant!", call. = FALSE)
@@ -78,7 +88,8 @@ list_dataflows <- function(workspace, access_token) {
 }
 
 
-list_reports <- function(workspace_id, access_token) {
+list_reports <- function(workspace_id, access_token = NULL) {
+  access_token <- init_access_token(access_token)
   base_url <- paste0("https://api.powerbi.com/v1.0/myorg/groups/", workspace_id, "/reports")
   metadata_request <- httr::GET(url = base_url,
                                 config = get_auth_header(access_token),
