@@ -2,7 +2,8 @@ get_auth_header <- function(access_token) {
   httr::add_headers(Authorization = paste("Bearer", access_token))
 }
 
-get_cluster_url <- function(access_token) {
+get_cluster_url <- function(access_token = NULL) {
+  access_token <- init_access_token(access_token)
   cluster_details <-
     httr::GET(url = "https://api.powerbi.com/powerbi/globalservice/v201606/clusterdetails",
             config = get_auth_header(access_token),
@@ -283,4 +284,25 @@ clean_dataset_names <- function(df, curr_names = NULL) {
     curr_names <- names(df)
   }
   stats::setNames(df, gsub("(.*)?\\[(.*)\\]", "\\2", curr_names))
+}
+
+init_access_token <- function(access_token = NULL) {
+  if (is.character(access_token)) {
+    return(access_token)
+  }
+
+  if (inherits(access_token, "AzureToken")) {
+    access_token$resource <- "https://analysis.windows.net/powerbi/api"
+    access_token$refresh()
+  }
+
+  if (is.null(access_token)) {
+    if (!requireNamespace("qiverse.azure", quietly = TRUE)) {
+      stop("The `qiverse.azure` package is required for automatic authentication!",
+            call. = FALSE)
+    }
+    access_token <- qiverse.azure::get_az_tk("pbi_df")
+  }
+
+  access_token$credentials$access_token
 }

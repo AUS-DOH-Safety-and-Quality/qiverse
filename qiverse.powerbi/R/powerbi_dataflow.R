@@ -1,5 +1,6 @@
-get_dataflow_metadata <- function(workspace_name, dataflow_name, access_token,
+get_dataflow_metadata <- function(workspace_name, dataflow_name, access_token = NULL,
                                   verbose = TRUE) {
+  access_token <- init_access_token(access_token)
   if (interactive() && isTRUE(verbose)) {
     message("Fetching dataflow metadata...")
   }
@@ -41,7 +42,8 @@ get_dataflow_metadata <- function(workspace_name, dataflow_name, access_token,
   target_dataflow[[1]]
 }
 
-get_table_metadata <- function(dataflow_id, table_name, access_token) {
+get_table_metadata <- function(dataflow_id, table_name, access_token = NULL) {
+  access_token <- init_access_token(access_token)
   # Now we can request detailed metadata for the dataflow, including column names
   # and types, as well the storage location of the actual CSV file
   all_tables <- httr::GET(url = paste0(get_cluster_url(access_token), "/metadata/v201606/cdsa/dataflows/", dataflow_id, "/contentandcache"),
@@ -58,7 +60,8 @@ get_table_metadata <- function(dataflow_id, table_name, access_token) {
   rtn
 }
 
-get_sas_key <- function(dataflow_id, table_name, access_token) {
+get_sas_key <- function(dataflow_id, table_name, access_token = NULL) {
+  access_token <- init_access_token(access_token)
   # While we have the URL for the table, we don't have 'permission' to
   # download it using our current access token. Instead, we need to use the
   # access token to request a Shared Access Signature (SAS). This SAS summarises
@@ -90,8 +93,12 @@ get_sas_key <- function(dataflow_id, table_name, access_token) {
 #' @param dataflow_name The name of the PowerBI Dataflow within the workspace.
 #' @param table_name The name of the table within the PowerBI Dataflow to be
 #' accessed.
-#' @param access_token The token generated with the correct PowerBI Dataflow
-#' permissions. Use get_az_tk('pbi_df') to create this token.
+#' @param access_token Token for authorising the connection to PowerBI. Valid options are:
+#' \itemize{
+#' \item `NULL`(default): Automatically generate via `qiverse.azure::get_az_tk('pbi_df')`
+#' \item An `AzureAuth` object: Will be refreshed for the `https://analysis.windows.net/powerbi/api` resource
+#' \item A single string specifying the access token
+#'}
 #' @param destfile Optional output filepath to save raw dataflow CSV file to.
 #' If `NULL` (default) the CSV is read into an R `data.frame`. If non-null,
 #' the CSV file is downloaded to specified filepath and the function has no return.
@@ -124,9 +131,10 @@ get_sas_key <- function(dataflow_id, table_name, access_token) {
 #' )
 #'}
 download_dataflow_table <- function(workspace_name, dataflow_name,
-                                    table_name, access_token,
+                                    table_name, access_token = NULL,
                                     destfile = NULL,
                                     verbose = TRUE) {
+  access_token <- init_access_token(access_token)
   target_dataflow <- get_dataflow_metadata(workspace_name, dataflow_name,
                                            access_token, verbose)
   # Extract
@@ -192,8 +200,12 @@ download_dataflow_table_impl <- function(dataflow_id, table_name, access_token, 
 #'
 #' @param workspace_name The PowerBI workspace name.
 #' @param dataflow_name The name of the PowerBI Dataflow within the workspace.
-#' @param access_token The token generated with the correct PowerBI Dataflow
-#' permissions. Use get_az_tk('pbi_df') to create this token.
+#' @param access_token Token for authorising the connection to PowerBI. Valid options are:
+#' \itemize{
+#' \item `NULL`(default): Automatically generate via `qiverse.azure::get_az_tk('pbi_df')`
+#' \item An `AzureAuth` object: Will be refreshed for the `https://analysis.windows.net/powerbi/api` resource
+#' \item A single string specifying the access token
+#'}
 #' @param verbose Whether to print status messages while the function is
 #' running. Default is TRUE.
 #'
@@ -214,10 +226,10 @@ download_dataflow_table_impl <- function(dataflow_id, table_name, access_token, 
 refresh_dataflow <- function(
   workspace_name,
   dataflow_name,
-  access_token,
+  access_token = NULL,
   verbose = TRUE
 ) {
-
+  access_token <- init_access_token(access_token)
   # Get dataflow metadata using utility function
   target_dataflow <- get_dataflow_metadata(workspace_name, dataflow_name,
                                            access_token, FALSE)
@@ -276,8 +288,12 @@ refresh_dataflow <- function(
 #' @param dataflow_name The name of the PowerBI Dataflow within the workspace.
 #' @param compute_engine The compute engine behaviour setting to be
 #' applied. Must be one of "computeOptimized", "computeOn" or "computeDisabled".
-#' @param access_token The token generated with the correct PowerBI Dataflow
-#' permissions. Use get_az_tk('pbi_df') to create this token.
+#' @param access_token Token for authorising the connection to PowerBI. Valid options are:
+#' \itemize{
+#' \item `NULL`(default): Automatically generate via `qiverse.azure::get_az_tk('pbi_df')`
+#' \item An `AzureAuth` object: Will be refreshed for the `https://analysis.windows.net/powerbi/api` resource
+#' \item A single string specifying the access token
+#'}
 #'
 #' @return A response object from the PATCH request.
 #' @export
@@ -298,8 +314,9 @@ update_dataflow_compute_engine <- function(
     workspace_name,
     dataflow_name,
     compute_engine,
-    access_token
+    access_token = NULL
 ) {
+  access_token <- init_access_token(access_token)
   # Check if compute engine behaviour is a valid option
   valid_compute_engine <- c("computeOptimized", "computeOn", "computeDisabled")
   if (!(compute_engine %in% valid_compute_engine)) {
