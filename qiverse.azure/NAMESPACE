@@ -10,3 +10,12 @@ export(kv_list_secrets)
 export(kv_write_secret)
 export(store_databricks_access_token)
 export(update_databricks_token)
+importFrom(AzureAuth,get_azure_token)
+importFrom(httr,
+  GET,
+  POST,
+  add_headers,
+  content,
+  content_type_json
+)
+importFrom(jsonlite,toJSON)

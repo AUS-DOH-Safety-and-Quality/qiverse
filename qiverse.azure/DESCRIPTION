@@ -1,6 +1,6 @@
 Package: qiverse.azure
 Title: PowerBI, Sharepoint and Snowflake Connectivity
-Version: 0.0.4
+Version: 0.0.5
 Authors@R:
     person(given = "Healthcare Quality Intelligence Unit (Western Australia Health)",
     family = "",
@@ -16,15 +16,13 @@ BugReports: https://github.com/AUS-DOH-Safety-and-Quality/qiverse/issues
 Imports:
   httr,
   jsonlite,
-  AzureKeyVault,
-  AzureAuth,
-  utils
+  AzureAuth
 Suggests:
+  AzureKeyVault,
   knitr,
   rmarkdown,
   testthat (>= 3.0.0),
   SparkR
 Remotes:
 VignetteBuilder: knitr
-Config/roxygen2/version: 8.0.0
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.1.0

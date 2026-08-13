@@ -10,8 +10,12 @@
 #' @family Key Vault methods
 
 .init_key_vault <- function(vault_name, token_object) {
+  if (!requireNamespace("AzureKeyVault", quietly = TRUE)) {
+    stop("The `AzureKeyVault` package is required for this functionality!",
+        call. = FALSE)
+  }
   if (is.null(token_object)) {
-    token_object <- qiverse.azure::get_az_tk("key_vault")
+    token_object <- get_az_tk("key_vault")
   }
   AzureKeyVault::key_vault(url = vault_name, token = token_object)
 }
