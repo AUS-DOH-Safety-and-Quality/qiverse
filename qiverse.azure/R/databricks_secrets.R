@@ -38,7 +38,7 @@ db_secret_scopes_api <- function(operation, workspace_url, access_token,
     args$body <- list("scope" = scope_name)
   }
 
-  do.call(qiverse.azure::az_authenticated_api_query, args)
+  do.call(az_authenticated_api_query, args)
 }
 
 #' Interact with the Databricks API for managing individual secrets.
@@ -94,7 +94,7 @@ db_secrets_api <- function(operation, workspace_url, access_token,
     }
   }
 
-  do.call(qiverse.azure::az_authenticated_api_query, args)
+  do.call(az_authenticated_api_query, args)
 }
 
 #' Create an Azure authentication token and store it as a Databricks secret
@@ -138,7 +138,7 @@ db_secrets_api <- function(operation, workspace_url, access_token,
 #'}
 store_databricks_access_token <- function(token, url, username) {
   # Check if username scope exists, otherwise create
-  qiverse.azure::db_secret_scopes_api(
+  db_secret_scopes_api(
     operation = "create",
     scope_name = username,
     workspace_url = url,
@@ -149,7 +149,7 @@ store_databricks_access_token <- function(token, url, username) {
   token_as_bytes <- serialize(token, NULL)
 
   # Put token into databricks secrets
-  qiverse.azure::db_secrets_api(operation = "put",
+  db_secrets_api(operation = "put",
                                 workspace_url = url,
                                 access_token = token$credentials$access_token,
                                 scope_name = username,
