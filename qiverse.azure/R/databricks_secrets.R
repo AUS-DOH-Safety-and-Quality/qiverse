@@ -164,18 +164,20 @@ store_databricks_access_token <- function(token, url, username) {
 #' secret in the specified workspace under your username.
 #'
 #' @param workspace_url The workspace URL of the databricks instance
+#' @param app_id The App ID used to authenticate to. Default is the App ID for
+#' Excel for PowerQuery.
 #'
 #' @return NULL
 #'
 #' @family Azure methods
 #' @export
-update_databricks_token <- function(workspace_url) {
+update_databricks_token <- function(workspace_url, app_id = "a672d62c-fc7b-4e81-a576-e60dc46e951d") {
   db_token <- AzureAuth::get_azure_token(
     # Default resource ID for Azure Databricks
     resource = "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d",
     tenant = "common",
     # App ID for Excel for PowerQuery
-    app = "a672d62c-fc7b-4e81-a576-e60dc46e951d",
+    app = app_id,
     # Ensure that token has MFA claim for usage outside of corporate network
     token_args = list(claims = '{"access_token":{"amr":{"values":["mfa"]}}}'),
     use_cache = FALSE
