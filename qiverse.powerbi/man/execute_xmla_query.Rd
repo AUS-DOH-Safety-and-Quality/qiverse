@@ -5,7 +5,7 @@
 \title{Execute a DAX query against a specified PowerBI Dataset using the XMLA API
 endpoint.}
 \usage{
-execute_xmla_query(workspace, dataset, query, access_token)
+execute_xmla_query(workspace, dataset, query, access_token = NULL)
 }
 \arguments{
 \item{workspace}{Name of the workspace containing dataflow}
@@ -14,9 +14,12 @@ execute_xmla_query(workspace, dataset, query, access_token)
 
 \item{query}{DAX query to execute}
 
-\item{access_token}{The token generated with the correct PowerBI Dataset
-permissions. Use get_az_tk('pbi_df') or get_az_tk('pbi_df') to create
-this token.}
+\item{access_token}{Token for authorising the connection to PowerBI. Valid options are:
+\itemize{
+\item \code{NULL}(default): Automatically generate via \code{qiverse.azure::get_az_tk('pbi_df')}
+\item An \code{AzureAuth} object: Will be refreshed for the \verb{https://analysis.windows.net/powerbi/api} resource
+\item A single string specifying the access token
+}}
 }
 \value{
 DataFrame containing results of query

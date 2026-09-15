@@ -8,7 +8,7 @@ download_dataflow_table(
   workspace_name,
   dataflow_name,
   table_name,
-  access_token,
+  access_token = NULL,
   destfile = NULL,
   verbose = TRUE
 )
@@ -21,8 +21,12 @@ download_dataflow_table(
 \item{table_name}{The name of the table within the PowerBI Dataflow to be
 accessed.}
 
-\item{access_token}{The token generated with the correct PowerBI Dataflow
-permissions. Use get_az_tk('pbi_df') to create this token.}
+\item{access_token}{Token for authorising the connection to PowerBI. Valid options are:
+\itemize{
+\item \code{NULL}(default): Automatically generate via \code{qiverse.azure::get_az_tk('pbi_df')}
+\item An \code{AzureAuth} object: Will be refreshed for the \verb{https://analysis.windows.net/powerbi/api} resource
+\item A single string specifying the access token
+}}
 
 \item{destfile}{Optional output filepath to save raw dataflow CSV file to.
 If \code{NULL} (default) the CSV is read into an R \code{data.frame}. If non-null,

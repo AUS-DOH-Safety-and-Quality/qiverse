@@ -1,12 +1,16 @@
 #' Request metadata for all datasets in specified workspace
 #'
 #' @param workspace Name of the workspace containing datasets
-#' @param access_token The token generated with the correct PowerBI Dataset
-#' permissions. Use get_az_tk('pbi_ds') to create this token.
-#'
+#' @param access_token Token for authorising the connection to PowerBI. Valid options are:
+#' \itemize{
+#' \item `NULL`(default): Automatically generate via `qiverse.azure::get_az_tk('pbi_df')`
+#' \item An `AzureAuth` object: Will be refreshed for the `https://analysis.windows.net/powerbi/api` resource
+#' \item A single string specifying the access token
+#'}
 #' @return DataFrame containing the names, GUIDs, and descriptions for all datasets in workspace
 #' @export
-list_datasets <- function(workspace, access_token) {
+list_datasets <- function(workspace, access_token = NULL) {
+  access_token <- init_access_token(access_token)
   workspace_metadata <- list_workspaces(access_token)
   if (!(workspace %in% workspace_metadata$Workspace)) {
     stop("No workspace called: ", workspace, " in tenant!", call. = FALSE)
@@ -57,14 +61,19 @@ list_datasets <- function(workspace, access_token) {
 #' @param dataset Name of the dataset containing table
 #' @param table Name of the table to download
 #' @param method The API to use for downloading the table. Valid values are "XMLA" (the default) and "REST"
-#' @param access_token The token generated with the correct PowerBI Dataset
-#' permissions. Use get_az_tk('pbi_ds') to create this token.
+#' @param access_token Token for authorising the connection to PowerBI. Valid options are:
+#' \itemize{
+#' \item `NULL`(default): Automatically generate via `qiverse.azure::get_az_tk('pbi_df')`
+#' \item An `AzureAuth` object: Will be refreshed for the `https://analysis.windows.net/powerbi/api` resource
+#' \item A single string specifying the access token
+#'}
 #'
 #' @return DataFrame containing downloaded table
 #' @export
 download_dataset_table <- function(workspace, dataset, table,
                               method = "XMLA",
-                              access_token) {
+                              access_token = NULL) {
+  access_token <- init_access_token(access_token)
   query <- paste0("EVALUATE('", table, "')")
   if (method == "XMLA") {
     table_query <- execute_xmla_query(workspace, dataset, query, access_token)
@@ -83,12 +92,17 @@ download_dataset_table <- function(workspace, dataset, table,
 #' @param workspace Name of the workspace containing dataflow
 #' @param dataset Name of the dataset to execute query against
 #' @param query DAX query to execute
-#' @param access_token The token generated with the correct PowerBI Dataset
-#' permissions. Use get_az_tk('pbi_ds') to create this token.
+#' @param access_token Token for authorising the connection to PowerBI. Valid options are:
+#' \itemize{
+#' \item `NULL`(default): Automatically generate via `qiverse.azure::get_az_tk('pbi_df')`
+#' \item An `AzureAuth` object: Will be refreshed for the `https://analysis.windows.net/powerbi/api` resource
+#' \item A single string specifying the access token
+#'}
 #'
 #' @return DataFrame containing results of query
 #' @export
-execute_rest_query <- function(workspace, dataset, query, access_token) {
+execute_rest_query <- function(workspace, dataset, query, access_token = NULL) {
+  access_token <- init_access_token(access_token)
   dataset_metadata <- list_datasets(workspace, access_token)
   if (!(dataset %in% dataset_metadata$Dataset)) {
     stop("No dataset called: ", dataset, "in workspace: ", workspace, "!", call. = FALSE)
@@ -110,12 +124,17 @@ execute_rest_query <- function(workspace, dataset, query, access_token) {
 #' @param workspace Name of the workspace containing dataflow
 #' @param dataset Name of the dataset to execute query against
 #' @param query DAX query to execute
-#' @param access_token The token generated with the correct PowerBI Dataset
-#' permissions. Use get_az_tk('pbi_ds') to create this token.
+#' @param access_token Token for authorising the connection to PowerBI. Valid options are:
+#' \itemize{
+#' \item `NULL`(default): Automatically generate via `qiverse.azure::get_az_tk('pbi_df')`
+#' \item An `AzureAuth` object: Will be refreshed for the `https://analysis.windows.net/powerbi/api` resource
+#' \item A single string specifying the access token
+#'}
 #'
 #' @return DataFrame containing results of query
 #' @export
-execute_arrow_query <- function(workspace, dataset, query, access_token) {
+execute_arrow_query <- function(workspace, dataset, query, access_token = NULL) {
+  access_token <- init_access_token(access_token)
   if (!("arrow" %in% utils::installed.packages()[,"Package"])) {
     stop("This function requires the 'arrow' package, but it is not installed!")
   }
@@ -131,7 +150,8 @@ execute_arrow_query <- function(workspace, dataset, query, access_token) {
   execute_arrow_query_impl(workspace_id, dataset_id, query, access_token)
 }
 
-execute_arrow_query_impl <- function(workspace_id, dataset_id, query, access_token) {
+execute_arrow_query_impl <- function(workspace_id, dataset_id, query, access_token = NULL) {
+  access_token <- init_access_token(access_token)
   query_url <- paste0("https://api.powerbi.com/v1.0/myorg/groups/", workspace_id, "/datasets/", dataset_id, "/executeDaxQueries")
 
   arrow_query <- httr::POST(
@@ -159,7 +179,8 @@ execute_arrow_query_impl <- function(workspace_id, dataset_id, query, access_tok
     clean_dataset_names()
 }
 
-execute_rest_query_impl <- function(dataset_id, query, access_token) {
+execute_rest_query_impl <- function(dataset_id, query, access_token = NULL) {
+  access_token <- init_access_token(access_token)
   query_url <- paste0("https://api.powerbi.com/v1.0/myorg/datasets/", dataset_id, "/executeQueries")
 
   rest_query <- httr::POST(url = query_url,
@@ -220,13 +241,17 @@ execute_xmla_query_impl <- function(cluster_url, xmla_server, dataset, query,
 #' @param workspace Name of the workspace containing dataflow
 #' @param dataset Name of the dataset to execute query against
 #' @param query DAX query to execute
-#' @param access_token The token generated with the correct PowerBI Dataset
-#' permissions. Use get_az_tk('pbi_df') or get_az_tk('pbi_df') to create
-#' this token.
+#' @param access_token Token for authorising the connection to PowerBI. Valid options are:
+#' \itemize{
+#' \item `NULL`(default): Automatically generate via `qiverse.azure::get_az_tk('pbi_df')`
+#' \item An `AzureAuth` object: Will be refreshed for the `https://analysis.windows.net/powerbi/api` resource
+#' \item A single string specifying the access token
+#'}
 #'
 #' @return DataFrame containing results of query
 #' @export
-execute_xmla_query <- function(workspace, dataset, query, access_token) {
+execute_xmla_query <- function(workspace, dataset, query, access_token = NULL) {
+  access_token <- init_access_token(access_token)
   auth_header <- get_auth_header(access_token)
 
   # Lookup GUIDs for the Workspace and overall capacity
@@ -265,8 +290,12 @@ execute_xmla_query <- function(workspace, dataset, query, access_token) {
 #' @param storage_mode The compute engine behaviour setting to be
 #' applied. Must be one of "Abf" (small semantic model format) or "PremiumFiles"
 #'  (large semantic model format).
-#' @param access_token The token generated with the correct PowerBI Dataflow
-#' permissions. Use get_az_tk('pbi_df') to create this token.
+#' @param access_token Token for authorising the connection to PowerBI. Valid options are:
+#' \itemize{
+#' \item `NULL`(default): Automatically generate via `qiverse.azure::get_az_tk('pbi_df')`
+#' \item An `AzureAuth` object: Will be refreshed for the `https://analysis.windows.net/powerbi/api` resource
+#' \item A single string specifying the access token
+#'}
 #'
 #' @return A response object from the PATCH request.
 #' @export
@@ -286,8 +315,9 @@ update_dataset_storage_mode <- function(
     workspace_name,
     dataset_name,
     storage_mode,
-    access_token
+    access_token = NULL
 ) {
+  access_token <- init_access_token(access_token)
   # Get dataset metadata
   dataset_metadata <- list_datasets(workspace_name, access_token)
   if (!(dataset_name %in% dataset_metadata$Dataset)) {

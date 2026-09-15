@@ -12,14 +12,18 @@ export(list_workspaces)
 export(refresh_dataflow)
 export(update_dataflow_compute_engine)
 export(update_dataset_storage_mode)
-importFrom(httr,GET)
-importFrom(httr,POST)
-importFrom(httr,add_headers)
-importFrom(httr,content)
-importFrom(httr,content_type_json)
+importFrom(httr,
+  GET,
+  POST,
+  add_headers,
+  content,
+  content_type_json
+)
 importFrom(jsonlite,toJSON)
-importFrom(xml2,xml_attr)
-importFrom(xml2,xml_children)
-importFrom(xml2,xml_find_all)
-importFrom(xml2,xml_name)
-importFrom(xml2,xml_text)
+importFrom(xml2,
+  xml_attr,
+  xml_children,
+  xml_find_all,
+  xml_name,
+  xml_text
+)

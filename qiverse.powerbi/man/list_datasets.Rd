@@ -4,13 +4,17 @@
 \alias{list_datasets}
 \title{Request metadata for all datasets in specified workspace}
 \usage{
-list_datasets(workspace, access_token)
+list_datasets(workspace, access_token = NULL)
 }
 \arguments{
 \item{workspace}{Name of the workspace containing datasets}
 
-\item{access_token}{The token generated with the correct PowerBI Dataset
-permissions. Use get_az_tk('pbi_ds') to create this token.}
+\item{access_token}{Token for authorising the connection to PowerBI. Valid options are:
+\itemize{
+\item \code{NULL}(default): Automatically generate via \code{qiverse.azure::get_az_tk('pbi_df')}
+\item An \code{AzureAuth} object: Will be refreshed for the \verb{https://analysis.windows.net/powerbi/api} resource
+\item A single string specifying the access token
+}}
 }
 \value{
 DataFrame containing the names, GUIDs, and descriptions for all datasets in workspace

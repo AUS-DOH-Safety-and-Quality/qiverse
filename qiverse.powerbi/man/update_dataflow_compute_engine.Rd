@@ -8,7 +8,7 @@ update_dataflow_compute_engine(
   workspace_name,
   dataflow_name,
   compute_engine,
-  access_token
+  access_token = NULL
 )
 }
 \arguments{
@@ -19,8 +19,12 @@ update_dataflow_compute_engine(
 \item{compute_engine}{The compute engine behaviour setting to be
 applied. Must be one of "computeOptimized", "computeOn" or "computeDisabled".}
 
-\item{access_token}{The token generated with the correct PowerBI Dataflow
-permissions. Use get_az_tk('pbi_df') to create this token.}
+\item{access_token}{Token for authorising the connection to PowerBI. Valid options are:
+\itemize{
+\item \code{NULL}(default): Automatically generate via \code{qiverse.azure::get_az_tk('pbi_df')}
+\item An \code{AzureAuth} object: Will be refreshed for the \verb{https://analysis.windows.net/powerbi/api} resource
+\item A single string specifying the access token
+}}
 }
 \value{
 A response object from the PATCH request.
