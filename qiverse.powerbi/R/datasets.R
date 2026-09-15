@@ -17,14 +17,22 @@ list_datasets <- function(workspace, access_token = NULL) {
   }
 
   base_url <- "https://api.powerbi.com/v1.0/myorg/groups/"
-  workspace_id <- workspace_metadata[workspace_metadata$Workspace == workspace,]$WorkspaceId
-  workspace_request <-  httr::GET(url = paste0(base_url, workspace_id, "/datasets"),
-                                  config = get_auth_header(access_token),
-                                  httr::content_type_json())
+  workspace_id <- workspace_metadata[
+    workspace_metadata$Workspace == workspace,
+  ]$WorkspaceId
+  workspace_request <- httr::GET(
+    url = paste0(base_url, workspace_id, "/datasets"),
+    config = get_auth_header(access_token),
+    httr::content_type_json()
+  )
 
   if (workspace_request$status_code != 200) {
-    stop("API request returned status code: ", workspace_request$status_code, "!",
-         call. = TRUE)
+    stop(
+      "API request returned status code: ",
+      workspace_request$status_code,
+      "!",
+      call. = TRUE
+    )
   }
 
   metadata_content <- httr::content(workspace_request)$value
@@ -33,9 +41,12 @@ list_datasets <- function(workspace, access_token = NULL) {
     return(NULL)
   }
 
-  content_to_dataframe <- .bind_rows_base(lapply(metadata_content, function(metadata) {
-    do.call(data.frame, Filter(function(x) length(x) > 0, metadata))
-  }))
+  content_to_dataframe <- .bind_rows_base(lapply(
+    metadata_content,
+    function(metadata) {
+      do.call(data.frame, Filter(function(x) length(x) > 0, metadata))
+    }
+  ))
   content_to_dataframe$Workspace <- workspace
   content_to_dataframe$WorkspaceId <- workspace_id
   if (!("configuredBy" %in% colnames(content_to_dataframe))) {
@@ -48,8 +59,20 @@ list_datasets <- function(workspace, access_token = NULL) {
     content_to_dataframe$name <- ""
   }
 
-  content_to_dataframe <- content_to_dataframe[,c("Workspace", "WorkspaceId", "name", "id", "configuredBy")]
-  names(content_to_dataframe) <- c("Workspace", "WorkspaceId", "Dataset", "DatasetId", "DatasetOwner")
+  content_to_dataframe <- content_to_dataframe[, c(
+    "Workspace",
+    "WorkspaceId",
+    "name",
+    "id",
+    "configuredBy"
+  )]
+  names(content_to_dataframe) <- c(
+    "Workspace",
+    "WorkspaceId",
+    "Dataset",
+    "DatasetId",
+    "DatasetOwner"
+  )
   content_to_dataframe
 }
 
@@ -60,7 +83,8 @@ list_datasets <- function(workspace, access_token = NULL) {
 #' @param workspace Name of the workspace containing dataflow
 #' @param dataset Name of the dataset containing table
 #' @param table Name of the table to download
-#' @param method The API to use for downloading the table. Valid values are "XMLA" (the default) and "REST"
+#' @param method The API to use for downloading the table. Valid values are "arrow" (the default), 
+#' XMLA" and "REST"
 #' @param access_token Token for authorising the connection to PowerBI. Valid options are:
 #' \itemize{
 #' \item `NULL`(default): Automatically generate via `qiverse.azure::get_az_tk('pbi_df')`
@@ -70,18 +94,28 @@ list_datasets <- function(workspace, access_token = NULL) {
 #'
 #' @return DataFrame containing downloaded table
 #' @export
-download_dataset_table <- function(workspace, dataset, table,
-                              method = "XMLA",
-                              access_token = NULL) {
+download_dataset_table <- function(
+  workspace,
+  dataset,
+  table,
+  method = "arrow",
+  access_token = NULL
+) {
   access_token <- init_access_token(access_token)
   query <- paste0("EVALUATE('", table, "')")
-  if (method == "XMLA") {
+  if (method == "arrow") {
+    table_query <- execute_arrow_query(workspace, dataset, query, access_token)
+  } else if (method == "XMLA") {
     table_query <- execute_xmla_query(workspace, dataset, query, access_token)
   } else if (method == "REST") {
     table_query <- execute_rest_query(workspace, dataset, query, access_token)
   } else {
-    stop("Invalid method: ", method, "! Valid values are \"XMLA\" or \"REST\".",
-         call. = FALSE)
+    stop(
+      "Invalid method: ",
+      method,
+      "! Valid values are \"arrow\", \"XMLA\" or \"REST\".",
+      call. = FALSE
+    )
   }
   table_query
 }
@@ -105,7 +139,14 @@ execute_rest_query <- function(workspace, dataset, query, access_token = NULL) {
   access_token <- init_access_token(access_token)
   dataset_metadata <- list_datasets(workspace, access_token)
   if (!(dataset %in% dataset_metadata$Dataset)) {
-    stop("No dataset called: ", dataset, "in workspace: ", workspace, "!", call. = FALSE)
+    stop(
+      "No dataset called: ",
+      dataset,
+      "in workspace: ",
+      workspace,
+      "!",
+      call. = FALSE
+    )
   }
 
   target_dataset <- dataset_metadata[dataset_metadata$Dataset == dataset, ]
@@ -133,14 +174,24 @@ execute_rest_query <- function(workspace, dataset, query, access_token = NULL) {
 #'
 #' @return DataFrame containing results of query
 #' @export
-execute_arrow_query <- function(workspace, dataset, query, access_token = NULL) {
+execute_arrow_query <- function(
+  workspace,
+  dataset,
+  query,
+  access_token = NULL
+) {
+  .check_suggests("arrow")
   access_token <- init_access_token(access_token)
-  if (!("arrow" %in% utils::installed.packages()[,"Package"])) {
-    stop("This function requires the 'arrow' package, but it is not installed!")
-  }
   dataset_metadata <- list_datasets(workspace, access_token)
   if (!(dataset %in% dataset_metadata$Dataset)) {
-    stop("No dataset called: ", dataset, "in workspace: ", workspace, "!", call. = FALSE)
+    stop(
+      "No dataset called: ",
+      dataset,
+      "in workspace: ",
+      workspace,
+      "!",
+      call. = FALSE
+    )
   }
 
   target_dataset <- dataset_metadata[dataset_metadata$Dataset == dataset, ]
@@ -150,9 +201,20 @@ execute_arrow_query <- function(workspace, dataset, query, access_token = NULL) 
   execute_arrow_query_impl(workspace_id, dataset_id, query, access_token)
 }
 
-execute_arrow_query_impl <- function(workspace_id, dataset_id, query, access_token = NULL) {
+execute_arrow_query_impl <- function(
+  workspace_id,
+  dataset_id,
+  query,
+  access_token = NULL
+) {
   access_token <- init_access_token(access_token)
-  query_url <- paste0("https://api.powerbi.com/v1.0/myorg/groups/", workspace_id, "/datasets/", dataset_id, "/executeDaxQueries")
+  query_url <- paste0(
+    "https://api.powerbi.com/v1.0/myorg/groups/",
+    workspace_id,
+    "/datasets/",
+    dataset_id,
+    "/executeDaxQueries"
+  )
 
   arrow_query <- httr::POST(
     url = query_url,
@@ -181,26 +243,37 @@ execute_arrow_query_impl <- function(workspace_id, dataset_id, query, access_tok
 
 execute_rest_query_impl <- function(dataset_id, query, access_token = NULL) {
   access_token <- init_access_token(access_token)
-  query_url <- paste0("https://api.powerbi.com/v1.0/myorg/datasets/", dataset_id, "/executeQueries")
+  query_url <- paste0(
+    "https://api.powerbi.com/v1.0/myorg/datasets/",
+    dataset_id,
+    "/executeQueries"
+  )
 
-  rest_query <- httr::POST(url = query_url,
-                           body = construct_rest_query(query),
-                           config = get_auth_header(access_token),
-                           httr::content_type_json())
+  rest_query <- httr::POST(
+    url = query_url,
+    body = construct_rest_query(query),
+    config = get_auth_header(access_token),
+    httr::content_type_json()
+  )
 
   query_content <- httr::content(rest_query)
 
   if ("error" %in% names(query_content)) {
-    stop("Query returned error: ", query_content$error$pbi.error$details[[1]]$detail$value,
-         call. = FALSE)
+    stop(
+      "Query returned error: ",
+      query_content$error$pbi.error$details[[1]]$detail$value,
+      call. = FALSE
+    )
   }
 
   if (("error" %in% names(query_content$results[[1]]))) {
     error_code <- query_content$results[[1]]$error$code
     if (error_code == "DaxByteCountNotSupported") {
-      stop("The query result is too large for the REST API! Try the XMLA API instead.\n",
-           "See: https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/execute-queries#limitations",
-           call. = FALSE)
+      stop(
+        "The query result is too large for the REST API! Try the Arrow API instead.\n",
+        "See: https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/execute-queries#limitations",
+        call. = FALSE
+      )
     }
   }
 
@@ -214,19 +287,26 @@ execute_rest_query_impl <- function(dataset_id, query, access_token = NULL) {
     clean_dataset_names(names(resultset[[1]]))
 }
 
-execute_xmla_query_impl <- function(cluster_url, xmla_server, dataset, query,
-                                    astoken) {
+execute_xmla_query_impl <- function(
+  cluster_url,
+  xmla_server,
+  dataset,
+  query,
+  astoken
+) {
   xmla_request <-
     httr::POST(
-      url = paste0('https://', cluster_url,'/webapi/xmla'),
+      url = paste0('https://', cluster_url, '/webapi/xmla'),
       config = httr::add_headers(Authorization = paste("MwcToken", astoken)),
       body = construct_xmla_query(dataset, query),
       httr::progress(),
-      httr::add_headers(.headers = c(
-        "x-ms-xmlacaps-negotiation-flags" = "0,0,0,1,1",
-        "Content-Type" = "text/xml",
-        "x-ms-xmlaserver" = xmla_server
-      ))
+      httr::add_headers(
+        .headers = c(
+          "x-ms-xmlacaps-negotiation-flags" = "0,0,0,1,1",
+          "Content-Type" = "text/xml",
+          "x-ms-xmlaserver" = xmla_server
+        )
+      )
     )
   httr::content(xmla_request, encoding = "UTF-8", as = "raw") |>
     xml2::read_xml(options = c("NOBLANKS", "HUGE")) |>
@@ -251,31 +331,47 @@ execute_xmla_query_impl <- function(cluster_url, xmla_server, dataset, query,
 #' @return DataFrame containing results of query
 #' @export
 execute_xmla_query <- function(workspace, dataset, query, access_token = NULL) {
+  .check_suggests("xml2")
   access_token <- init_access_token(access_token)
   auth_header <- get_auth_header(access_token)
 
   # Lookup GUIDs for the Workspace and overall capacity
-  all_workspaces <- httr::GET("https://api.powerbi.com/powerbi/databases/v201606/workspaces",
-                              config = auth_header,
-                              httr::content_type_json()) |>
+  all_workspaces <- httr::GET(
+    "https://api.powerbi.com/powerbi/databases/v201606/workspaces",
+    config = auth_header,
+    httr::content_type_json()
+  ) |>
     httr::content()
 
-  target_workspace <- Filter(function(x) {
-    !is.null(x$name) && identical(x$name, workspace)
-  }, all_workspaces)[[1]]
+  target_workspace <- Filter(
+    function(x) {
+      !is.null(x$name) && identical(x$name, workspace)
+    },
+    all_workspaces
+  )[[1]]
   workspace_id <- target_workspace$id
   capacity_id <- target_workspace$capacityObjectId
-  region_name <- gsub("pbidedicated://(.*).pbidedicated.windows.net/.*", "\\1", target_workspace$capacityUri)
+  region_name <- gsub(
+    "pbidedicated://(.*).pbidedicated.windows.net/.*",
+    "\\1",
+    target_workspace$capacityUri
+  )
 
-  cluster_details <- get_pbi_cluster_details(region_name, capacity_id, access_token)
+  cluster_details <- get_pbi_cluster_details(
+    region_name,
+    capacity_id,
+    access_token
+  )
 
   astoken <- get_dataset_access_token(capacity_id, workspace_id, access_token)
 
-  execute_xmla_query_impl(cluster_details$clusterFQDN,
-                          cluster_details$coreServerName,
-                          dataset,
-                          query,
-                          astoken)
+  execute_xmla_query_impl(
+    cluster_details$clusterFQDN,
+    cluster_details$coreServerName,
+    dataset,
+    query,
+    astoken
+  )
 }
 
 #' Update PowerBI Semantic Model (Dataset) storage mode
@@ -312,16 +408,23 @@ execute_xmla_query <- function(workspace, dataset, query, access_token = NULL) {
 #' )
 #'}
 update_dataset_storage_mode <- function(
-    workspace_name,
-    dataset_name,
-    storage_mode,
-    access_token = NULL
+  workspace_name,
+  dataset_name,
+  storage_mode,
+  access_token = NULL
 ) {
   access_token <- init_access_token(access_token)
   # Get dataset metadata
   dataset_metadata <- list_datasets(workspace_name, access_token)
   if (!(dataset_name %in% dataset_metadata$Dataset)) {
-    stop("No dataset called: ", dataset_name, "in workspace: ", workspace_name, "!", call. = FALSE)
+    stop(
+      "No dataset called: ",
+      dataset_name,
+      "in workspace: ",
+      workspace_name,
+      "!",
+      call. = FALSE
+    )
   }
 
   target_dataset <- dataset_metadata[dataset_metadata$Dataset == dataset_name, ]
@@ -331,11 +434,14 @@ update_dataset_storage_mode <- function(
   valid_storage_mode <- c("PremiumFiles", "Abf")
   if (!(storage_mode %in% valid_storage_mode)) {
     stop(paste0(
-      "target_storage_mode setting of '", storage_mode, "' ",
+      "target_storage_mode setting of '",
+      storage_mode,
+      "' ",
       "is not recognised. Must be one of: ",
-      paste0(valid_storage_mode, collapse = ", "), ". \n",
-      "See https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/update-dataset#examples")
-    )
+      paste0(valid_storage_mode, collapse = ", "),
+      ". \n",
+      "See https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/update-dataset#examples"
+    ))
   }
 
   # Update dataset dataset storage mode using PATCH
@@ -346,9 +452,11 @@ update_dataset_storage_mode <- function(
     ),
     config = get_auth_header(access_token),
     httr::content_type_json(),
-    body = sprintf('{
+    body = sprintf(
+      '{
       "targetStorageMode": "%s"
-    }', storage_mode
+    }',
+      storage_mode
     )
   )
 

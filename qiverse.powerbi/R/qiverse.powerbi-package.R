@@ -7,6 +7,5 @@
 #'
 #' @importFrom httr add_headers GET POST content_type_json content
 #' @importFrom jsonlite toJSON
-#' @importFrom xml2 xml_find_all xml_children xml_attr xml_name xml_text
 #'
 "_PACKAGE"

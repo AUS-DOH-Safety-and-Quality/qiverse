@@ -1,5 +1,9 @@
-get_dataflow_metadata <- function(workspace_name, dataflow_name, access_token = NULL,
-                                  verbose = TRUE) {
+get_dataflow_metadata <- function(
+  workspace_name,
+  dataflow_name,
+  access_token = NULL,
+  verbose = TRUE
+) {
   access_token <- init_access_token(access_token)
   if (interactive() && isTRUE(verbose)) {
     message("Fetching dataflow metadata...")
@@ -12,32 +16,45 @@ get_dataflow_metadata <- function(workspace_name, dataflow_name, access_token = 
   # We need the unique identifier for the dataflow of interest, but we only
   # have its name. As such, we request the metadata of all dataflows that we
   # have access to and filter the results
-  all_dataflows <- httr::GET(url = paste0(cluster_url, "/metadata/v201901/gallery/dataflows"),
-                             config = get_auth_header(access_token),
-                             httr::content_type_json()) |>
+  all_dataflows <- httr::GET(
+    url = paste0(cluster_url, "/metadata/v201901/gallery/dataflows"),
+    config = get_auth_header(access_token),
+    httr::content_type_json()
+  ) |>
     httr::content()
 
-  target_dataflow <- Filter(function(x) {
-    if (is.null(x$cdsaModel$displayName)) {
-      FALSE
-    } else {
-      x$workspaceName == workspace_name && x$cdsaModel$displayName == dataflow_name
-    }
-  }, all_dataflows)
+  target_dataflow <- Filter(
+    function(x) {
+      if (is.null(x$cdsaModel$displayName)) {
+        FALSE
+      } else {
+        x$workspaceName == workspace_name &&
+          x$cdsaModel$displayName == dataflow_name
+      }
+    },
+    all_dataflows
+  )
 
   # Keep last edited target dataflow
   if (length(target_dataflow) > 1) {
     # Find max last edited date
-    last_edit_times <- vapply(target_dataflow, function(x) {
-      t <- x$cdsaModel$lastEditedTimeUTC
-      if (is.null(t)) NA_character_ else t
-    }, character(1))
+    last_edit_times <- vapply(
+      target_dataflow,
+      function(x) {
+        t <- x$cdsaModel$lastEditedTimeUTC
+        if (is.null(t)) NA_character_ else t
+      },
+      character(1)
+    )
     max_last_edit_date <- max(last_edit_times, na.rm = TRUE)
     # Choose last edited date dataflow
-    target_dataflow <- Filter(function(x) {
-      t <- x$cdsaModel$lastEditedTimeUTC
-      !is.null(t) && identical(t, max_last_edit_date)
-    }, target_dataflow)
+    target_dataflow <- Filter(
+      function(x) {
+        t <- x$cdsaModel$lastEditedTimeUTC
+        !is.null(t) && identical(t, max_last_edit_date)
+      },
+      target_dataflow
+    )
   }
   target_dataflow[[1]]
 }
@@ -46,14 +63,24 @@ get_table_metadata <- function(dataflow_id, table_name, access_token = NULL) {
   access_token <- init_access_token(access_token)
   # Now we can request detailed metadata for the dataflow, including column names
   # and types, as well the storage location of the actual CSV file
-  all_tables <- httr::GET(url = paste0(get_cluster_url(access_token), "/metadata/v201606/cdsa/dataflows/", dataflow_id, "/contentandcache"),
-                          config = get_auth_header(access_token),
-                          httr::content_type_json()) |>
+  all_tables <- httr::GET(
+    url = paste0(
+      get_cluster_url(access_token),
+      "/metadata/v201606/cdsa/dataflows/",
+      dataflow_id,
+      "/contentandcache"
+    ),
+    config = get_auth_header(access_token),
+    httr::content_type_json()
+  ) |>
     httr::content()
 
-  rtn <- Filter(function(x) {
-    !is.null(x$name) && identical(x$name, table_name)
-  }, all_tables$content$entities)[[1]]
+  rtn <- Filter(
+    function(x) {
+      !is.null(x$name) && identical(x$name, table_name)
+    },
+    all_tables$content$entities
+  )[[1]]
   # Locale info (e.g. en-GB) is stored in the content object
   # but not in the table object
   rtn$locale <- all_tables$content$culture
@@ -68,11 +95,18 @@ get_sas_key <- function(dataflow_id, table_name, access_token = NULL) {
   # the extent of data that we are allowed to access, and the length of time
   # that it is valid for use.
   sas_query <- httr::POST(
-    url = paste0(get_cluster_url(access_token), "/metadata/v201606/cdsa/dataflows/", dataflow_id, "/storageAccess"),
+    url = paste0(
+      get_cluster_url(access_token),
+      "/metadata/v201606/cdsa/dataflows/",
+      dataflow_id,
+      "/storageAccess"
+    ),
     body = jsonlite::toJSON(
-      list("TokenLifetimeInMinutes" = 360,
-           "Permissions" = "Read",
-           "EntityName" = table_name),
+      list(
+        "TokenLifetimeInMinutes" = 360,
+        "Permissions" = "Read",
+        "EntityName" = table_name
+      ),
       auto_unbox = TRUE
     ),
     config = get_auth_header(access_token),
@@ -130,20 +164,40 @@ get_sas_key <- function(dataflow_id, table_name, access_token = NULL) {
 #'   destfile = "my_table_name.csv"
 #' )
 #'}
-download_dataflow_table <- function(workspace_name, dataflow_name,
-                                    table_name, access_token = NULL,
-                                    destfile = NULL,
-                                    verbose = TRUE) {
+download_dataflow_table <- function(
+  workspace_name,
+  dataflow_name,
+  table_name,
+  access_token = NULL,
+  destfile = NULL,
+  verbose = TRUE
+) {
   access_token <- init_access_token(access_token)
-  target_dataflow <- get_dataflow_metadata(workspace_name, dataflow_name,
-                                           access_token, verbose)
+  target_dataflow <- get_dataflow_metadata(
+    workspace_name,
+    dataflow_name,
+    access_token,
+    verbose
+  )
   # Extract
   dataflow_id <- target_dataflow$cdsaModel$objectId
 
-  download_dataflow_table_impl(dataflow_id, table_name, access_token, destfile, verbose)
+  download_dataflow_table_impl(
+    dataflow_id,
+    table_name,
+    access_token,
+    destfile,
+    verbose
+  )
 }
 
-download_dataflow_table_impl <- function(dataflow_id, table_name, access_token, destfile, verbose) {
+download_dataflow_table_impl <- function(
+  dataflow_id,
+  table_name,
+  access_token,
+  destfile,
+  verbose
+) {
   target_table <- get_table_metadata(dataflow_id, table_name, access_token)
   sas_key <- get_sas_key(dataflow_id, table_name, access_token)
 
@@ -153,7 +207,11 @@ download_dataflow_table_impl <- function(dataflow_id, table_name, access_token, 
   on.exit(close(con), add = TRUE)
 
   # Extract the column names and types
-  table_colnames <- vapply(target_table$attributes, function(x) x[["name"]], character(1))
+  table_colnames <- vapply(
+    target_table$attributes,
+    function(x) x[["name"]],
+    character(1)
+  )
 
   if (interactive() && isTRUE(verbose)) {
     message("Downloading dataflow table...")
@@ -161,16 +219,23 @@ download_dataflow_table_impl <- function(dataflow_id, table_name, access_token, 
 
   if (is.null(destfile)) {
     type_by_name <- stats::setNames(
-      vapply(target_table$attributes, function(x) x[["dataType"]], character(1)),
+      vapply(
+        target_table$attributes,
+        function(x) x[["dataType"]],
+        character(1)
+      ),
       table_colnames
     )
 
     has_dt_types <- any(c("date", "dateTime", "time") %in% type_by_name)
     # All our dataflows are either en-AU, en-US, or en-GB
     #  but add warning message in case this changes
-    if (has_dt_types && !(target_table$locale %in% c("en-AU", "en-US", "en-GB"))) {
+    if (
+      has_dt_types && !(target_table$locale %in% c("en-AU", "en-US", "en-GB"))
+    ) {
       warning(
-        "The dataflow's locale is: ", target_table$locale,
+        "The dataflow's locale is: ",
+        target_table$locale,
         ", for which date-time parsing has not been specifically implemented.",
         " If you encounter unexpected results, please open an issue at: https://github.com/AUS-DOH-Safety-and-Quality/qiverse",
         call. = FALSE
@@ -231,8 +296,12 @@ refresh_dataflow <- function(
 ) {
   access_token <- init_access_token(access_token)
   # Get dataflow metadata using utility function
-  target_dataflow <- get_dataflow_metadata(workspace_name, dataflow_name,
-                                           access_token, FALSE)
+  target_dataflow <- get_dataflow_metadata(
+    workspace_name,
+    dataflow_name,
+    access_token,
+    FALSE
+  )
   # Extract ids
   dataflow_id <- target_dataflow$cdsaModel$objectId
   workspace_id <- target_dataflow$workspaceObjectId
@@ -311,26 +380,33 @@ refresh_dataflow <- function(
 #' )
 #'}
 update_dataflow_compute_engine <- function(
-    workspace_name,
-    dataflow_name,
-    compute_engine,
-    access_token = NULL
+  workspace_name,
+  dataflow_name,
+  compute_engine,
+  access_token = NULL
 ) {
   access_token <- init_access_token(access_token)
   # Check if compute engine behaviour is a valid option
   valid_compute_engine <- c("computeOptimized", "computeOn", "computeDisabled")
   if (!(compute_engine %in% valid_compute_engine)) {
     stop(paste0(
-      "compute_engine setting of '", compute_engine, "' ",
+      "compute_engine setting of '",
+      compute_engine,
+      "' ",
       "is not recognised. Must be one of: ",
-      paste0(valid_compute_engine, collapse = ", "), ". \n",
-      "See https://learn.microsoft.com/en-us/rest/api/power-bi/dataflows/update-dataflow#request-body")
-    )
+      paste0(valid_compute_engine, collapse = ", "),
+      ". \n",
+      "See https://learn.microsoft.com/en-us/rest/api/power-bi/dataflows/update-dataflow#request-body"
+    ))
   }
 
   # Get dataflow metadata using utility function
-  target_dataflow <- get_dataflow_metadata(workspace_name, dataflow_name,
-                                           access_token, FALSE)
+  target_dataflow <- get_dataflow_metadata(
+    workspace_name,
+    dataflow_name,
+    access_token,
+    FALSE
+  )
   # Extract ids
   dataflow_id <- target_dataflow$cdsaModel$objectId
   workspace_id <- target_dataflow$workspaceObjectId
@@ -345,9 +421,11 @@ update_dataflow_compute_engine <- function(
     ),
     config = get_auth_header(access_token),
     httr::content_type_json(),
-    body = sprintf('{
+    body = sprintf(
+      '{
       "computeEngineBehavior": "%s"
-    }', compute_engine
+    }',
+      compute_engine
     )
   )
 
