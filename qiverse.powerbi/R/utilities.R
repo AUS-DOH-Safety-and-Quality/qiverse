@@ -5,9 +5,11 @@ get_auth_header <- function(access_token) {
 get_cluster_url <- function(access_token = NULL) {
   access_token <- init_access_token(access_token)
   cluster_details <-
-    httr::GET(url = "https://api.powerbi.com/powerbi/globalservice/v201606/clusterdetails",
-            config = get_auth_header(access_token),
-            httr::content_type_json()) |>
+    httr::GET(
+      url = "https://api.powerbi.com/powerbi/globalservice/v201606/clusterdetails",
+      config = get_auth_header(access_token),
+      httr::content_type_json()
+    ) |>
     httr::content()
 
   cluster_details$clusterUrl
@@ -52,25 +54,38 @@ rowset_to_df <- function(xmla_rowset) {
     fault_details <- xml2::xml_text(query_fault)
     names(fault_details) <- xml2::xml_name(query_fault)
 
-    stop(paste0(fault_details['faultcode'], ": ", fault_details['faultstring']),
-         call. = FALSE)
+    stop(
+      paste0(fault_details['faultcode'], ": ", fault_details['faultstring']),
+      call. = FALSE
+    )
   }
 
-  schema <- xml2::xml_find_all(xmla_rowset, "//xsd:complexType[@name='row']/xsd:sequence")
+  schema <- xml2::xml_find_all(
+    xmla_rowset,
+    "//xsd:complexType[@name='row']/xsd:sequence"
+  )
 
   metadata <- lapply(xml2::xml_children(schema), \(child) {
-    list(name = xml2::xml_attr(child, "field"),
-         type = gsub("xsd:","",xml2::xml_attr(child, "type"), fixed = TRUE))
+    list(
+      name = xml2::xml_attr(child, "field"),
+      type = gsub("xsd:", "", xml2::xml_attr(child, "type"), fixed = TRUE)
+    )
   })
 
-  names(metadata) <- sapply(xml2::xml_children(schema), \(child) {xml2::xml_attr(child, "name")})
+  names(metadata) <- sapply(xml2::xml_children(schema), \(child) {
+    xml2::xml_attr(child, "name")
+  })
 
   xmla_extract_fun <- list(
     "long" = xml2::xml_integer,
     "double" = xml2::xml_double,
     "string" = xml2::xml_text,
-    "dateTime" = \(x) { as.Date(xml2::xml_text(x), format = "%Y-%m-%dT%H:%M:%S") },
-    "boolean" = \(x){ tolower(xml2::xml_text(x)) == "true" }
+    "dateTime" = \(x) {
+      as.Date(xml2::xml_text(x), format = "%Y-%m-%dT%H:%M:%S")
+    },
+    "boolean" = \(x) {
+      tolower(xml2::xml_text(x)) == "true"
+    }
   )
 
   all_rows <- xml2::xml_find_all(xmla_rowset, "//d3:row")
@@ -91,7 +106,6 @@ rowset_to_df <- function(xmla_rowset) {
   )
   col_names <- sapply(metadata, \(xml_col) xml_col[["name"]])
   names(rows) <- col_names
-
 
   if (n_rows == 0) {
     return(rows)
@@ -116,7 +130,8 @@ escape_xml_query <- function(query) {
 }
 
 construct_xmla_query <- function(dataset, query) {
-  paste0('
+  paste0(
+    '
     <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
       <Header>
         <BeginSession soap:mustUnderstand="1" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns="urn:schemas-microsoft-com:xml-analysis" />
@@ -124,10 +139,14 @@ construct_xmla_query <- function(dataset, query) {
       </Header>
       <Body>
         <Execute xmlns="urn:schemas-microsoft-com:xml-analysis">
-          <Command><Statement>', escape_xml_query(query), '</Statement></Command>
+          <Command><Statement>',
+    escape_xml_query(query),
+    '</Statement></Command>
           <Properties>
             <PropertyList>
-              <Catalog>', escape_xml_query(dataset),'</Catalog>
+              <Catalog>',
+    escape_xml_query(dataset),
+    '</Catalog>
               <Format>Tabular</Format>
             </PropertyList>
           </Properties>
@@ -140,7 +159,9 @@ construct_xmla_query <- function(dataset, query) {
 construct_rest_query <- function(query) {
   paste0(
     '{
-      "queries": [{ "query": "', query, '" }],
+      "queries": [{ "query": "',
+    query,
+    '" }],
       "serializerSettings": { "includeNulls": true }
     }'
   )
@@ -162,50 +183,64 @@ construct_rest_query <- function(query) {
 #' decompress_string(table_str) |> cat()
 #' # [["M","Male"],["F","Female"],["X","Another term"],["U","Unknown"],["N","Not specified"]]
 decompress_string <- function(compressed_string) {
-  for (pkg in c("zlib")) {
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      stop("Package '", pkg, "' is required but not installed. ", call. = FALSE)
-    }
-  }
+  .check_suggests("zlib")
   # Need to wrap the call in sapply to properly handle a vector of strings
   # otherwise base64_dec will treat as a single large string
-  sapply(compressed_string, \(x) {
-    x |>
-    jsonlite::base64_dec() |>
-    # PBI compresses without standard gzip header
-    # setting a negative wbits suppresses the header check
-    zlib::decompress(wbits = -15) |>
-    rawToChar()
-  }, USE.NAMES = FALSE)
+  sapply(
+    compressed_string,
+    \(x) {
+      x |>
+        jsonlite::base64_dec() |>
+        # PBI compresses without standard gzip header
+        # setting a negative wbits suppresses the header check
+        zlib::decompress(wbits = -15) |>
+        rawToChar()
+    },
+    USE.NAMES = FALSE
+  )
 }
 
 # Query the cluster resolve endpoint to get XMLA server details for a given capacity (needed for querying datasets)
 get_pbi_cluster_details <- function(region_name, capacity_id, access_token) {
-  httr::POST(paste0("https://", region_name, ".pbidedicated.windows.net/webapi/clusterResolve"),
-              config = get_auth_header(access_token),
-              body = jsonlite::toJSON(list(
-                databaseName = NA,
-                premiumPublicXmlaEndpoint = TRUE,
-                serverName = capacity_id
-              ), auto_unbox = TRUE),
-              httr::content_type_json()) |>
+  httr::POST(
+    paste0(
+      "https://",
+      region_name,
+      ".pbidedicated.windows.net/webapi/clusterResolve"
+    ),
+    config = get_auth_header(access_token),
+    body = jsonlite::toJSON(
+      list(
+        databaseName = NA,
+        premiumPublicXmlaEndpoint = TRUE,
+        serverName = capacity_id
+      ),
+      auto_unbox = TRUE
+    ),
+    httr::content_type_json()
+  ) |>
     httr::content()
 }
 
 # Generate an XMLA access token for a PowerBI Dataset given the capacity and workspace IDs
 get_dataset_access_token <- function(capacity_id, workspace_id, access_token) {
-  astoken <- httr::POST("https://api.powerbi.com/metadata/v201606/generateastoken",
-                        config = get_auth_header(access_token),
-                        body = jsonlite::toJSON(list(
-                          applyAuxiliaryPermission = FALSE,
-                          auxiliaryPermissionOwner = NA,
-                          capacityObjectId = capacity_id,
-                          datasetName = NA,
-                          intendedUsage = 0,
-                          sourceCapacityObjectId = NA,
-                          workspaceObjectId = workspace_id
-                        ), auto_unbox = TRUE),
-                        httr::content_type_json()) |>
+  astoken <- httr::POST(
+    "https://api.powerbi.com/metadata/v201606/generateastoken",
+    config = get_auth_header(access_token),
+    body = jsonlite::toJSON(
+      list(
+        applyAuxiliaryPermission = FALSE,
+        auxiliaryPermissionOwner = NA,
+        capacityObjectId = capacity_id,
+        datasetName = NA,
+        intendedUsage = 0,
+        sourceCapacityObjectId = NA,
+        workspaceObjectId = workspace_id
+      ),
+      auto_unbox = TRUE
+    ),
+    httr::content_type_json()
+  ) |>
     httr::content()
 
   astoken$Token
@@ -297,12 +332,17 @@ init_access_token <- function(access_token = NULL) {
   }
 
   if (is.null(access_token)) {
-    if (!requireNamespace("qiverse.azure", quietly = TRUE)) {
-      stop("The `qiverse.azure` package is required for automatic authentication!",
-            call. = FALSE)
-    }
+    .check_suggests("qiverse.azure")
     access_token <- qiverse.azure::get_az_tk("pbi_df")
   }
 
   access_token$credentials$access_token
+}
+
+.check_suggests <- function(pkgs) {
+  for (pkg in pkgs) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      stop("Package '", pkg, "' is required but not installed. ", call. = FALSE)
+    }
+  }
 }

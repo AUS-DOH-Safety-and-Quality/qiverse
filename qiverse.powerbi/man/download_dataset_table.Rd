@@ -10,7 +10,7 @@ download_dataset_table(
   workspace,
   dataset,
   table,
-  method = "XMLA",
+  method = "arrow",
   access_token = NULL
 )
 }
@@ -21,7 +21,8 @@ download_dataset_table(
 
 \item{table}{Name of the table to download}
 
-\item{method}{The API to use for downloading the table. Valid values are "XMLA" (the default) and "REST"}
+\item{method}{The API to use for downloading the table. Valid values are "arrow" (the default),
+XMLA" and "REST"}
 
 \item{access_token}{Token for authorising the connection to PowerBI. Valid options are:
 \itemize{
