@@ -54,10 +54,11 @@
 download_sharepoint_file <- function(
   site_url,
   file_url,
-  token,
+  token = NULL,
   download = FALSE,
   download_dest = NULL
 ) {
+  token <- init_access_token(token)
   # split up site_url to determine where drive starts
   if (substr(site_url, nchar(site_url), nchar(site_url)) == "/") {
     site_url <- substr(site_url, 1, nchar(site_url) - 1)
@@ -168,8 +169,9 @@ upload_sharepoint_file <- function(
   src,
   site_url,
   dest_fldr_url,
-  token
+  token = NULL
 ) {
+  token <- init_access_token(token)
   # split up site_url to determine where drive starts
   if (substr(site_url, nchar(site_url), nchar(site_url)) == "/") {
     site_url <- substr(site_url, 1, nchar(site_url) - 1)

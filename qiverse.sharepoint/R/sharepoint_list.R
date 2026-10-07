@@ -29,8 +29,9 @@
 #'}
 download_sharepoint_list <- function(
     list_url,
-    token
+    token = NULL
 ) {
+  token <- init_access_token(token)
   # Initialise objects ####
   ## Check if the string 'Lists' exists in the url, and return the position
   list_url_start <- gregexpr("Lists", list_url)[[1]][1]
