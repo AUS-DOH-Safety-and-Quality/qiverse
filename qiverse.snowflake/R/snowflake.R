@@ -245,38 +245,21 @@ ingest_dataflow_table_impl <- function(
   pbi_tk
 ) {
   access_token <- pbi_tk$credentials$access_token
-  target_table <- qiverse.powerbi:::get_table_metadata(pbi_dataflow_id, pbi_table, access_token)
-  sas_key <- qiverse.powerbi:::get_sas_key(pbi_dataflow_id, pbi_table, access_token)
-
-  # Extract the column names and types
-  table_colnames <- sapply(target_table$attributes, \(column) {
-    # Snowflake accepts all PBI typenames except 'int64
-    coltype <- ifelse(column$dataType == "int64", "int", column$dataType)
-    # Enclose name in double-quotes in case of spaces in name
-    glue::glue('"{column$name}" {coltype}')
-  }) |>
-    paste(collapse = ",")
-
-  # Need to remove :443 port specification from URL
-  location <- gsub(":443", "", target_table$partitions[[1]]$location, fixed = TRUE)
-  location_parts <- strsplit(location, "/")[[1]]
-  blob_storage_url <- location_parts[3]
-  blob_storage_container <- location_parts[4]
-  filename <- target_table$`pbi:refreshPolicy`$location
-
-  date_format <- ifelse(target_table$locale == "en-US", "MM/DD/YYYY", "DD/MM/YYYY")
-  # Only needed for the TIMESTAMP format, as the TIME format is always 24-hour
-  time_format <- ifelse(target_table$locale == "en-GB", "HH24:MI:SS", "HH12:MI:SS PM")
+  target_table <- qiverse.powerbi:::get_dataflow_table_metadata_impl(
+    pbi_dataflow_id,
+    pbi_table,
+    access_token
+  )
 
   create_command <- glue::glue(
-    "CREATE OR REPLACE TABLE {database_name}.{schema_name}.{table_name}({table_colnames})"
+    "CREATE OR REPLACE TABLE {database_name}.{schema_name}.{table_name}({target_table$column_definitions})"
   )
   ingest_command <- glue::glue(
     "COPY INTO {database_name}.{schema_name}.{table_name}",
-    "FROM 'azure://{blob_storage_url}/{blob_storage_container}/'",
-    "FILES=('{filename}')",
-    "CREDENTIALS=(AZURE_SAS_TOKEN='?{sas_key}')",
-    "FILE_FORMAT = (TYPE = 'CSV' FIELD_OPTIONALLY_ENCLOSED_BY = '\"' DATE_FORMAT = '{date_format}' TIMESTAMP_FORMAT = '{date_format} {time_format}')",
+    "FROM '{target_table$azure_url}'",
+    "FILES=('{target_table$filename}')",
+    "CREDENTIALS=(AZURE_SAS_TOKEN='{target_table$sas_key}')",
+    "FILE_FORMAT = (TYPE = 'CSV' FIELD_OPTIONALLY_ENCLOSED_BY = '\"' DATE_FORMAT = '{target_table$date_format}' TIMESTAMP_FORMAT = '{target_table$timestamp_format}')",
     .sep = "\n"
   )
 
