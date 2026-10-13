@@ -117,6 +117,44 @@ get_sas_key <- function(dataflow_id, table_name, access_token = NULL) {
   sas_query$accessDetails[[1]]$blobContainerSas
 }
 
+get_dataflow_table_metadata_impl <- function(
+  dataflow_id,
+  table_name,
+  access_token = NULL
+) {
+  access_token <- init_access_token(access_token)
+  target_table <- get_table_metadata(dataflow_id, table_name, access_token)
+  sas_key <- get_sas_key(dataflow_id, table_name, access_token)
+  location <- target_table$partitions[[1]]$location
+  location_parts <- strsplit(
+    gsub(":443", "", location, fixed = TRUE),
+    "/"
+  )[[1]]
+  column_definitions <- vapply(
+    target_table$attributes,
+    function(column) {
+      coltype <- ifelse(column$dataType == "int64", "int", column$dataType)
+      paste0('"', column$name, '" ', coltype)
+    },
+    character(1)
+  ) |>
+    paste(collapse = ",")
+  date_format <- ifelse(target_table$locale == "en-US", "MM/DD/YYYY", "DD/MM/YYYY")
+  time_format <- ifelse(target_table$locale == "en-GB", "HH24:MI:SS", "HH12:MI:SS PM")
+
+  list(
+    attributes = target_table$attributes,
+    locale = target_table$locale,
+    column_definitions = column_definitions,
+    filename = target_table$`pbi:refreshPolicy`$location,
+    csv_url = paste0(location, "&", sas_key),
+    azure_url = paste0("azure://", location_parts[3], "/", location_parts[4], "/"),
+    sas_key = paste0("?", sas_key),
+    date_format = date_format,
+    timestamp_format = paste(date_format, time_format)
+  )
+}
+
 #' Download PowerBI Dataflow Table
 #'
 #' This function provides the ability to download tables from within PowerBI
@@ -198,12 +236,9 @@ download_dataflow_table_impl <- function(
   destfile,
   verbose
 ) {
-  target_table <- get_table_metadata(dataflow_id, table_name, access_token)
-  sas_key <- get_sas_key(dataflow_id, table_name, access_token)
+  target_table <- get_dataflow_table_metadata_impl(dataflow_id, table_name, access_token)
 
-  # Now we can simply append the generated SAS to the blob storage download URL to download the CSV
-  csv_url <- paste0(target_table$partitions[[1]]$location, "&", sas_key)
-  con <- url(csv_url, open = "rt", encoding = "UTF-8")
+  con <- url(target_table$csv_url, open = "rt", encoding = "UTF-8")
   on.exit(close(con), add = TRUE)
 
   # Extract the column names and types
