@@ -259,7 +259,7 @@ ingest_dataflow_table_impl <- function(
     "FROM '{target_table$azure_url}'",
     "FILES=('{target_table$filename}')",
     "CREDENTIALS=(AZURE_SAS_TOKEN='{target_table$sas_key}')",
-    "FILE_FORMAT = (TYPE = 'CSV' FIELD_OPTIONALLY_ENCLOSED_BY = '\"' DATE_FORMAT = '{target_table$date_format}' TIMESTAMP_FORMAT = '{target_table$timestamp_format}')",
+    "FILE_FORMAT = (TYPE = 'CSV' FIELD_OPTIONALLY_ENCLOSED_BY = '\"' ESCAPE_UNENCLOSED_FIELD = 'NONE' DATE_FORMAT = '{target_table$date_format}' TIMESTAMP_FORMAT = '{target_table$timestamp_format}')",
     .sep = "\n"
   )
 
