@@ -134,6 +134,9 @@ get_dataflow_table_metadata_impl <- function(
     target_table$attributes,
     function(column) {
       coltype <- ifelse(column$dataType == "int64", "int", column$dataType)
+      # Snowflake only allows one datetime format for entire table
+      # dateTimeOffset is very rarely used, so default to string
+      coltype <- ifelse(coltype == "dateTimeOffset", "string", coltype)
       paste0('"', column$name, '" ', coltype)
     },
     character(1)
