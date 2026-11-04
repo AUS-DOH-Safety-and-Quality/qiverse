@@ -225,6 +225,10 @@ execute_arrow_query_impl <- function(
     httr::content(as = "raw") |>
     arrow::read_ipc_stream(as_data_frame = FALSE)
 
+  if (arrow_query$metadata$IsError == "true") {
+    stop("Query returned error:\n", arrow_query$metadata$FaultString, call. = FALSE)
+  }
+
   # PBI returns data as 'dictionary' types (e.g., dictionary<double>), which get converted to 'factor' types by R
   # Need to extract the target type and update the schema before converting to R
   schema_types <- strsplit(utils::capture.output(arrow_query$schema)[-1], ":")
