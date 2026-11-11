@@ -88,7 +88,9 @@ get_az_tk <- function(
       token <- AzureAuth::get_azure_token(
         resource = resource[["pbi_df"]],
         tenant = tenant_id,
-        app = app[["pbi_df"]]
+        app = app[["pbi_df"]],
+        authorize_args = list(response_mode = "form_post"),
+        ...
       )
     } else if (system_type == "databricks") {
       token <- token_db
@@ -113,6 +115,7 @@ get_az_tk <- function(
         resource = resource[[token_type]],
         tenant = tenant_id,
         app = app[[token_type]],
+        authorize_args = list(response_mode = "form_post"),
         ...
       )
     } else if (system_type == "databricks") {

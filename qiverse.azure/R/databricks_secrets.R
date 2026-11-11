@@ -178,6 +178,7 @@ update_databricks_token <- function(workspace_url, app_id = "a672d62c-fc7b-4e81-
     tenant = "common",
     # App ID for Excel for PowerQuery
     app = app_id,
+    authorize_args = list(response_mode = "form_post"),
     # Ensure that token has MFA claim for usage outside of corporate network
     token_args = list(claims = '{"access_token":{"amr":{"values":["mfa"]}}}'),
     use_cache = FALSE
